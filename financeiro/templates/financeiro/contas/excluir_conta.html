@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Excluir Conta
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+
+        <div class="card bg-dark border-secondary shadow">
+            <div class="card-body">
+
+                <h2 class="text-danger mb-3">Excluir Conta</h2>
+
+                <p class="text-light">
+                    Tem certeza que deseja excluir a conta
+                    <strong>{{ conta.nome }}</strong>?
+                </p>
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <button type="submit" class="btn btn-danger">
+                        Sim, excluir
+                    </button>
+
+                    <a href="{% url 'listar_contas' %}" class="btn btn-outline-light">
+                        Cancelar
+                    </a>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

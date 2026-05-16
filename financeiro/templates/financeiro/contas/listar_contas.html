@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Contas
+{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Contas</h1>
+
+    <a href="{% url 'criar_conta' %}" class="btn btn-success">
+        Nova Conta
+    </a>
+</div>
+
+<div class="card bg-dark border-secondary">
+    <div class="card-body">
+
+        <table class="table table-dark table-hover align-middle">
+
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Tipo</th>
+                    <th>Saldo Inicial</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for conta in contas %}
+
+                <tr>
+                    <td>{{ conta.nome }}</td>
+
+                    <td>{{ conta.get_tipo_display }}</td>
+
+                    <td>
+                        R$ {{ conta.saldo_inicial }}
+                    </td>
+
+                    <td>
+                        {% if conta.ativa %}
+                            Ativa
+                        {% else %}
+                            Inativa
+                        {% endif %}
+                    </td>
+
+                    <td>
+
+                        <a href="{% url 'detalhes_conta' conta.id %}" class="btn btn-sm btn-outline-success">
+                            Detalhes
+                        </a>
+                        
+                        <a href="{% url 'editar_conta' conta.id %}" class="btn btn-sm btn-outline-light">
+                            Editar
+                        </a>
+
+                        <a href="{% url 'excluir_conta' conta.id %}" class="btn btn-sm btn-outline-danger">
+                            Excluir
+                        </a>
+                    </td>
+                </tr>
+
+                {% empty %}
+
+                <td colspan="5">
+                    Nenhuma conta cadastrada.
+                </td>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,3 +1,124 @@
 from django.db import models
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 
-# Create your models here.
+
+class Conta(models.Model):
+    TIPO_CONTA_CHOICES = [
+        ('corrente', 'Conta Corrente'),
+        ('investimento', 'Investimento/Caixinha'),
+    ]
+
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    nome = models.CharField(max_length=100)
+    tipo = models.CharField(max_length=20, choices=TIPO_CONTA_CHOICES)
+    saldo_inicial = models.DecimalField(
+        max_digits=10, decimal_places=2, default=0)
+    descricao = models.TextField(blank=True, null=True)
+    ativa = models.BooleanField(default=True)
+    criada_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Conta'
+        verbose_name_plural = 'Contas'
+        ordering = ['nome']
+
+    def __str__(self):
+        return self.nome
+
+
+class Categoria(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    nome = models.CharField(max_length=100)
+    descricao = models.TextField(blank=True, null=True)
+    ativa = models.BooleanField(default=True)
+    criada_em = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Categoria'
+        verbose_name_plural = 'Categorias'
+        ordering = ['nome']
+
+    def __str__(self):
+        return self.nome
+
+
+class Movimentacao(models.Model):
+    TIPO_MOVIMENTACAO_CHOICES = [
+        ('entrada', 'Entrada'),
+        ('saida', 'Saída'),
+        ('transferencia', 'Transferência Interna'),
+    ]
+
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    descricao = models.CharField(max_length=150)
+    valor = models.DecimalField(max_digits=10, decimal_places=2)
+    tipo = models.CharField(max_length=20, choices=TIPO_MOVIMENTACAO_CHOICES)
+
+    categoria = models.ForeignKey(
+        Categoria,
+        on_delete=models.SET_NULL,
+        blank=True,
+        null=True
+    )
+
+    conta_origem = models.ForeignKey(
+        Conta,
+        on_delete=models.CASCADE,
+        related_name='movimentacoes_origem',
+        blank=True,
+        null=True
+    )
+
+    conta_destino = models.ForeignKey(
+        Conta,
+        on_delete=models.CASCADE,
+        related_name='movimentacoes_destino',
+        blank=True,
+        null=True
+    )
+
+    data = models.DateField()
+    observacao = models.TextField(blank=True, null=True)
+    criada_em = models.DateTimeField(auto_now_add=True)
+    atualizada_em = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'Movimentação'
+        verbose_name_plural = 'Movimentações'
+        ordering = ['-data', '-criada_em']
+
+    def __str__(self):
+        return f'{self.descricao} - R$ {self.valor}'
+
+    def clean(self):
+        if self.valor <= 0:
+            raise ValidationError(
+                'O valor da movimentação deve ser maior que zero.')
+
+        if self.tipo == 'entrada':
+            if not self.conta_destino:
+                raise ValidationError(
+                    'Entradas precisam de uma conta de destino.')
+            if self.conta_origem:
+                raise ValidationError(
+                    'Entradas não devem ter conta de origem.')
+
+        if self.tipo == 'saida':
+            if not self.conta_origem:
+                raise ValidationError(
+                    'Saídas precisam de uma conta de origem.')
+            if self.conta_destino:
+                raise ValidationError('Saídas não devem ter conta de destino.')
+
+        if self.tipo == 'transferencia':
+            if not self.conta_origem or not self.conta_destino:
+                raise ValidationError(
+                    'Transferências precisam de conta de origem e destino.')
+            if self.conta_origem == self.conta_destino:
+                raise ValidationError(
+                    'A conta de origem e destino não podem ser iguais.')
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super().save(*args, **kwargs)

@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Movimentações
+{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="text-success">Movimentações</h1>
+
+    <a href="{% url 'criar_movimentacao' %}" class="btn btn-success">
+        Nova Movimentação
+    </a>
+</div>
+
+<div class="card bg-dark border-secondary shadow">
+    <div class="card-body">
+
+        <table class="table table-dark table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Descrição</th>
+                    <th>Tipo</th>
+                    <th>Valor</th>
+                    <th>Categoria</th>
+                    <th>Origem</th>
+                    <th>Destino</th>
+                    <th>Data</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for movimentacao in movimentacoes %}
+                <tr>
+                    <td>{{ movimentacao.descricao }}</td>
+                    <td>{{ movimentacao.get_tipo_display }}</td>
+                    <td>R$ {{ movimentacao.valor }}</td>
+                    <td>{{ movimentacao.categoria|default:"-" }}</td>
+                    <td>{{ movimentacao.conta_origem|default:"-" }}</td>
+                    <td>{{ movimentacao.conta_destino|default:"-" }}</td>
+                    <td>{{ movimentacao.data }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">Nenhuma movimentação cadastrada.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}

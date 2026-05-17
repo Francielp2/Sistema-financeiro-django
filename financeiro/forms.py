@@ -104,6 +104,7 @@ class MovimentacaoForm(forms.ModelForm):
             'conta_origem',
             'conta_destino',
             'data',
+            'hora',
             'observacao'
         ]
 
@@ -132,6 +133,10 @@ class MovimentacaoForm(forms.ModelForm):
                 'class': 'form-control',
                 'type': 'date'
             }),
+            'hora': forms.TimeInput(attrs={
+                'class': 'form-control',
+                'type': 'time'
+            }),
             'observacao': forms.Textarea(attrs={
                 'class': 'form-control',
                 'rows': 3,
@@ -144,7 +149,6 @@ class MovimentacaoForm(forms.ModelForm):
 
         self.fields['categoria'].queryset = Categoria.objects.filter(
             ativa=True)
-        self.fields['conta_origem'].queryset = Conta.objects.filter(
-            ativa=True)
+        self.fields['conta_origem'].queryset = Conta.objects.filter(ativa=True)
         self.fields['conta_destino'].queryset = Conta.objects.filter(
             ativa=True)

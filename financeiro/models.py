@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
+from django.utils import timezone
 
 
 class Conta(models.Model):
@@ -78,7 +79,8 @@ class Movimentacao(models.Model):
         null=True
     )
 
-    data = models.DateField()
+    data = models.DateField(blank=True, null=True)
+    hora = models.TimeField(blank=True, null=True)
     observacao = models.TextField(blank=True, null=True)
     criada_em = models.DateTimeField(auto_now_add=True)
     atualizada_em = models.DateTimeField(auto_now=True)
@@ -86,7 +88,7 @@ class Movimentacao(models.Model):
     class Meta:
         verbose_name = 'Movimentação'
         verbose_name_plural = 'Movimentações'
-        ordering = ['-data', '-criada_em']
+        ordering = ['-data', '-hora', '-criada_em']
 
     def __str__(self):
         return f'{self.descricao} - R$ {self.valor}'
@@ -95,6 +97,10 @@ class Movimentacao(models.Model):
         if self.valor <= 0:
             raise ValidationError(
                 'O valor da movimentação deve ser maior que zero.')
+
+        if self.data and not self.hora:
+            raise ValidationError(
+                'Ao informar uma data, a hora da movimentação também deve ser informada.')
 
         if self.tipo == 'entrada':
             if not self.conta_destino:
@@ -120,5 +126,13 @@ class Movimentacao(models.Model):
                     'A conta de origem e destino não podem ser iguais.')
 
     def save(self, *args, **kwargs):
+        agora = timezone.localtime()
+
+        if not self.data:
+            self.data = agora.date()
+
+        if not self.hora:
+            self.hora = agora.time()
+
         self.full_clean()
         super().save(*args, **kwargs)

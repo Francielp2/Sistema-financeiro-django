@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Detalhes da Movimentação
+{% endblock %}
+
+{% block content %}
+
+<div class="card bg-dark border-secondary shadow">
+    <div class="card-body">
+
+        <h2 class="text-success mb-4">
+            {{ movimentacao.descricao }}
+        </h2>
+
+        <p class="text-light"><strong>Tipo:</strong> {{ movimentacao.get_tipo_display }}</p>
+        <p class="text-light"><strong>Valor:</strong> R$ {{ movimentacao.valor }}</p>
+        <p class="text-light"><strong>Categoria:</strong> {{ movimentacao.categoria|default:"-" }}</p>
+        <p class="text-light"><strong>Conta de origem:</strong> {{ movimentacao.conta_origem|default:"-" }}</p>
+        <p class="text-light"><strong>Conta de destino:</strong> {{ movimentacao.conta_destino|default:"-" }}</p>
+        <p class="text-light"><strong>Data:</strong> {{ movimentacao.data|date:"d/m/Y" }}</p>
+        <p class="text-light"><strong>Hora:</strong> {{ movimentacao.hora|time:"H:i"|default:"-" }}</p>
+        <p class="text-light"><strong>Criada em:</strong> {{ movimentacao.criada_em|date:"d/m/Y H:i" }}</p>
+        <p class="text-light"><strong>Atualizada em:</strong> {{ movimentacao.atualizada_em|date:"d/m/Y H:i" }}</p>
+        <p class="text-light"><strong>Observação:</strong> {{ movimentacao.observacao|default:"Sem observação" }}</p>
+
+        <div class="mt-4">
+            <a href="{% url 'editar_movimentacao' movimentacao.id %}" class="btn btn-success">
+                Editar
+            </a>
+
+            <a href="{% url 'listar_movimentacoes' %}" class="btn btn-outline-light">
+                Voltar
+            </a>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Excluir Movimentação
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+
+        <div class="card bg-dark border-secondary shadow">
+            <div class="card-body">
+
+                <h2 class="text-danger mb-3">
+                    Excluir Movimentação
+                </h2>
+
+                <p class="text-light">
+                    Tem certeza que deseja excluir a movimentação
+                    <strong>{{ movimentacao.descricao }}</strong>
+                    no valor de
+                    <strong>R$ {{ movimentacao.valor }}</strong>?
+                </p>
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <button type="submit" class="btn btn-danger">
+                        Sim, excluir
+                    </button>
+
+                    <a href="{% url 'listar_movimentacoes' %}" class="btn btn-outline-light">
+                        Cancelar
+                    </a>
+                </form>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

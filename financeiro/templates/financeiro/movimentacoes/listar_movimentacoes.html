@@ -27,6 +27,9 @@ Movimentações
                     <th>Origem</th>
                     <th>Destino</th>
                     <th>Data</th>
+                    <th>Hora</th>
+                    <th>Criada em</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
 
@@ -39,11 +42,27 @@ Movimentações
                     <td>{{ movimentacao.categoria|default:"-" }}</td>
                     <td>{{ movimentacao.conta_origem|default:"-" }}</td>
                     <td>{{ movimentacao.conta_destino|default:"-" }}</td>
-                    <td>{{ movimentacao.data }}</td>
+                    <td>{{ movimentacao.data|date:"d/m/Y" }}</td>
+                    <td>{{ movimentacao.hora|default:"-" }}</td>
+                    <td>{{ movimentacao.criada_em|date:"d/m/Y H:i" }}</td>
+
+                    <td>
+                        <a href="{% url 'detalhes_movimentacao' movimentacao.id %}" class="btn btn-sm btn-outline-success">
+                            Detalhes
+                        </a>
+
+                        <a href="{% url 'editar_movimentacao' movimentacao.id %}" class="btn btn-sm btn-outline-light">
+                            Editar
+                        </a>
+
+                        <a href="{% url 'excluir_movimentacao' movimentacao.id %}" class="btn btn-sm btn-outline-danger">
+                            Excluir
+                        </a>
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="7">Nenhuma movimentação cadastrada.</td>
+                    <td colspan="10">Nenhuma movimentação cadastrada.</td>
                 </tr>
                 {% endfor %}
             </tbody>

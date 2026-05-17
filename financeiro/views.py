@@ -141,7 +141,11 @@ def excluir_categoria(request, categoria_id):
 # Funções par movimentações
 
 def listar_movimentacoes(request):
-    movimentacoes = models.Movimentacao.objects.all()
+    movimentacoes = models.Movimentacao.objects.all().order_by(
+        '-data',
+        '-hora',
+        '-criada_em'
+    )
 
     return render(request, 'financeiro/movimentacoes/listar_movimentacoes.html', {
         'movimentacoes': movimentacoes
@@ -164,3 +168,39 @@ def criar_movimentacao(request):
         'form': form
     })
 
+
+def detalhes_movimentacao(request, movimentacao_id):
+    movimentacao = get_object_or_404(models.Movimentacao, id=movimentacao_id)
+
+    return render(request, 'financeiro/movimentacoes/detalhes_movimentacao.html', {
+        'movimentacao': movimentacao
+    })
+
+
+def editar_movimentacao(request, movimentacao_id):
+    movimentacao = get_object_or_404(models.Movimentacao, id=movimentacao_id)
+
+    if request.method == 'POST':
+        form = MovimentacaoForm(request.POST, instance=movimentacao)
+
+        if form.is_valid():
+            form.save()
+            return redirect('listar_movimentacoes')
+    else:
+        form = MovimentacaoForm(instance=movimentacao)
+
+    return render(request, 'financeiro/movimentacoes/form_movimentacao.html', {
+        'form': form
+    })
+
+
+def excluir_movimentacao(request, movimentacao_id):
+    movimentacao = get_object_or_404(models.Movimentacao, id=movimentacao_id)
+
+    if request.method == 'POST':
+        movimentacao.delete()
+        return redirect('listar_movimentacoes')
+
+    return render(request, 'financeiro/movimentacoes/excluir_movimentacao.html', {
+        'movimentacao': movimentacao
+    })

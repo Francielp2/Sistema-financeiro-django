@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Resumo Financeiro
+{% endblock %}
+
+{% block content %}
+
+<h1 class="text-success mb-4">Resumo Financeiro</h1>
+
+<div class="row g-3 mb-4">
+
+    <div class="col-md-4">
+        <div class="card bg-dark border-secondary shadow">
+            <div class="card-body">
+                <h5 class="text-light">Entradas</h5>
+                <h3 class="text-success">R$ {{ total_entradas }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card bg-dark border-secondary shadow">
+            <div class="card-body">
+                <h5 class="text-light">Saídas</h5>
+                <h3 class="text-danger">R$ {{ total_saidas }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card bg-dark border-secondary shadow">
+            <div class="card-body">
+                <h5 class="text-light">Saldo Geral</h5>
+                <h3 class="text-info">R$ {{ saldo_geral }}</h3>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<h2 class="text-success mb-3">Saldo por Conta</h2>
+
+<div class="card bg-dark border-secondary shadow">
+    <div class="card-body">
+
+        <table class="table table-dark table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Conta</th>
+                    <th>Tipo</th>
+                    <th>Saldo Inicial</th>
+                    <th>Saldo Atual</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for conta in contas %}
+                <tr>
+                    <td>{{ conta.nome }}</td>
+                    <td>{{ conta.get_tipo_display }}</td>
+                    <td>R$ {{ conta.saldo_inicial }}</td>
+                    <td>R$ {{ conta.saldo_atual }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4">Nenhuma conta cadastrada.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}

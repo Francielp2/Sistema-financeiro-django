@@ -24,6 +24,7 @@ Contas
                     <th>Nome</th>
                     <th>Tipo</th>
                     <th>Saldo Inicial</th>
+                    <th>Saldo Atual</th>
                     <th>Status</th>
                     <th>Ações</th>
                 </tr>
@@ -41,6 +42,8 @@ Contas
                     <td>
                         R$ {{ conta.saldo_inicial }}
                     </td>
+
+                    <td>R$ {{ conta.saldo_atual }}</td>
 
                     <td>
                         {% if conta.ativa %}

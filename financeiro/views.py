@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .import models
 from .forms import ContaForm, ContaEditarForm, CategoriaForm, MovimentacaoForm
+from django.db.models import Sum
 
 # Função para a página inicial do aplicativo financeiro
 
@@ -203,4 +204,27 @@ def excluir_movimentacao(request, movimentacao_id):
 
     return render(request, 'financeiro/movimentacoes/excluir_movimentacao.html', {
         'movimentacao': movimentacao
+    })
+
+# Função para resumo financeiro
+
+
+def resumo_financeiro(request):
+    total_entradas = models.Movimentacao.objects.filter(
+        tipo='entrada'
+    ).aggregate(total=Sum('valor'))['total'] or 0
+
+    total_saidas = models.Movimentacao.objects.filter(
+        tipo='saida'
+    ).aggregate(total=Sum('valor'))['total'] or 0
+
+    saldo_geral = total_entradas - total_saidas
+
+    contas = models.Conta.objects.all()
+
+    return render(request, 'financeiro/resumo_financeiro.html', {
+        'total_entradas': total_entradas,
+        'total_saidas': total_saidas,
+        'saldo_geral': saldo_geral,
+        'contas': contas,
     })

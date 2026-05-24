@@ -27,6 +27,26 @@ class Conta(models.Model):
     def __str__(self):
         return self.nome
 
+    @property
+    def saldo_atual(self):
+        entradas = self.movimentacoes_destino.filter(tipo='entrada').aggregate(
+            total=models.Sum('valor')
+        )['total'] or 0
+
+        saidas = self.movimentacoes_origem.filter(tipo='saida').aggregate(
+            total=models.Sum('valor')
+        )['total'] or 0
+
+        transferencias_recebidas = self.movimentacoes_destino.filter(tipo='transferencia').aggregate(
+            total=models.Sum('valor')
+        )['total'] or 0
+
+        transferencias_enviadas = self.movimentacoes_origem.filter(tipo='transferencia').aggregate(
+            total=models.Sum('valor')
+        )['total'] or 0
+
+        return self.saldo_inicial + entradas - saidas + transferencias_recebidas - transferencias_enviadas
+
 
 class Categoria(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -124,6 +144,18 @@ class Movimentacao(models.Model):
             if self.conta_origem == self.conta_destino:
                 raise ValidationError(
                     'A conta de origem e destino não podem ser iguais.')
+
+        if self.tipo == 'saida':
+            if self.conta_origem.saldo_atual < self.valor:
+                raise ValidationError(
+                    'Saldo insuficiente para realizar esta saída.'
+                )
+            
+        if self.tipo == 'transferencia':
+            if self.conta_origem.saldo_atual < self.valor:
+                raise ValidationError(
+                    'Saldo insuficiente para realizar esta transferência.'
+                )
 
     def save(self, *args, **kwargs):
         agora = timezone.localtime()

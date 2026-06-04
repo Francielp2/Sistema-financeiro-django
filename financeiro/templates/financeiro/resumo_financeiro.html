@@ -8,31 +8,74 @@ Resumo Financeiro
 
 <h1 class="text-success mb-4">Resumo Financeiro</h1>
 
+<form method="get" class="card bg-dark border-secondary shadow mb-4">
+    <div class="card-body">
+        <h5 class="text-light mb-3">Filtrar período</h5>
+
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label text-light">Data inicial</label>
+                <input type="date" name="data_inicio" class="form-control" value="{{ data_inicio|date:'Y-m-d' }}">
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label text-light">Data final</label>
+                <input type="date" name="data_fim" class="form-control" value="{{ data_fim|date:'Y-m-d' }}">
+            </div>
+
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-success w-100">
+                    Aplicar filtro
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
 <div class="row g-3 mb-4">
 
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card bg-dark border-secondary shadow">
             <div class="card-body">
-                <h5 class="text-light">Entradas</h5>
-                <h3 class="text-success">R$ {{ total_entradas }}</h3>
+                <h5 class="text-light">Patrimônio Total</h5>
+                <h3 class="text-info">R$ {{ patrimonio_total }}</h3>
+                <small class="text-secondary">Saldo real acumulado das contas</small>
             </div>
         </div>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card bg-dark border-secondary shadow">
             <div class="card-body">
-                <h5 class="text-light">Saídas</h5>
-                <h3 class="text-danger">R$ {{ total_saidas }}</h3>
+                <h5 class="text-light">Entradas do Período</h5>
+                <h3 class="text-success">R$ {{ total_entradas_periodo }}</h3>
+                <small class="text-secondary">{{ data_inicio|date:'d/m/Y' }} até {{ data_fim|date:'d/m/Y' }}</small>
             </div>
         </div>
     </div>
 
-    <div class="col-md-4">
+    <div class="col-md-3">
         <div class="card bg-dark border-secondary shadow">
             <div class="card-body">
-                <h5 class="text-light">Saldo Geral</h5>
-                <h3 class="text-info">R$ {{ saldo_geral }}</h3>
+                <h5 class="text-light">Saídas do Período</h5>
+                <h3 class="text-danger">R$ {{ total_saidas_periodo }}</h3>
+                <small class="text-secondary">{{ data_inicio|date:'d/m/Y' }} até {{ data_fim|date:'d/m/Y' }}</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-dark border-secondary shadow">
+            <div class="card-body">
+                <h5 class="text-light">Resultado do Período</h5>
+
+                {% if resultado_periodo >= 0 %}
+                    <h3 class="text-success">R$ {{ resultado_periodo }}</h3>
+                {% else %}
+                    <h3 class="text-danger">R$ {{ resultado_periodo }}</h3>
+                {% endif %}
+
+                <small class="text-secondary">Entradas menos saídas</small>
             </div>
         </div>
     </div>
@@ -73,4 +116,49 @@ Resumo Financeiro
     </div>
 </div>
 
+
+<h2 class="text-success mt-5 mb-3">Resumo por Conta no Período</h2>
+
+<div class="card bg-dark border-secondary shadow">
+    <div class="card-body">
+
+        <table class="table table-dark table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Conta</th>
+                    <th>Saldo Atual</th>
+                    <th>Entradas</th>
+                    <th>Saídas</th>
+                    <th>Transferências Recebidas</th>
+                    <th>Transferências Enviadas</th>
+                    <th>Resultado</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in resumo_por_conta %}
+                <tr>
+                    <td>{{ item.conta.nome }}</td>
+                    <td>R$ {{ item.conta.saldo_atual }}</td>
+                    <td class="text-success">R$ {{ item.entradas }}</td>
+                    <td class="text-danger">R$ {{ item.saidas }}</td>
+                    <td class="text-success">R$ {{ item.transferencias_recebidas }}</td>
+                    <td class="text-warning">R$ {{ item.transferencias_enviadas }}</td>
+
+                    {% if item.resultado_periodo >= 0 %}
+                        <td class="text-success">R$ {{ item.resultado_periodo }}</td>
+                    {% else %}
+                        <td class="text-danger">R$ {{ item.resultado_periodo }}</td>
+                    {% endif %}
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7">Nenhuma conta cadastrada.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
 {% endblock %}

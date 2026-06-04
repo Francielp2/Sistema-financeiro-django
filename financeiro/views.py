@@ -2,6 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .import models
 from .forms import ContaForm, ContaEditarForm, CategoriaForm, MovimentacaoForm
 from django.db.models import Sum
+from datetime import datetime
+from calendar import monthrange
+from django.utils import timezone
 
 # Função para a página inicial do aplicativo financeiro
 
@@ -206,25 +209,89 @@ def excluir_movimentacao(request, movimentacao_id):
         'movimentacao': movimentacao
     })
 
+
 # Função para resumo financeiro
 
-
 def resumo_financeiro(request):
-    total_entradas = models.Movimentacao.objects.filter(
+    hoje = timezone.localdate()
+
+    data_inicio_str = request.GET.get('data_inicio')
+    data_fim_str = request.GET.get('data_fim')
+
+    if data_inicio_str and data_fim_str:
+        data_inicio = datetime.strptime(data_inicio_str, '%Y-%m-%d').date()
+        data_fim = datetime.strptime(data_fim_str, '%Y-%m-%d').date()
+    else:
+        primeiro_dia = hoje.replace(day=1)
+        ultimo_dia = hoje.replace(day=monthrange(hoje.year, hoje.month)[1])
+
+        data_inicio = primeiro_dia
+        data_fim = ultimo_dia
+
+    movimentacoes_periodo = models.Movimentacao.objects.filter(
+        data__range=[data_inicio, data_fim]
+    )
+
+    total_entradas_periodo = movimentacoes_periodo.filter(
         tipo='entrada'
     ).aggregate(total=Sum('valor'))['total'] or 0
 
-    total_saidas = models.Movimentacao.objects.filter(
+    total_saidas_periodo = movimentacoes_periodo.filter(
         tipo='saida'
     ).aggregate(total=Sum('valor'))['total'] or 0
 
-    saldo_geral = total_entradas - total_saidas
+    resultado_periodo = total_entradas_periodo - total_saidas_periodo
 
     contas = models.Conta.objects.all()
 
+    resumo_por_conta = []
+
+    for conta in contas:
+        entradas_conta = movimentacoes_periodo.filter(
+            tipo='entrada',
+            conta_destino=conta
+        ).aggregate(total=Sum('valor'))['total'] or 0
+
+        saidas_conta = movimentacoes_periodo.filter(
+            tipo='saida',
+            conta_origem=conta
+        ).aggregate(total=Sum('valor'))['total'] or 0
+
+        transferencias_recebidas = movimentacoes_periodo.filter(
+            tipo='transferencia',
+            conta_destino=conta
+        ).aggregate(total=Sum('valor'))['total'] or 0
+
+        transferencias_enviadas = movimentacoes_periodo.filter(
+            tipo='transferencia',
+            conta_origem=conta
+        ).aggregate(total=Sum('valor'))['total'] or 0
+
+        resultado_periodo_conta = (
+            entradas_conta
+            - saidas_conta
+            + transferencias_recebidas
+            - transferencias_enviadas
+        )
+
+        resumo_por_conta.append({
+            'conta': conta,
+            'entradas': entradas_conta,
+            'saidas': saidas_conta,
+            'transferencias_recebidas': transferencias_recebidas,
+            'transferencias_enviadas': transferencias_enviadas,
+            'resultado_periodo': resultado_periodo_conta,
+        })
+
+    patrimonio_total = sum(conta.saldo_atual for conta in contas)
+
     return render(request, 'financeiro/resumo_financeiro.html', {
-        'total_entradas': total_entradas,
-        'total_saidas': total_saidas,
-        'saldo_geral': saldo_geral,
+        'patrimonio_total': patrimonio_total,
+        'total_entradas_periodo': total_entradas_periodo,
+        'total_saidas_periodo': total_saidas_periodo,
+        'resultado_periodo': resultado_periodo,
+        'data_inicio': data_inicio,
+        'data_fim': data_fim,
         'contas': contas,
+        'resumo_por_conta': resumo_por_conta,
     })

@@ -229,6 +229,7 @@ def resumo_financeiro(request):
         data_fim = ultimo_dia
 
     tipo_filtro = request.GET.get('tipo')
+    categoria_filtro = request.GET.get('categoria')
 
     movimentacoes_periodo = models.Movimentacao.objects.filter(
         data__range=[data_inicio, data_fim]
@@ -236,6 +237,14 @@ def resumo_financeiro(request):
 
     if tipo_filtro in ['entrada', 'saida', 'transferencia']:
         movimentacoes_periodo = movimentacoes_periodo.filter(tipo=tipo_filtro)
+
+    if categoria_filtro:
+        if categoria_filtro == 'sem_categoria':
+            movimentacoes_periodo = movimentacoes_periodo.filter(
+                categoria__isnull=True)
+        else:
+            movimentacoes_periodo = movimentacoes_periodo.filter(
+                categoria_id=categoria_filtro)
 
     total_entradas_periodo = movimentacoes_periodo.filter(
         tipo='entrada'
@@ -293,6 +302,7 @@ def resumo_financeiro(request):
         })
 
     patrimonio_total = sum(conta.saldo_atual for conta in contas)
+    categorias = models.Categoria.objects.filter(ativa=True).order_by('nome')
 
     return render(request, 'financeiro/resumo_financeiro.html', {
         'patrimonio_total': patrimonio_total,
@@ -305,6 +315,8 @@ def resumo_financeiro(request):
         'resumo_por_conta': resumo_por_conta,
         'tipo_filtro': tipo_filtro,
         'total_transferencias_periodo': total_transferencias_periodo,
+        'categorias': categorias,
+        'categoria_filtro': categoria_filtro,
     })
 
 # Função para resumo financeiro por conta

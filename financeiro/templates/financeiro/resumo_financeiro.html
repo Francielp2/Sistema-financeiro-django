@@ -13,17 +13,17 @@ Resumo Financeiro
         <h5 class="text-light mb-3">Filtrar período</h5>
 
         <div class="row g-3 align-items-end">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label class="form-label text-light">Data inicial</label>
                 <input type="date" name="data_inicio" class="form-control" value="{{ data_inicio|date:'Y-m-d' }}">
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label class="form-label text-light">Data final</label>
                 <input type="date" name="data_fim" class="form-control" value="{{ data_fim|date:'Y-m-d' }}">
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <label class="form-label text-light">Tipo</label>
                 <select name="tipo" class="form-select">
                     <option value="">Todos</option>
@@ -43,6 +43,23 @@ Resumo Financeiro
             </div>
 
             <div class="col-md-3">
+                <label class="form-label text-light">Categoria</label>
+                <select name="categoria" class="form-select">
+                    <option value="">Todas</option>
+
+                    <option value="sem_categoria" {% if categoria_filtro == 'sem_categoria' %}selected{% endif %}>
+                        Sem categoria
+                    </option>
+
+                    {% for categoria in categorias %}
+                        <option value="{{ categoria.id }}" {% if categoria_filtro == categoria.id|stringformat:"s" %}selected{% endif %}>
+                            {{ categoria.nome }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-3">
                 <button type="submit" class="btn btn-success w-100">
                     Aplicar filtro
                 </button>
@@ -51,17 +68,23 @@ Resumo Financeiro
     </div>
 </form>
 
-<div class="row row-cols-1 row-cols-md-2 {% if not tipo_filtro %}row-cols-xl-5{% else %}row-cols-xl-2{% endif %} g-3 mb-4">
-
-    <div class="col">
-        <div class="card bg-dark border-secondary shadow h-100">
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-dark border-info shadow">
             <div class="card-body">
                 <h5 class="text-light">Patrimônio Total</h5>
-                <h3 class="text-info">R$ {{ patrimonio_total }}</h3>
-                <small class="text-secondary">Saldo real acumulado das contas</small>
+                <h2 class="text-info">R$ {{ patrimonio_total }}</h2>
+                <small class="text-secondary">
+                    Saldo real acumulado de todas as contas. Este valor não muda com os filtros.
+                </small>
             </div>
         </div>
     </div>
+</div>
+
+<h2 class="text-success mb-3">Resumo do Período</h2>
+
+<div class="row row-cols-1 row-cols-md-2 {% if not tipo_filtro %}row-cols-xl-4{% else %}row-cols-xl-1{% endif %} g-3 mb-4">
 
     {% if not tipo_filtro or tipo_filtro == 'entrada' %}
     <div class="col">

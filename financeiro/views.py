@@ -228,15 +228,19 @@ def resumo_financeiro(request):
         data_inicio = primeiro_dia
         data_fim = ultimo_dia
 
-    tipo_filtro = request.GET.get('tipo')
+    tipos_filtro = request.GET.getlist('tipos')
     categoria_filtro = request.GET.get('categoria')
 
     movimentacoes_periodo = models.Movimentacao.objects.filter(
         data__range=[data_inicio, data_fim]
     )
 
-    if tipo_filtro in ['entrada', 'saida', 'transferencia']:
-        movimentacoes_periodo = movimentacoes_periodo.filter(tipo=tipo_filtro)
+    tipos_validos = ['entrada', 'saida', 'transferencia']
+
+    if tipos_filtro:
+        tipos_filtro = [tipo for tipo in tipos_filtro if tipo in tipos_validos]
+        movimentacoes_periodo = movimentacoes_periodo.filter(
+            tipo__in=tipos_filtro)
 
     if categoria_filtro:
         if categoria_filtro == 'sem_categoria':
@@ -313,7 +317,7 @@ def resumo_financeiro(request):
         'data_fim': data_fim,
         'contas': contas,
         'resumo_por_conta': resumo_por_conta,
-        'tipo_filtro': tipo_filtro,
+        'tipos_filtro': tipos_filtro,
         'total_transferencias_periodo': total_transferencias_periodo,
         'categorias': categorias,
         'categoria_filtro': categoria_filtro,

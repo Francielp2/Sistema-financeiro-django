@@ -12,34 +12,15 @@ Resumo Financeiro
     <div class="card-body">
         <h5 class="text-light mb-3">Filtrar período</h5>
 
-        <div class="row g-3 align-items-end">
-            <div class="col-md-2">
+        <div class="row g-3">
+            <div class="col-md-3">
                 <label class="form-label text-light">Data inicial</label>
                 <input type="date" name="data_inicio" class="form-control" value="{{ data_inicio|date:'Y-m-d' }}">
             </div>
 
-            <div class="col-md-2">
+            <div class="col-md-3">
                 <label class="form-label text-light">Data final</label>
                 <input type="date" name="data_fim" class="form-control" value="{{ data_fim|date:'Y-m-d' }}">
-            </div>
-
-            <div class="col-md-2">
-                <label class="form-label text-light">Tipo</label>
-                <select name="tipo" class="form-select">
-                    <option value="">Todos</option>
-
-                    <option value="entrada" {% if tipo_filtro == 'entrada' %}selected{% endif %}>
-                        Entradas
-                    </option>
-
-                    <option value="saida" {% if tipo_filtro == 'saida' %}selected{% endif %}>
-                        Saídas
-                    </option>
-
-                    <option value="transferencia" {% if tipo_filtro == 'transferencia' %}selected{% endif %}>
-                        Transferências
-                    </option>
-                </select>
             </div>
 
             <div class="col-md-3">
@@ -59,10 +40,64 @@ Resumo Financeiro
                 </select>
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-3 d-flex align-items-end">
                 <button type="submit" class="btn btn-success w-100">
                     Aplicar filtro
                 </button>
+            </div>
+
+            <div class="col-12">
+                <label class="form-label text-light">Tipos</label>
+
+                <div class="border rounded p-2 d-flex flex-wrap gap-4">
+                    <div class="form-check text-light">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="tipoTodos"
+                            {% if not tipos_filtro %}checked{% endif %}
+                        >
+                        <label class="form-check-label fw-bold" for="tipoTodos">
+                            Todos
+                        </label>
+                    </div>
+
+                    <div class="form-check text-light">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="tipos"
+                            value="entrada"
+                            id="tipoEntrada"
+                            {% if 'entrada' in tipos_filtro %}checked{% endif %}
+                        >
+                        <label class="form-check-label" for="tipoEntrada">Entradas</label>
+                    </div>
+
+                    <div class="form-check text-light">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="tipos"
+                            value="saida"
+                            id="tipoSaida"
+                            {% if 'saida' in tipos_filtro %}checked{% endif %}
+                        >
+                        <label class="form-check-label" for="tipoSaida">Saídas</label>
+                    </div>
+
+                    <div class="form-check text-light">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            name="tipos"
+                            value="transferencia"
+                            id="tipoTransferencia"
+                            {% if 'transferencia' in tipos_filtro %}checked{% endif %}
+                        >
+                        <label class="form-check-label" for="tipoTransferencia">Transferências</label>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -84,10 +119,10 @@ Resumo Financeiro
 
 <h2 class="text-success mb-3">Resumo do Período</h2>
 
-<div class="row row-cols-1 row-cols-md-2 {% if not tipo_filtro %}row-cols-xl-4{% else %}row-cols-xl-1{% endif %} g-3 mb-4">
+<div class="row g-3 mb-4">
 
-    {% if not tipo_filtro or tipo_filtro == 'entrada' %}
-    <div class="col">
+    {% if not tipos_filtro or 'entrada' in tipos_filtro %}
+    <div class="{% if not tipos_filtro %}col-md-3{% else %}col-md{% endif %}">
         <div class="card bg-dark border-secondary shadow h-100">
             <div class="card-body">
                 <h5 class="text-light">Entradas do Período</h5>
@@ -98,8 +133,8 @@ Resumo Financeiro
     </div>
     {% endif %}
 
-    {% if not tipo_filtro or tipo_filtro == 'saida' %}
-    <div class="col">
+    {% if not tipos_filtro or 'saida' in tipos_filtro %}
+    <div class="{% if not tipos_filtro %}col-md-3{% else %}col-md{% endif %}">
         <div class="card bg-dark border-secondary shadow h-100">
             <div class="card-body">
                 <h5 class="text-light">Saídas do Período</h5>
@@ -110,8 +145,8 @@ Resumo Financeiro
     </div>
     {% endif %}
 
-    {% if not tipo_filtro or tipo_filtro == 'transferencia' %}
-    <div class="col">
+    {% if not tipos_filtro or 'transferencia' in tipos_filtro %}
+    <div class="{% if not tipos_filtro %}col-md-3{% else %}col-md{% endif %}">
         <div class="card bg-dark border-warning shadow h-100">
             <div class="card-body">
                 <h5 class="text-light">Transferências Internas</h5>
@@ -122,8 +157,8 @@ Resumo Financeiro
     </div>
     {% endif %}
 
-    {% if not tipo_filtro %}
-    <div class="col">
+    {% if not tipos_filtro or 'entrada' in tipos_filtro and 'saida' in tipos_filtro %}
+    <div class="{% if not tipos_filtro %}col-md-3{% else %}col-md{% endif %}">
         <div class="card bg-dark border-secondary shadow h-100">
             <div class="card-body">
                 <h5 class="text-light">Resultado do Período</h5>
@@ -227,4 +262,42 @@ Resumo Financeiro
 
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const todos = document.getElementById('tipoTodos');
+
+    const tipos = [
+        document.getElementById('tipoEntrada'),
+        document.getElementById('tipoSaida'),
+        document.getElementById('tipoTransferencia')
+    ];
+
+    function atualizarEstadoTodos() {
+        const algumTipoMarcado = tipos.some(function (tipo) {
+            return tipo.checked;
+        });
+
+        if (algumTipoMarcado) {
+            todos.checked = false;
+        } else {
+            todos.checked = true;
+        }
+    }
+
+    tipos.forEach(function (tipo) {
+        tipo.addEventListener('change', atualizarEstadoTodos);
+    });
+
+    todos.addEventListener('change', function () {
+        if (todos.checked) {
+            tipos.forEach(function (tipo) {
+                tipo.checked = false;
+            });
+        }
+    });
+
+    atualizarEstadoTodos();
+});
+</script>
 {% endblock %}

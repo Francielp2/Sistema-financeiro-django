@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Resumo da Conta
+{% endblock %}
+
+{% block content %}
+
+<h1 class="text-success mb-4">Resumo da Conta: {{ conta.nome }}</h1>
+
+<form method="get" class="card bg-dark border-secondary shadow mb-4">
+    <div class="card-body">
+        <h5 class="text-light mb-3">Filtrar período</h5>
+
+        <div class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label text-light">Data inicial</label>
+                <input type="date" name="data_inicio" class="form-control" value="{{ data_inicio|date:'Y-m-d' }}">
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label text-light">Data final</label>
+                <input type="date" name="data_fim" class="form-control" value="{{ data_fim|date:'Y-m-d' }}">
+            </div>
+
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-success w-100">
+                    Aplicar filtro
+                </button>
+            </div>
+        </div>
+    </div>
+</form>
+
+<div class="row g-3 mb-4">
+
+    <div class="col-md-3">
+        <div class="card bg-dark border-secondary shadow">
+            <div class="card-body">
+                <h5 class="text-light">Saldo Atual</h5>
+                <h3 class="text-info">R$ {{ conta.saldo_atual }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-dark border-secondary shadow">
+            <div class="card-body">
+                <h5 class="text-light">Entradas</h5>
+                <h3 class="text-success">R$ {{ entradas }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-dark border-secondary shadow">
+            <div class="card-body">
+                <h5 class="text-light">Saídas</h5>
+                <h3 class="text-danger">R$ {{ saidas }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="card bg-dark border-secondary shadow">
+            <div class="card-body">
+                <h5 class="text-light">Resultado</h5>
+
+                {% if resultado_periodo >= 0 %}
+                    <h3 class="text-success">R$ {{ resultado_periodo }}</h3>
+                {% else %}
+                    <h3 class="text-danger">R$ {{ resultado_periodo }}</h3>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="row g-3 mb-4">
+
+    <div class="col-md-6">
+        <div class="card bg-dark border-secondary shadow">
+            <div class="card-body">
+                <h5 class="text-light">Transferências Recebidas</h5>
+                <h3 class="text-success">R$ {{ transferencias_recebidas }}</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card bg-dark border-secondary shadow">
+            <div class="card-body">
+                <h5 class="text-light">Transferências Enviadas</h5>
+                <h3 class="text-warning">R$ {{ transferencias_enviadas }}</h3>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="mb-4">
+    <a href="{% url 'detalhes_conta' conta.id %}" class="btn btn-outline-info">
+        Informações da Conta
+    </a>
+
+    <a href="{% url 'resumo_financeiro' %}" class="btn btn-outline-secondary">
+        Voltar ao Resumo Geral
+    </a>
+</div>
+
+<h2 class="text-success mb-3">Movimentações da Conta</h2>
+
+<div class="card bg-dark border-secondary shadow">
+    <div class="card-body">
+
+        <table class="table table-dark table-hover align-middle">
+            <thead>
+                <tr>
+                    <th>Data</th>
+                    <th>Tipo</th>
+                    <th>Descrição</th>
+                    <th>Categoria</th>
+                    <th>Valor</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for movimentacao in movimentacoes_conta %}
+                <tr>
+                    <td>{{ movimentacao.data|date:'d/m/Y' }}</td>
+                    <td>{{ movimentacao.get_tipo_display }}</td>
+                    <td>{{ movimentacao.descricao }}</td>
+                    <td>
+                        {% if movimentacao.categoria %}
+                            {{ movimentacao.categoria.nome }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+                    <td>R$ {{ movimentacao.valor }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5">Nenhuma movimentação encontrada para esta conta.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+</div>
+
+{% endblock %}

@@ -13,17 +13,17 @@ Resumo Financeiro
         <h5 class="text-light mb-3">Filtrar período</h5>
 
         <div class="row g-3">
-            <div class="col-md-3">
+            <div class="col-md">
                 <label class="form-label text-light">Data inicial</label>
                 <input type="date" name="data_inicio" class="form-control" value="{{ data_inicio|date:'Y-m-d' }}">
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md">
                 <label class="form-label text-light">Data final</label>
                 <input type="date" name="data_fim" class="form-control" value="{{ data_fim|date:'Y-m-d' }}">
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md">
                 <label class="form-label text-light">Categoria</label>
                 <select name="categoria" class="form-select">
                     <option value="">Todas</option>
@@ -40,64 +40,82 @@ Resumo Financeiro
                 </select>
             </div>
 
-            <div class="col-md-3 d-flex align-items-end">
+            <div class="col-md">
+                <label class="form-label text-light">Tipos</label>
+
+                <div class="dropdown">
+                    <button
+                        class="form-select text-start"
+                        type="button"
+                        id="dropdownTipos"
+                        data-bs-toggle="dropdown"
+                        data-bs-auto-close="outside"
+                        aria-expanded="false"
+                    >
+                        <span id="textoTiposSelecionados">
+                            Todos os tipos
+                        </span>
+                    </button>
+
+                    <div class="dropdown-menu dropdown-menu-dark p-3 w-100" aria-labelledby="dropdownTipos">
+                        <div class="form-check text-light mb-2">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="tipoTodos"
+                                {% if not tipos_filtro %}checked{% endif %}
+                            >
+                            <label class="form-check-label fw-bold" for="tipoTodos">
+                                Todos
+                            </label>
+                        </div>
+
+                        <div class="form-check text-light mb-2">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                name="tipos"
+                                value="entrada"
+                                id="tipoEntrada"
+                                data-label="Entradas"
+                                {% if 'entrada' in tipos_filtro %}checked{% endif %}
+                            >
+                            <label class="form-check-label" for="tipoEntrada">Entradas</label>
+                        </div>
+
+                        <div class="form-check text-light mb-2">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                name="tipos"
+                                value="saida"
+                                id="tipoSaida"
+                                data-label="Saídas"
+                                {% if 'saida' in tipos_filtro %}checked{% endif %}
+                            >
+                            <label class="form-check-label" for="tipoSaida">Saídas</label>
+                        </div>
+
+                        <div class="form-check text-light">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                name="tipos"
+                                value="transferencia"
+                                id="tipoTransferencia"
+                                data-label="Transferências"
+                                {% if 'transferencia' in tipos_filtro %}checked{% endif %}
+                            >
+                            <label class="form-check-label" for="tipoTransferencia">Transferências</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md d-flex align-items-end">
                 <button type="submit" class="btn btn-success w-100">
                     Aplicar filtro
                 </button>
-            </div>
-
-            <div class="col-12">
-                <label class="form-label text-light">Tipos</label>
-
-                <div class="border rounded p-2 d-flex flex-wrap gap-4">
-                    <div class="form-check text-light">
-                        <input
-                            class="form-check-input"
-                            type="checkbox"
-                            id="tipoTodos"
-                            {% if not tipos_filtro %}checked{% endif %}
-                        >
-                        <label class="form-check-label fw-bold" for="tipoTodos">
-                            Todos
-                        </label>
-                    </div>
-
-                    <div class="form-check text-light">
-                        <input
-                            class="form-check-input"
-                            type="checkbox"
-                            name="tipos"
-                            value="entrada"
-                            id="tipoEntrada"
-                            {% if 'entrada' in tipos_filtro %}checked{% endif %}
-                        >
-                        <label class="form-check-label" for="tipoEntrada">Entradas</label>
-                    </div>
-
-                    <div class="form-check text-light">
-                        <input
-                            class="form-check-input"
-                            type="checkbox"
-                            name="tipos"
-                            value="saida"
-                            id="tipoSaida"
-                            {% if 'saida' in tipos_filtro %}checked{% endif %}
-                        >
-                        <label class="form-check-label" for="tipoSaida">Saídas</label>
-                    </div>
-
-                    <div class="form-check text-light">
-                        <input
-                            class="form-check-input"
-                            type="checkbox"
-                            name="tipos"
-                            value="transferencia"
-                            id="tipoTransferencia"
-                            {% if 'transferencia' in tipos_filtro %}checked{% endif %}
-                        >
-                        <label class="form-check-label" for="tipoTransferencia">Transferências</label>
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -266,12 +284,31 @@ Resumo Financeiro
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const todos = document.getElementById('tipoTodos');
+    const textoTiposSelecionados = document.getElementById('textoTiposSelecionados');
 
     const tipos = [
         document.getElementById('tipoEntrada'),
         document.getElementById('tipoSaida'),
         document.getElementById('tipoTransferencia')
     ];
+
+    function atualizarTextoTipos() {
+        const selecionados = tipos
+            .filter(function (tipo) {
+                return tipo.checked;
+            })
+            .map(function (tipo) {
+                return tipo.dataset.label;
+            });
+
+        if (selecionados.length === 0) {
+            textoTiposSelecionados.textContent = 'Todos os tipos';
+        } else if (selecionados.length === 1) {
+            textoTiposSelecionados.textContent = selecionados[0];
+        } else {
+            textoTiposSelecionados.textContent = 'Tipos selecionados';
+        }
+    }
 
     function atualizarEstadoTodos() {
         const algumTipoMarcado = tipos.some(function (tipo) {
@@ -283,6 +320,8 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             todos.checked = true;
         }
+
+        atualizarTextoTipos();
     }
 
     tipos.forEach(function (tipo) {
@@ -295,6 +334,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 tipo.checked = false;
             });
         }
+
+        atualizarTextoTipos();
     });
 
     atualizarEstadoTodos();

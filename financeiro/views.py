@@ -228,9 +228,14 @@ def resumo_financeiro(request):
         data_inicio = primeiro_dia
         data_fim = ultimo_dia
 
+    tipo_filtro = request.GET.get('tipo')
+
     movimentacoes_periodo = models.Movimentacao.objects.filter(
         data__range=[data_inicio, data_fim]
     )
+
+    if tipo_filtro in ['entrada', 'saida', 'transferencia']:
+        movimentacoes_periodo = movimentacoes_periodo.filter(tipo=tipo_filtro)
 
     total_entradas_periodo = movimentacoes_periodo.filter(
         tipo='entrada'
@@ -238,6 +243,10 @@ def resumo_financeiro(request):
 
     total_saidas_periodo = movimentacoes_periodo.filter(
         tipo='saida'
+    ).aggregate(total=Sum('valor'))['total'] or 0
+
+    total_transferencias_periodo = movimentacoes_periodo.filter(
+        tipo='transferencia'
     ).aggregate(total=Sum('valor'))['total'] or 0
 
     resultado_periodo = total_entradas_periodo - total_saidas_periodo
@@ -294,9 +303,12 @@ def resumo_financeiro(request):
         'data_fim': data_fim,
         'contas': contas,
         'resumo_por_conta': resumo_por_conta,
+        'tipo_filtro': tipo_filtro,
+        'total_transferencias_periodo': total_transferencias_periodo,
     })
 
 # Função para resumo financeiro por conta
+
 
 def resumo_conta(request, conta_id):
     conta = get_object_or_404(models.Conta, id=conta_id)
@@ -344,7 +356,7 @@ def resumo_conta(request, conta_id):
         - transferencias_enviadas
     )
 
-    movimentacoes_conta = models.Movimentacao.objects.filter(
+    movimentacoes_conta = movimentacoes_periodo.filter(
         Q(conta_origem=conta) | Q(conta_destino=conta)
     ).order_by('-data', '-hora', '-criada_em')
 

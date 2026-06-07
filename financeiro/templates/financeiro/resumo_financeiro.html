@@ -13,17 +13,36 @@ Resumo Financeiro
         <h5 class="text-light mb-3">Filtrar período</h5>
 
         <div class="row g-3 align-items-end">
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label class="form-label text-light">Data inicial</label>
                 <input type="date" name="data_inicio" class="form-control" value="{{ data_inicio|date:'Y-m-d' }}">
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label class="form-label text-light">Data final</label>
                 <input type="date" name="data_fim" class="form-control" value="{{ data_fim|date:'Y-m-d' }}">
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md-3">
+                <label class="form-label text-light">Tipo</label>
+                <select name="tipo" class="form-select">
+                    <option value="">Todos</option>
+
+                    <option value="entrada" {% if tipo_filtro == 'entrada' %}selected{% endif %}>
+                        Entradas
+                    </option>
+
+                    <option value="saida" {% if tipo_filtro == 'saida' %}selected{% endif %}>
+                        Saídas
+                    </option>
+
+                    <option value="transferencia" {% if tipo_filtro == 'transferencia' %}selected{% endif %}>
+                        Transferências
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md-3">
                 <button type="submit" class="btn btn-success w-100">
                     Aplicar filtro
                 </button>
@@ -32,10 +51,10 @@ Resumo Financeiro
     </div>
 </form>
 
-<div class="row g-3 mb-4">
+<div class="row row-cols-1 row-cols-md-2 {% if not tipo_filtro %}row-cols-xl-5{% else %}row-cols-xl-2{% endif %} g-3 mb-4">
 
-    <div class="col-md-3">
-        <div class="card bg-dark border-secondary shadow">
+    <div class="col">
+        <div class="card bg-dark border-secondary shadow h-100">
             <div class="card-body">
                 <h5 class="text-light">Patrimônio Total</h5>
                 <h3 class="text-info">R$ {{ patrimonio_total }}</h3>
@@ -44,8 +63,9 @@ Resumo Financeiro
         </div>
     </div>
 
-    <div class="col-md-3">
-        <div class="card bg-dark border-secondary shadow">
+    {% if not tipo_filtro or tipo_filtro == 'entrada' %}
+    <div class="col">
+        <div class="card bg-dark border-secondary shadow h-100">
             <div class="card-body">
                 <h5 class="text-light">Entradas do Período</h5>
                 <h3 class="text-success">R$ {{ total_entradas_periodo }}</h3>
@@ -53,9 +73,11 @@ Resumo Financeiro
             </div>
         </div>
     </div>
+    {% endif %}
 
-    <div class="col-md-3">
-        <div class="card bg-dark border-secondary shadow">
+    {% if not tipo_filtro or tipo_filtro == 'saida' %}
+    <div class="col">
+        <div class="card bg-dark border-secondary shadow h-100">
             <div class="card-body">
                 <h5 class="text-light">Saídas do Período</h5>
                 <h3 class="text-danger">R$ {{ total_saidas_periodo }}</h3>
@@ -63,9 +85,23 @@ Resumo Financeiro
             </div>
         </div>
     </div>
+    {% endif %}
 
-    <div class="col-md-3">
-        <div class="card bg-dark border-secondary shadow">
+    {% if not tipo_filtro or tipo_filtro == 'transferencia' %}
+    <div class="col">
+        <div class="card bg-dark border-warning shadow h-100">
+            <div class="card-body">
+                <h5 class="text-light">Transferências Internas</h5>
+                <h3 class="text-warning">R$ {{ total_transferencias_periodo }}</h3>
+                <small class="text-secondary">Movimentações entre contas próprias</small>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if not tipo_filtro %}
+    <div class="col">
+        <div class="card bg-dark border-secondary shadow h-100">
             <div class="card-body">
                 <h5 class="text-light">Resultado do Período</h5>
 
@@ -79,6 +115,7 @@ Resumo Financeiro
             </div>
         </div>
     </div>
+    {% endif %}
 
 </div>
 

@@ -62,14 +62,14 @@ Resumo da Conta
     </div>
 
     <div class="col-md-3">
-        <div class="card bg-dark border-secondary shadow">
+        <div class="card bg-dark border-success shadow">
             <div class="card-body">
-                <h5 class="text-light">Resultado</h5>
+                <h5 class="text-light">Resultado do Período</h5>
 
                 {% if resultado_periodo >= 0 %}
-                    <h3 class="text-success">R$ {{ resultado_periodo }}</h3>
+                    <h2 class="text-success fw-bold">R$ {{ resultado_periodo }}</h2>
                 {% else %}
-                    <h3 class="text-danger">R$ {{ resultado_periodo }}</h3>
+                    <h2 class="text-danger fw-bold">R$ {{ resultado_periodo }}</h2>
                 {% endif %}
             </div>
         </div>
@@ -121,7 +121,9 @@ Resumo da Conta
                     <th>Tipo</th>
                     <th>Descrição</th>
                     <th>Categoria</th>
-                    <th>Valor</th>
+                    <th>Conta Origem</th>
+                    <th>Conta Destino</th>
+                    <th class="text-end">Valor</th>
                 </tr>
             </thead>
 
@@ -129,8 +131,25 @@ Resumo da Conta
                 {% for movimentacao in movimentacoes_conta %}
                 <tr>
                     <td>{{ movimentacao.data|date:'d/m/Y' }}</td>
-                    <td>{{ movimentacao.get_tipo_display }}</td>
+
+                    <td>
+                        {% if movimentacao.tipo == 'entrada' %}
+                            <span class="badge bg-success">Entrada</span>
+                        {% elif movimentacao.tipo == 'saida' %}
+                            <span class="badge bg-danger">Saída</span>
+                        {% elif movimentacao.tipo == 'transferencia' %}
+                            {% if movimentacao.conta_origem.id == conta.id %}
+                                <span class="badge bg-warning text-dark">Transferência enviada</span>
+                            {% elif movimentacao.conta_destino.id == conta.id %}
+                                <span class="badge bg-info text-dark">Transferência recebida</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Transferência</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
+
                     <td>{{ movimentacao.descricao }}</td>
+
                     <td>
                         {% if movimentacao.categoria %}
                             {{ movimentacao.categoria.nome }}
@@ -138,11 +157,40 @@ Resumo da Conta
                             -
                         {% endif %}
                     </td>
-                    <td>R$ {{ movimentacao.valor }}</td>
+
+                    <td>
+                        {% if movimentacao.conta_origem %}
+                            {{ movimentacao.conta_origem.nome }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        {% if movimentacao.conta_destino %}
+                            {{ movimentacao.conta_destino.nome }}
+                        {% else %}
+                            -
+                        {% endif %}
+                    </td>
+
+                    <td class="text-end">
+                        {% if movimentacao.tipo == 'entrada' %}
+                            <span class="text-success">+ R$ {{ movimentacao.valor }}</span>
+                        {% elif movimentacao.tipo == 'saida' %}
+                            <span class="text-danger">- R$ {{ movimentacao.valor }}</span>
+                        {% elif movimentacao.tipo == 'transferencia' %}
+                            {% if movimentacao.conta_origem.id == conta.id %}
+                                <span class="text-warning">- R$ {{ movimentacao.valor }}</span>
+                            {% elif movimentacao.conta_destino.id == conta.id %}
+                                <span class="text-info">+ R$ {{ movimentacao.valor }}</span>
+                            {% endif %}
+                        {% endif %}
+                    </td>
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="5">Nenhuma movimentação encontrada para esta conta.</td>
+                    <td colspan="7">Nenhuma movimentação encontrada para esta conta no período selecionado.</td>
                 </tr>
                 {% endfor %}
             </tbody>

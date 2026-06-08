@@ -17,7 +17,31 @@ def inicio(request):
 
 def listar_contas(request):
     contas = models.Conta.objects.all()
-    return render(request, 'financeiro/contas/listar_contas.html', {'contas': contas})
+
+    nome_filtro = request.GET.get('nome', '').strip()
+    tipo_filtro = request.GET.get('tipo', '')
+    ativa_filtro = request.GET.get('ativa', '')
+
+    if nome_filtro:
+        contas = contas.filter(nome__icontains=nome_filtro)
+
+    if tipo_filtro:
+        contas = contas.filter(tipo=tipo_filtro)
+
+    if ativa_filtro == 'sim':
+        contas = contas.filter(ativa=True)
+    elif ativa_filtro == 'nao':
+        contas = contas.filter(ativa=False)
+
+    contas = contas.order_by('nome')
+
+    return render(request, 'financeiro/contas/listar_contas.html', {
+        'contas': contas,
+        'nome_filtro': nome_filtro,
+        'tipo_filtro': tipo_filtro,
+        'ativa_filtro': ativa_filtro,
+        'tipos_conta': models.Conta.TIPO_CONTA_CHOICES,
+    })
 
 
 def criar_conta(request):

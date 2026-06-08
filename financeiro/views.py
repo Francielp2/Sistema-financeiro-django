@@ -185,14 +185,86 @@ def excluir_categoria(request, categoria_id):
 # Funções par movimentações
 
 def listar_movimentacoes(request):
-    movimentacoes = models.Movimentacao.objects.all().order_by(
+    movimentacoes = models.Movimentacao.objects.all()
+
+    data_inicio_filtro = request.GET.get('data_inicio', '')
+    data_fim_filtro = request.GET.get('data_fim', '')
+    tipo_filtro = request.GET.get('tipo', '')
+    categoria_filtro = request.GET.get('categoria', '')
+    conta_origem_filtro = request.GET.get('conta_origem', '')
+    conta_destino_filtro = request.GET.get('conta_destino', '')
+    descricao_filtro = request.GET.get('descricao', '').strip()
+
+    if data_inicio_filtro:
+        try:
+            data_inicio = datetime.strptime(
+                data_inicio_filtro, '%Y-%m-%d'
+            ).date()
+            movimentacoes = movimentacoes.filter(data__gte=data_inicio)
+        except ValueError:
+            data_inicio_filtro = ''
+
+    if data_fim_filtro:
+        try:
+            data_fim = datetime.strptime(data_fim_filtro, '%Y-%m-%d').date()
+            movimentacoes = movimentacoes.filter(data__lte=data_fim)
+        except ValueError:
+            data_fim_filtro = ''
+
+    tipos_validos = [
+        tipo
+        for tipo, _ in models.Movimentacao.TIPO_MOVIMENTACAO_CHOICES
+    ]
+
+    if tipo_filtro in tipos_validos:
+        movimentacoes = movimentacoes.filter(tipo=tipo_filtro)
+    else:
+        tipo_filtro = ''
+
+    if categoria_filtro == 'sem_categoria':
+        movimentacoes = movimentacoes.filter(categoria__isnull=True)
+    elif categoria_filtro.isdigit():
+        movimentacoes = movimentacoes.filter(categoria_id=categoria_filtro)
+    else:
+        categoria_filtro = ''
+
+    if conta_origem_filtro.isdigit():
+        movimentacoes = movimentacoes.filter(
+            conta_origem_id=conta_origem_filtro)
+    else:
+        conta_origem_filtro = ''
+
+    if conta_destino_filtro.isdigit():
+        movimentacoes = movimentacoes.filter(
+            conta_destino_id=conta_destino_filtro)
+    else:
+        conta_destino_filtro = ''
+
+    if descricao_filtro:
+        movimentacoes = movimentacoes.filter(
+            descricao__icontains=descricao_filtro)
+
+    movimentacoes = movimentacoes.order_by(
         '-data',
         '-hora',
         '-criada_em'
     )
 
+    categorias = models.Categoria.objects.filter(ativa=True).order_by('nome')
+    contas = models.Conta.objects.all().order_by('nome')
+
     return render(request, 'financeiro/movimentacoes/listar_movimentacoes.html', {
-        'movimentacoes': movimentacoes
+        'movimentacoes': movimentacoes,
+        'categorias': categorias,
+        'contas': contas,
+        'data_inicio_filtro': data_inicio_filtro,
+        'data_fim_filtro': data_fim_filtro,
+        'tipo_filtro': tipo_filtro,
+        'categoria_filtro': categoria_filtro,
+        'conta_origem_filtro': conta_origem_filtro,
+        'conta_destino_filtro': conta_destino_filtro,
+        'descricao_filtro': descricao_filtro,
+        'tipos_movimentacao': models.Movimentacao.TIPO_MOVIMENTACAO_CHOICES,
     })
 
 

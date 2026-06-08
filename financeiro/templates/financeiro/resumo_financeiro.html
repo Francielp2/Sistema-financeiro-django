@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}
 Resumo Financeiro
@@ -327,115 +328,8 @@ Resumo Financeiro
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const todos = document.getElementById('tipoTodos');
-    const textoTiposSelecionados = document.getElementById('textoTiposSelecionados');
-    const categoriaTodas = document.getElementById('categoriaTodas');
-    const textoCategoriasSelecionadas = document.getElementById('textoCategoriasSelecionadas');
+{% endblock %}
 
-    const tipos = [
-        document.getElementById('tipoEntrada'),
-        document.getElementById('tipoSaida'),
-        document.getElementById('tipoTransferencia')
-    ];
-
-    const categorias = Array.from(document.querySelectorAll('.categoria-opcao'));
-
-    function atualizarTextoTipos() {
-        const selecionados = tipos
-            .filter(function (tipo) {
-                return tipo.checked;
-            })
-            .map(function (tipo) {
-                return tipo.dataset.label;
-            });
-
-        if (selecionados.length === 0) {
-            textoTiposSelecionados.textContent = 'Todos os tipos';
-        } else if (selecionados.length === 1) {
-            textoTiposSelecionados.textContent = selecionados[0];
-        } else {
-            textoTiposSelecionados.textContent = 'Tipos selecionados';
-        }
-    }
-
-    function atualizarTextoCategorias() {
-        const selecionadas = categorias
-            .filter(function (categoria) {
-                return categoria.checked;
-            })
-            .map(function (categoria) {
-                return categoria.dataset.label;
-            });
-
-        if (selecionadas.length === 0) {
-            textoCategoriasSelecionadas.textContent = 'Todas as categorias';
-        } else if (selecionadas.length === 1) {
-            textoCategoriasSelecionadas.textContent = selecionadas[0];
-        } else {
-            textoCategoriasSelecionadas.textContent = 'Categorias selecionadas';
-        }
-    }
-
-    function atualizarEstadoTodos() {
-        const algumTipoMarcado = tipos.some(function (tipo) {
-            return tipo.checked;
-        });
-
-        if (algumTipoMarcado) {
-            todos.checked = false;
-        } else {
-            todos.checked = true;
-        }
-
-        atualizarTextoTipos();
-    }
-
-    function atualizarEstadoCategoriaTodas() {
-        const algumaCategoriaMarcada = categorias.some(function (categoria) {
-            return categoria.checked;
-        });
-
-        if (algumaCategoriaMarcada) {
-            categoriaTodas.checked = false;
-        } else {
-            categoriaTodas.checked = true;
-        }
-
-        atualizarTextoCategorias();
-    }
-
-    tipos.forEach(function (tipo) {
-        tipo.addEventListener('change', atualizarEstadoTodos);
-    });
-
-    categorias.forEach(function (categoria) {
-        categoria.addEventListener('change', atualizarEstadoCategoriaTodas);
-    });
-
-    todos.addEventListener('change', function () {
-        if (todos.checked) {
-            tipos.forEach(function (tipo) {
-                tipo.checked = false;
-            });
-        }
-
-        atualizarTextoTipos();
-    });
-
-    categoriaTodas.addEventListener('change', function () {
-        if (categoriaTodas.checked) {
-            categorias.forEach(function (categoria) {
-                categoria.checked = false;
-            });
-        }
-
-        atualizarTextoCategorias();
-    });
-
-    atualizarEstadoTodos();
-    atualizarEstadoCategoriaTodas();
-});
-</script>
+{% block extra_js %}
+<script src="{% static 'financeiro/js/filtros_resumo.js' %}"></script>
 {% endblock %}

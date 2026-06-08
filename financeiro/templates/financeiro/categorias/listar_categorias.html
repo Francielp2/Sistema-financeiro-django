@@ -18,6 +18,60 @@ Categorias
 
 </div>
 
+<form method="get" class="card bg-dark border-secondary shadow mb-4">
+
+    <div class="card-body">
+
+        <h5 class="text-light mb-3">
+            Filtros
+        </h5>
+
+        <div class="row g-3 align-items-end">
+
+            <div class="col-md">
+                <label class="form-label text-light">
+                    Nome
+                </label>
+                <input
+                    type="text"
+                    name="nome"
+                    class="form-control"
+                    value="{{ nome_filtro }}"
+                    placeholder="Buscar por nome"
+                >
+            </div>
+
+            <div class="col-md">
+                <label class="form-label text-light">
+                    Status
+                </label>
+                <select name="ativa" class="form-select">
+                    <option value="">Todos</option>
+                    <option value="sim" {% if ativa_filtro == 'sim' %}selected{% endif %}>
+                        Ativas
+                    </option>
+                    <option value="nao" {% if ativa_filtro == 'nao' %}selected{% endif %}>
+                        Inativas
+                    </option>
+                </select>
+            </div>
+
+            <div class="col-md d-flex gap-2">
+                <button type="submit" class="btn btn-success w-100">
+                    Aplicar filtro
+                </button>
+
+                <a href="{% url 'listar_categorias' %}" class="btn btn-outline-light w-100">
+                    Limpar filtros
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+</form>
+
 <div class="card bg-dark border-secondary shadow">
 
     <div class="card-body">
@@ -73,7 +127,7 @@ Categorias
                 <tr>
 
                     <td colspan="3">
-                        Nenhuma categoria cadastrada.
+                        Nenhuma categoria encontrada.
                     </td>
 
                 </tr>

@@ -107,8 +107,24 @@ def detalhes_conta(request, conta_id):
 
 def listar_categorias(request):
     categorias = models.Categoria.objects.all()
+
+    nome_filtro = request.GET.get('nome', '').strip()
+    ativa_filtro = request.GET.get('ativa', '')
+
+    if nome_filtro:
+        categorias = categorias.filter(nome__icontains=nome_filtro)
+
+    if ativa_filtro == 'sim':
+        categorias = categorias.filter(ativa=True)
+    elif ativa_filtro == 'nao':
+        categorias = categorias.filter(ativa=False)
+
+    categorias = categorias.order_by('nome')
+
     return render(request, 'financeiro/categorias/listar_categorias.html', {
-        'categorias': categorias
+        'categorias': categorias,
+        'nome_filtro': nome_filtro,
+        'ativa_filtro': ativa_filtro,
     })
 
 

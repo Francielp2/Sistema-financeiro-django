@@ -25,19 +25,65 @@ Resumo Financeiro
 
             <div class="col-md">
                 <label class="form-label text-light">Categoria</label>
-                <select name="categoria" class="form-select">
-                    <option value="">Todas</option>
 
-                    <option value="sem_categoria" {% if categoria_filtro == 'sem_categoria' %}selected{% endif %}>
-                        Sem categoria
-                    </option>
+                <div class="dropdown">
+                    <button
+                        class="form-select text-start"
+                        type="button"
+                        id="dropdownCategorias"
+                        data-bs-toggle="dropdown"
+                        data-bs-auto-close="outside"
+                        aria-expanded="false"
+                    >
+                        <span id="textoCategoriasSelecionadas">
+                            Todas as categorias
+                        </span>
+                    </button>
 
-                    {% for categoria in categorias %}
-                        <option value="{{ categoria.id }}" {% if categoria_filtro == categoria.id|stringformat:"s" %}selected{% endif %}>
-                            {{ categoria.nome }}
-                        </option>
-                    {% endfor %}
-                </select>
+                    <div class="dropdown-menu dropdown-menu-dark p-3 w-100" aria-labelledby="dropdownCategorias">
+                        <div class="form-check text-light mb-2">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="categoriaTodas"
+                                {% if not categorias_filtro %}checked{% endif %}
+                            >
+                            <label class="form-check-label fw-bold" for="categoriaTodas">
+                                Todas
+                            </label>
+                        </div>
+
+                        <div class="form-check text-light mb-2">
+                            <input
+                                class="form-check-input categoria-opcao"
+                                type="checkbox"
+                                name="categorias"
+                                value="sem_categoria"
+                                id="categoriaSemCategoria"
+                                data-label="Sem categoria"
+                                {% if 'sem_categoria' in categorias_filtro %}checked{% endif %}
+                            >
+                            <label class="form-check-label" for="categoriaSemCategoria">Sem categoria</label>
+                        </div>
+
+                        {% for categoria in categorias %}
+                            <div class="form-check text-light mb-2">
+                                <input
+                                    class="form-check-input categoria-opcao"
+                                    type="checkbox"
+                                    name="categorias"
+                                    value="{{ categoria.id }}"
+                                    id="categoria{{ categoria.id }}"
+                                    data-label="{{ categoria.nome }}"
+                                    {% if categoria.id|stringformat:"s" in categorias_filtro %}checked{% endif %}
+                                >
+                                <label class="form-check-label" for="categoria{{ categoria.id }}">
+                                    {{ categoria.nome }}
+                                </label>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
             </div>
 
             <div class="col-md">
@@ -285,12 +331,16 @@ Resumo Financeiro
 document.addEventListener('DOMContentLoaded', function () {
     const todos = document.getElementById('tipoTodos');
     const textoTiposSelecionados = document.getElementById('textoTiposSelecionados');
+    const categoriaTodas = document.getElementById('categoriaTodas');
+    const textoCategoriasSelecionadas = document.getElementById('textoCategoriasSelecionadas');
 
     const tipos = [
         document.getElementById('tipoEntrada'),
         document.getElementById('tipoSaida'),
         document.getElementById('tipoTransferencia')
     ];
+
+    const categorias = Array.from(document.querySelectorAll('.categoria-opcao'));
 
     function atualizarTextoTipos() {
         const selecionados = tipos
@@ -310,6 +360,24 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    function atualizarTextoCategorias() {
+        const selecionadas = categorias
+            .filter(function (categoria) {
+                return categoria.checked;
+            })
+            .map(function (categoria) {
+                return categoria.dataset.label;
+            });
+
+        if (selecionadas.length === 0) {
+            textoCategoriasSelecionadas.textContent = 'Todas as categorias';
+        } else if (selecionadas.length === 1) {
+            textoCategoriasSelecionadas.textContent = selecionadas[0];
+        } else {
+            textoCategoriasSelecionadas.textContent = 'Categorias selecionadas';
+        }
+    }
+
     function atualizarEstadoTodos() {
         const algumTipoMarcado = tipos.some(function (tipo) {
             return tipo.checked;
@@ -324,8 +392,26 @@ document.addEventListener('DOMContentLoaded', function () {
         atualizarTextoTipos();
     }
 
+    function atualizarEstadoCategoriaTodas() {
+        const algumaCategoriaMarcada = categorias.some(function (categoria) {
+            return categoria.checked;
+        });
+
+        if (algumaCategoriaMarcada) {
+            categoriaTodas.checked = false;
+        } else {
+            categoriaTodas.checked = true;
+        }
+
+        atualizarTextoCategorias();
+    }
+
     tipos.forEach(function (tipo) {
         tipo.addEventListener('change', atualizarEstadoTodos);
+    });
+
+    categorias.forEach(function (categoria) {
+        categoria.addEventListener('change', atualizarEstadoCategoriaTodas);
     });
 
     todos.addEventListener('change', function () {
@@ -338,7 +424,18 @@ document.addEventListener('DOMContentLoaded', function () {
         atualizarTextoTipos();
     });
 
+    categoriaTodas.addEventListener('change', function () {
+        if (categoriaTodas.checked) {
+            categorias.forEach(function (categoria) {
+                categoria.checked = false;
+            });
+        }
+
+        atualizarTextoCategorias();
+    });
+
     atualizarEstadoTodos();
+    atualizarEstadoCategoriaTodas();
 });
 </script>
 {% endblock %}

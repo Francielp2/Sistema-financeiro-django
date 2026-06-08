@@ -229,7 +229,7 @@ def resumo_financeiro(request):
         data_fim = ultimo_dia
 
     tipos_filtro = request.GET.getlist('tipos')
-    categoria_filtro = request.GET.get('categoria')
+    categorias_filtro = request.GET.getlist('categorias')
 
     movimentacoes_periodo = models.Movimentacao.objects.filter(
         data__range=[data_inicio, data_fim]
@@ -242,13 +242,33 @@ def resumo_financeiro(request):
         movimentacoes_periodo = movimentacoes_periodo.filter(
             tipo__in=tipos_filtro)
 
-    if categoria_filtro:
-        if categoria_filtro == 'sem_categoria':
-            movimentacoes_periodo = movimentacoes_periodo.filter(
-                categoria__isnull=True)
-        else:
-            movimentacoes_periodo = movimentacoes_periodo.filter(
-                categoria_id=categoria_filtro)
+    categorias = models.Categoria.objects.filter(ativa=True).order_by('nome')
+    categorias_ids_validos = {
+        str(categoria_id)
+        for categoria_id in categorias.values_list('id', flat=True)
+    }
+    categorias_validas = [
+        categoria_id
+        for categoria_id in categorias_filtro
+        if categoria_id in categorias_ids_validos
+    ]
+    incluir_sem_categoria = 'sem_categoria' in categorias_filtro
+
+    if categorias_validas or incluir_sem_categoria:
+        filtro_categorias = Q()
+
+        if categorias_validas:
+            filtro_categorias |= Q(categoria_id__in=categorias_validas)
+
+        if incluir_sem_categoria:
+            filtro_categorias |= Q(categoria__isnull=True)
+
+        movimentacoes_periodo = movimentacoes_periodo.filter(
+            filtro_categorias)
+
+    categorias_filtro = categorias_validas + (
+        ['sem_categoria'] if incluir_sem_categoria else []
+    )
 
     total_entradas_periodo = movimentacoes_periodo.filter(
         tipo='entrada'
@@ -306,7 +326,6 @@ def resumo_financeiro(request):
         })
 
     patrimonio_total = sum(conta.saldo_atual for conta in contas)
-    categorias = models.Categoria.objects.filter(ativa=True).order_by('nome')
 
     return render(request, 'financeiro/resumo_financeiro.html', {
         'patrimonio_total': patrimonio_total,
@@ -320,7 +339,7 @@ def resumo_financeiro(request):
         'tipos_filtro': tipos_filtro,
         'total_transferencias_periodo': total_transferencias_periodo,
         'categorias': categorias,
-        'categoria_filtro': categoria_filtro,
+        'categorias_filtro': categorias_filtro,
     })
 
 # Função para resumo financeiro por conta

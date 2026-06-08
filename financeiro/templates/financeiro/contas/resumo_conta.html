@@ -6,120 +6,175 @@ Resumo da Conta
 
 {% block content %}
 
-<h1 class="text-success mb-4">Resumo da Conta: {{ conta.nome }}</h1>
+<h1 class="text-success mb-4">
+    Resumo da Conta: {{ conta.nome }}
+</h1>
 
 <form method="get" class="card bg-dark border-secondary shadow mb-4">
     <div class="card-body">
-        <h5 class="text-light mb-3">Filtrar resumo</h5>
+        <h5 class="text-light mb-3">
+            Filtros
+        </h5>
 
         <div class="row g-3">
             <div class="col-md">
-                <label class="form-label text-light">Data inicial</label>
+                <label class="form-label text-light">
+                    Data inicial
+                </label>
                 <input type="date" name="data_inicio" class="form-control" value="{{ data_inicio|date:'Y-m-d' }}">
             </div>
 
             <div class="col-md">
-                <label class="form-label text-light">Data final</label>
+                <label class="form-label text-light">
+                    Data final
+                </label>
                 <input type="date" name="data_fim" class="form-control" value="{{ data_fim|date:'Y-m-d' }}">
             </div>
 
             <div class="col-md">
-                <label class="form-label text-light">Tipos</label>
+                <label class="form-label text-light">
+                    Tipos
+                </label>
 
-                <div class="border rounded p-2">
-                    <div class="form-check text-light">
-                        <input
-                            class="form-check-input"
-                            type="checkbox"
-                            id="tipoTodos"
-                            {% if not tipos_filtro %}checked{% endif %}
-                        >
-                        <label class="form-check-label fw-bold" for="tipoTodos">
-                            Todos
-                        </label>
-                    </div>
+                <div class="dropdown">
+                    <button
+                        class="form-select text-start"
+                        type="button"
+                        id="dropdownTipos"
+                        data-bs-toggle="dropdown"
+                        data-bs-auto-close="outside"
+                        aria-expanded="false"
+                    >
+                        <span id="textoTiposSelecionados">
+                            Todos os tipos
+                        </span>
+                    </button>
 
-                    <div class="form-check text-light">
-                        <input
-                            class="form-check-input tipo-opcao"
-                            type="checkbox"
-                            name="tipos"
-                            value="entrada"
-                            id="tipoEntrada"
-                            {% if 'entrada' in tipos_filtro %}checked{% endif %}
-                        >
-                        <label class="form-check-label" for="tipoEntrada">Entradas</label>
-                    </div>
+                    <div class="dropdown-menu dropdown-menu-dark p-3 w-100" aria-labelledby="dropdownTipos">
+                        <div class="form-check text-light mb-2">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="tipoTodos"
+                                {% if not tipos_filtro %}checked{% endif %}
+                            >
+                            <label class="form-check-label fw-bold" for="tipoTodos">
+                                Todos
+                            </label>
+                        </div>
 
-                    <div class="form-check text-light">
-                        <input
-                            class="form-check-input tipo-opcao"
-                            type="checkbox"
-                            name="tipos"
-                            value="saida"
-                            id="tipoSaida"
-                            {% if 'saida' in tipos_filtro %}checked{% endif %}
-                        >
-                        <label class="form-check-label" for="tipoSaida">Saídas</label>
-                    </div>
+                        <div class="form-check text-light mb-2">
+                            <input
+                                class="form-check-input tipo-opcao"
+                                type="checkbox"
+                                name="tipos"
+                                value="entrada"
+                                id="tipoEntrada"
+                                data-label="Entradas"
+                                {% if 'entrada' in tipos_filtro %}checked{% endif %}
+                            >
+                            <label class="form-check-label" for="tipoEntrada">
+                                Entradas
+                            </label>
+                        </div>
 
-                    <div class="form-check text-light">
-                        <input
-                            class="form-check-input tipo-opcao"
-                            type="checkbox"
-                            name="tipos"
-                            value="transferencia"
-                            id="tipoTransferencia"
-                            {% if 'transferencia' in tipos_filtro %}checked{% endif %}
-                        >
-                        <label class="form-check-label" for="tipoTransferencia">Transferências</label>
+                        <div class="form-check text-light mb-2">
+                            <input
+                                class="form-check-input tipo-opcao"
+                                type="checkbox"
+                                name="tipos"
+                                value="saida"
+                                id="tipoSaida"
+                                data-label="Saídas"
+                                {% if 'saida' in tipos_filtro %}checked{% endif %}
+                            >
+                            <label class="form-check-label" for="tipoSaida">
+                                Saídas
+                            </label>
+                        </div>
+
+                        <div class="form-check text-light">
+                            <input
+                                class="form-check-input tipo-opcao"
+                                type="checkbox"
+                                name="tipos"
+                                value="transferencia"
+                                id="tipoTransferencia"
+                                data-label="Transferências"
+                                {% if 'transferencia' in tipos_filtro %}checked{% endif %}
+                            >
+                            <label class="form-check-label" for="tipoTransferencia">
+                                Transferências
+                            </label>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <div class="col-md">
-                <label class="form-label text-light">Categorias</label>
+                <label class="form-label text-light">
+                    Categorias
+                </label>
 
-                <div class="border rounded p-2">
-                    <div class="form-check text-light">
-                        <input
-                            class="form-check-input"
-                            type="checkbox"
-                            id="categoriaTodas"
-                            {% if not categorias_filtro %}checked{% endif %}
-                        >
-                        <label class="form-check-label fw-bold" for="categoriaTodas">
-                            Todas
-                        </label>
-                    </div>
+                <div class="dropdown">
+                    <button
+                        class="form-select text-start"
+                        type="button"
+                        id="dropdownCategorias"
+                        data-bs-toggle="dropdown"
+                        data-bs-auto-close="outside"
+                        aria-expanded="false"
+                    >
+                        <span id="textoCategoriasSelecionadas">
+                            Todas as categorias
+                        </span>
+                    </button>
 
-                    <div class="form-check text-light">
-                        <input
-                            class="form-check-input categoria-opcao"
-                            type="checkbox"
-                            name="categorias"
-                            value="sem_categoria"
-                            id="categoriaSemCategoria"
-                            {% if 'sem_categoria' in categorias_filtro %}checked{% endif %}
-                        >
-                        <label class="form-check-label" for="categoriaSemCategoria">Sem categoria</label>
-                    </div>
+                    <div class="dropdown-menu dropdown-menu-dark p-3 w-100" aria-labelledby="dropdownCategorias">
+                        <div class="form-check text-light mb-2">
+                            <input
+                                class="form-check-input"
+                                type="checkbox"
+                                id="categoriaTodas"
+                                {% if not categorias_filtro %}checked{% endif %}
+                            >
+                            <label class="form-check-label fw-bold" for="categoriaTodas">
+                                Todas
+                            </label>
+                        </div>
 
-                    {% for categoria in categorias %}
-                        <div class="form-check text-light">
+                        <div class="form-check text-light mb-2">
+                            <input
+                                class="form-check-input categoria-opcao"
+                                type="checkbox"
+                                name="categorias"
+                                value="sem_categoria"
+                                id="categoriaSemCategoria"
+                                data-label="Sem categoria"
+                                {% if 'sem_categoria' in categorias_filtro %}checked{% endif %}
+                            >
+                            <label class="form-check-label" for="categoriaSemCategoria">
+                                Sem categoria
+                            </label>
+                        </div>
+
+                        {% for categoria in categorias %}
+                        <div class="form-check text-light mb-2">
                             <input
                                 class="form-check-input categoria-opcao"
                                 type="checkbox"
                                 name="categorias"
                                 value="{{ categoria.id }}"
                                 id="categoria{{ categoria.id }}"
+                                data-label="{{ categoria.nome }}"
                                 {% if categoria.id|stringformat:"s" in categorias_filtro %}checked{% endif %}
                             >
                             <label class="form-check-label" for="categoria{{ categoria.id }}">
                                 {{ categoria.nome }}
                             </label>
                         </div>
-                    {% endfor %}
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
 
@@ -132,71 +187,114 @@ Resumo da Conta
     </div>
 </form>
 
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card bg-dark border-info shadow">
+            <div class="card-body">
+                <h5 class="text-light">
+                    Saldo Atual
+                </h5>
+                <h3 class="text-info">
+                    R$ {{ conta.saldo_atual }}
+                </h3>
+                <small class="text-secondary">
+                    Saldo real da conta. Este valor não muda com os filtros.
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h2 class="text-success mb-3">
+    Resumo do Período
+</h2>
+
 <div class="row g-3 mb-4">
-
-    <div class="col-md-3">
-        <div class="card bg-dark border-secondary shadow">
-            <div class="card-body">
-                <h5 class="text-light">Saldo Atual</h5>
-                <h3 class="text-info">R$ {{ conta.saldo_atual }}</h3>
+    {% if not tipos_filtro or 'entrada' in tipos_filtro %}
+    <div class="{% if not tipos_filtro %}col-md-6 col-xl{% else %}col-md{% endif %}">
+        <div class="card bg-dark border-secondary shadow h-100">
+            <div class="card-body d-flex flex-column justify-content-between">
+                <h5 class="text-light mb-3">
+                    Entradas
+                </h5>
+                <h3 class="text-success">
+                    R$ {{ entradas }}
+                </h3>
             </div>
         </div>
     </div>
+    {% endif %}
 
-    <div class="col-md-3">
-        <div class="card bg-dark border-secondary shadow">
-            <div class="card-body">
-                <h5 class="text-light">Entradas</h5>
-                <h3 class="text-success">R$ {{ entradas }}</h3>
+    {% if not tipos_filtro or 'saida' in tipos_filtro %}
+    <div class="{% if not tipos_filtro %}col-md-6 col-xl{% else %}col-md{% endif %}">
+        <div class="card bg-dark border-secondary shadow h-100">
+            <div class="card-body d-flex flex-column justify-content-between">
+                <h5 class="text-light mb-3">
+                    Saídas
+                </h5>
+                <h3 class="text-danger">
+                    R$ {{ saidas }}
+                </h3>
             </div>
         </div>
     </div>
+    {% endif %}
 
-    <div class="col-md-3">
-        <div class="card bg-dark border-secondary shadow">
-            <div class="card-body">
-                <h5 class="text-light">Saídas</h5>
-                <h3 class="text-danger">R$ {{ saidas }}</h3>
+    {% if not tipos_filtro or 'transferencia' in tipos_filtro %}
+    <div class="{% if not tipos_filtro %}col-md-6 col-xl{% else %}col-md{% endif %}">
+        <div class="card bg-dark border-secondary shadow h-100">
+            <div class="card-body d-flex flex-column justify-content-between">
+                <h5 class="text-light mb-3">
+                    Transferências Recebidas
+                </h5>
+                <h3 class="text-success">
+                    R$ {{ transferencias_recebidas }}
+                </h3>
             </div>
         </div>
     </div>
+    {% endif %}
 
-    <div class="col-md-3">
-        <div class="card bg-dark border-success shadow">
-            <div class="card-body">
-                <h5 class="text-light">Resultado do Período</h5>
+    {% if not tipos_filtro or 'transferencia' in tipos_filtro %}
+    <div class="{% if not tipos_filtro %}col-md-6 col-xl{% else %}col-md{% endif %}">
+        <div class="card bg-dark border-secondary shadow h-100">
+            <div class="card-body d-flex flex-column justify-content-between">
+                <h5 class="text-light mb-3">
+                    Transferências Enviadas
+                </h5>
+                <h3 class="text-warning">
+                    R$ {{ transferencias_enviadas }}
+                </h3>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if not tipos_filtro or 'entrada' in tipos_filtro and 'saida' in tipos_filtro %}
+    <div class="{% if not tipos_filtro %}col-md-6 col-xl{% else %}col-md{% endif %}">
+        <div class="card bg-dark border-success shadow h-100">
+            <div class="card-body d-flex flex-column justify-content-between">
+                <h5 class="text-light mb-3">
+                    {% if categorias_filtro %}
+                        Resultado do Filtro
+                    {% else %}
+                        Resultado do Período
+                    {% endif %}
+                </h5>
 
                 {% if resultado_periodo >= 0 %}
-                    <h2 class="text-success fw-bold">R$ {{ resultado_periodo }}</h2>
+                    <h3 class="text-success fw-bold">
+                        R$ {{ resultado_periodo }}
+                    </h3>
                 {% else %}
-                    <h2 class="text-danger fw-bold">R$ {{ resultado_periodo }}</h2>
+                    <h3 class="text-danger fw-bold">
+                        R$ {{ resultado_periodo }}
+                    </h3>
                 {% endif %}
             </div>
         </div>
     </div>
-
-</div>
-
-<div class="row g-3 mb-4">
-
-    <div class="col-md-6">
-        <div class="card bg-dark border-secondary shadow">
-            <div class="card-body">
-                <h5 class="text-light">Transferências Recebidas</h5>
-                <h3 class="text-success">R$ {{ transferencias_recebidas }}</h3>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-6">
-        <div class="card bg-dark border-secondary shadow">
-            <div class="card-body">
-                <h5 class="text-light">Transferências Enviadas</h5>
-                <h3 class="text-warning">R$ {{ transferencias_enviadas }}</h3>
-            </div>
-        </div>
-    </div>
-
+    {% endif %}
 </div>
 
 <div class="mb-4">
@@ -209,11 +307,12 @@ Resumo da Conta
     </a>
 </div>
 
-<h2 class="text-success mb-3">Movimentações da Conta</h2>
+<h2 class="text-success mb-3">
+    Movimentações da Conta
+</h2>
 
 <div class="card bg-dark border-secondary shadow">
     <div class="card-body">
-
         <table class="table table-dark table-hover align-middle">
             <thead>
                 <tr>
@@ -290,48 +389,111 @@ Resumo da Conta
                 </tr>
                 {% empty %}
                 <tr>
-                    <td colspan="7">Nenhuma movimentação encontrada para esta conta no período selecionado.</td>
+                    <td colspan="7">
+                        Nenhuma movimentação encontrada para esta conta no período selecionado.
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
         </table>
-
     </div>
 </div>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    const tipoTodos = document.getElementById('tipoTodos');
-    const tipos = Array.from(document.querySelectorAll('.tipo-opcao'));
+    const todos = document.getElementById('tipoTodos');
+    const textoTiposSelecionados = document.getElementById('textoTiposSelecionados');
     const categoriaTodas = document.getElementById('categoriaTodas');
+    const textoCategoriasSelecionadas = document.getElementById('textoCategoriasSelecionadas');
+
+    const tipos = [
+        document.getElementById('tipoEntrada'),
+        document.getElementById('tipoSaida'),
+        document.getElementById('tipoTransferencia')
+    ];
+
     const categorias = Array.from(document.querySelectorAll('.categoria-opcao'));
 
-    function atualizarTodos(checkboxTodos, opcoes) {
-        const algumaOpcaoMarcada = opcoes.some(function (opcao) {
-            return opcao.checked;
+    function atualizarTextoTipos() {
+        const selecionados = tipos
+            .filter(function (tipo) {
+                return tipo.checked;
+            })
+            .map(function (tipo) {
+                return tipo.dataset.label;
+            });
+
+        if (selecionados.length === 0) {
+            textoTiposSelecionados.textContent = 'Todos os tipos';
+        } else if (selecionados.length === 1) {
+            textoTiposSelecionados.textContent = selecionados[0];
+        } else {
+            textoTiposSelecionados.textContent = 'Tipos selecionados';
+        }
+    }
+
+    function atualizarTextoCategorias() {
+        const selecionadas = categorias
+            .filter(function (categoria) {
+                return categoria.checked;
+            })
+            .map(function (categoria) {
+                return categoria.dataset.label;
+            });
+
+        if (selecionadas.length === 0) {
+            textoCategoriasSelecionadas.textContent = 'Todas as categorias';
+        } else if (selecionadas.length === 1) {
+            textoCategoriasSelecionadas.textContent = selecionadas[0];
+        } else {
+            textoCategoriasSelecionadas.textContent = 'Categorias selecionadas';
+        }
+    }
+
+    function atualizarEstadoTodos() {
+        const algumTipoMarcado = tipos.some(function (tipo) {
+            return tipo.checked;
         });
 
-        checkboxTodos.checked = !algumaOpcaoMarcada;
+        if (algumTipoMarcado) {
+            todos.checked = false;
+        } else {
+            todos.checked = true;
+        }
+
+        atualizarTextoTipos();
+    }
+
+    function atualizarEstadoCategoriaTodas() {
+        const algumaCategoriaMarcada = categorias.some(function (categoria) {
+            return categoria.checked;
+        });
+
+        if (algumaCategoriaMarcada) {
+            categoriaTodas.checked = false;
+        } else {
+            categoriaTodas.checked = true;
+        }
+
+        atualizarTextoCategorias();
     }
 
     tipos.forEach(function (tipo) {
-        tipo.addEventListener('change', function () {
-            atualizarTodos(tipoTodos, tipos);
-        });
+        tipo.addEventListener('change', atualizarEstadoTodos);
     });
 
     categorias.forEach(function (categoria) {
-        categoria.addEventListener('change', function () {
-            atualizarTodos(categoriaTodas, categorias);
-        });
+        categoria.addEventListener('change', atualizarEstadoCategoriaTodas);
     });
 
-    tipoTodos.addEventListener('change', function () {
-        if (tipoTodos.checked) {
+    todos.addEventListener('change', function () {
+        if (todos.checked) {
             tipos.forEach(function (tipo) {
                 tipo.checked = false;
             });
         }
+
+        atualizarTextoTipos();
     });
 
     categoriaTodas.addEventListener('change', function () {
@@ -340,10 +502,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 categoria.checked = false;
             });
         }
+
+        atualizarTextoCategorias();
     });
 
-    atualizarTodos(tipoTodos, tipos);
-    atualizarTodos(categoriaTodas, categorias);
+    atualizarEstadoTodos();
+    atualizarEstadoCategoriaTodas();
 });
 </script>
 

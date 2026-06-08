@@ -23,6 +23,7 @@
 
 <body>
 
+    {# MENU PRINCIPAL DO SISTEMA #}
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark border-bottom border-secondary mb-4">
 
         <div class="container-fluid">
@@ -79,6 +80,7 @@
 
     </nav>
 
+    {# CONTEÚDO DAS PÁGINAS #}
     <div class="container">
 
         {% block content %}
@@ -86,8 +88,10 @@
 
     </div>
 
+    {# SCRIPTS GLOBAIS #}
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.bundle.min.js"></script>
 
+    {# SCRIPTS ESPECÍFICOS DAS PÁGINAS #}
     {% block extra_js %}
     {% endblock %}
 

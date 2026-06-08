@@ -3,10 +3,12 @@ from .models import Conta, Categoria, Movimentacao
 
 
 class ContaForm(forms.ModelForm):
+    # FORMULÁRIO PARA CRIAR CONTA
     class Meta:
         model = Conta
         fields = ['nome', 'tipo', 'saldo_inicial', 'descricao', 'ativa']
 
+        # CAMPOS COM CLASSES DO BOOTSTRAP
         widgets = {
             'nome': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -35,10 +37,12 @@ class ContaForm(forms.ModelForm):
 
 
 class ContaEditarForm(forms.ModelForm):
+    # FORMULÁRIO PARA EDITAR CONTA
     class Meta:
         model = Conta
         fields = ['nome', 'tipo', 'saldo_inicial', 'descricao', 'ativa']
 
+        # CAMPOS COM CLASSES DO BOOTSTRAP
         widgets = {
             'nome': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -62,6 +66,7 @@ class ContaEditarForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        # BLOQUEIA SALDO INICIAL QUANDO A CONTA JÁ TEM MOVIMENTAÇÕES
         bloquear_saldo = kwargs.pop('bloquear_saldo', False)
         super().__init__(*args, **kwargs)
 
@@ -73,10 +78,12 @@ class ContaEditarForm(forms.ModelForm):
 
 
 class CategoriaForm(forms.ModelForm):
+    # FORMULÁRIO PARA CRIAR E EDITAR CATEGORIA
     class Meta:
         model = Categoria
         fields = ['nome', 'descricao', 'ativa']
 
+        # CAMPOS COM CLASSES DO BOOTSTRAP
         widgets = {
             'nome': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -94,6 +101,7 @@ class CategoriaForm(forms.ModelForm):
 
 
 class MovimentacaoForm(forms.ModelForm):
+    # FORMULÁRIO PARA CRIAR E EDITAR MOVIMENTAÇÃO
     class Meta:
         model = Movimentacao
         fields = [
@@ -108,6 +116,7 @@ class MovimentacaoForm(forms.ModelForm):
             'observacao'
         ]
 
+        # CAMPOS COM CLASSES DO BOOTSTRAP
         widgets = {
             'descricao': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -147,6 +156,7 @@ class MovimentacaoForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        # MOSTRA APENAS CATEGORIAS E CONTAS ATIVAS NOS SELECTS
         self.fields['categoria'].queryset = Categoria.objects.filter(
             ativa=True)
         self.fields['conta_origem'].queryset = Conta.objects.filter(ativa=True)

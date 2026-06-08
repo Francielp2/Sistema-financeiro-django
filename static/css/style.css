@@ -1,14 +1,17 @@
+/* ESTILO GLOBAL DO PROJETO */
 body {
   background-color: #121212;
   color: #ffffff;
 }
 
+/* CARDS PADRÃO DO SISTEMA */
 .card {
   background-color: #1f232a !important;
   border: 1px solid #3a4250 !important;
   border-radius: 14px;
 }
 
+/* CAMPOS DOS FORMULÁRIOS */
 .form-label {
   color: #f1f1f1;
   font-weight: 500;
@@ -39,6 +42,7 @@ body {
   color: #ffffff;
 }
 
+/* CHECKBOXES E BOTÕES */
 .form-check-label {
   color: #f1f1f1;
 }
@@ -53,6 +57,7 @@ body {
   background-color: #1ed760;
 }
 
+/* TEXTOS DENTRO DOS CARDS */
 .card {
   color: #ffffff;
 }

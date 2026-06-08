@@ -1,18 +1,24 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // ELEMENTOS DOS FILTROS DE TIPO
     const todos = document.getElementById('tipoTodos');
     const textoTiposSelecionados = document.getElementById('textoTiposSelecionados');
+
+    // ELEMENTOS DOS FILTROS DE CATEGORIA
     const categoriaTodas = document.getElementById('categoriaTodas');
     const textoCategoriasSelecionadas = document.getElementById('textoCategoriasSelecionadas');
 
+    // CHECKBOXES ESPECÍFICOS DE TIPO
     const tipos = [
         document.getElementById('tipoEntrada'),
         document.getElementById('tipoSaida'),
         document.getElementById('tipoTransferencia')
     ].filter(Boolean);
 
+    // CHECKBOXES ESPECÍFICOS DE CATEGORIA
     const categorias = Array.from(document.querySelectorAll('.categoria-opcao'));
 
     function atualizarTextoTipos() {
+        // ATUALIZA O TEXTO DO DROPDOWN DE TIPOS
         if (!textoTiposSelecionados) {
             return;
         }
@@ -35,6 +41,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function atualizarTextoCategorias() {
+        // ATUALIZA O TEXTO DO DROPDOWN DE CATEGORIAS
         if (!textoCategoriasSelecionadas) {
             return;
         }
@@ -57,6 +64,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function atualizarEstadoTodos() {
+        // MARCA "TODOS" QUANDO NENHUM TIPO ESPECÍFICO ESTÁ MARCADO
         if (!todos) {
             return;
         }
@@ -70,6 +78,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function atualizarEstadoCategoriaTodas() {
+        // MARCA "TODAS" QUANDO NENHUMA CATEGORIA ESPECÍFICA ESTÁ MARCADA
         if (!categoriaTodas) {
             return;
         }
@@ -83,15 +92,18 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     tipos.forEach(function (tipo) {
+        // REAGE À MUDANÇA DOS TIPOS
         tipo.addEventListener('change', atualizarEstadoTodos);
     });
 
     categorias.forEach(function (categoria) {
+        // REAGE À MUDANÇA DAS CATEGORIAS
         categoria.addEventListener('change', atualizarEstadoCategoriaTodas);
     });
 
     if (todos) {
         todos.addEventListener('change', function () {
+            // LIMPA TIPOS ESPECÍFICOS AO MARCAR "TODOS"
             if (todos.checked) {
                 tipos.forEach(function (tipo) {
                     tipo.checked = false;
@@ -104,6 +116,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (categoriaTodas) {
         categoriaTodas.addEventListener('change', function () {
+            // LIMPA CATEGORIAS ESPECÍFICAS AO MARCAR "TODAS"
             if (categoriaTodas.checked) {
                 categorias.forEach(function (categoria) {
                     categoria.checked = false;
@@ -114,6 +127,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // ESTADO INICIAL DOS DROPDOWNS
     atualizarEstadoTodos();
     atualizarEstadoCategoriaTodas();
 });

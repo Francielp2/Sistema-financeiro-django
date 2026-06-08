@@ -6,18 +6,19 @@ from datetime import datetime
 from calendar import monthrange
 from django.utils import timezone
 
-# Função para a página inicial do aplicativo financeiro
+# PÁGINA INICIAL DO APP FINANCEIRO
 
 
 def inicio(request):
     return render(request, 'financeiro/inicio.html')
 
-# Funções para contas
+# VIEWS DE CONTAS
 
 
 def listar_contas(request):
     contas = models.Conta.objects.all()
 
+    # FILTROS DA LISTAGEM DE CONTAS
     nome_filtro = request.GET.get('nome', '').strip()
     tipo_filtro = request.GET.get('tipo', '')
     ativa_filtro = request.GET.get('ativa', '')
@@ -61,6 +62,7 @@ def criar_conta(request):
 def editar_conta(request, conta_id):
     conta = get_object_or_404(models.Conta, id=conta_id)
 
+    # BLOQUEIA ALTERAÇÃO DO SALDO INICIAL QUANDO JÁ EXISTEM MOVIMENTAÇÕES
     possui_movimentacoes = (
         conta.movimentacoes_origem.exists() or
         conta.movimentacoes_destino.exists()
@@ -103,11 +105,12 @@ def detalhes_conta(request, conta_id):
     })
 
 
-# Funções para categorias
+# VIEWS DE CATEGORIAS
 
 def listar_categorias(request):
     categorias = models.Categoria.objects.all()
 
+    # FILTROS DA LISTAGEM DE CATEGORIAS
     nome_filtro = request.GET.get('nome', '').strip()
     ativa_filtro = request.GET.get('ativa', '')
 
@@ -182,11 +185,12 @@ def excluir_categoria(request, categoria_id):
     })
 
 
-# Funções par movimentações
+# VIEWS DE MOVIMENTAÇÕES
 
 def listar_movimentacoes(request):
     movimentacoes = models.Movimentacao.objects.all()
 
+    # FILTROS DA LISTAGEM DE MOVIMENTAÇÕES
     data_inicio_filtro = request.GET.get('data_inicio', '')
     data_fim_filtro = request.GET.get('data_fim', '')
     tipo_filtro = request.GET.get('tipo', '')
@@ -253,6 +257,7 @@ def listar_movimentacoes(request):
     categorias = models.Categoria.objects.filter(ativa=True).order_by('nome')
     contas = models.Conta.objects.all().order_by('nome')
 
+    # DADOS PARA TABELA E CAMPOS DO FORMULÁRIO DE FILTROS
     return render(request, 'financeiro/movimentacoes/listar_movimentacoes.html', {
         'movimentacoes': movimentacoes,
         'categorias': categorias,
@@ -322,11 +327,12 @@ def excluir_movimentacao(request, movimentacao_id):
     })
 
 
-# Função para resumo financeiro geral
+# VIEW DO RESUMO FINANCEIRO GERAL
 
 def resumo_financeiro(request):
     hoje = timezone.localdate()
 
+    # PERÍODO PADRÃO DO RESUMO GERAL
     data_inicio_str = request.GET.get('data_inicio')
     data_fim_str = request.GET.get('data_fim')
 
@@ -343,10 +349,12 @@ def resumo_financeiro(request):
     tipos_filtro = request.GET.getlist('tipos')
     categorias_filtro = request.GET.getlist('categorias')
 
+    # MOVIMENTAÇÕES DO PERÍODO SELECIONADO
     movimentacoes_periodo = models.Movimentacao.objects.filter(
         data__range=[data_inicio, data_fim]
     )
 
+    # FILTRO POR TIPO DE MOVIMENTAÇÃO
     tipos_validos = ['entrada', 'saida', 'transferencia']
 
     tipos_filtro = [tipo for tipo in tipos_filtro if tipo in tipos_validos]
@@ -360,6 +368,8 @@ def resumo_financeiro(request):
         str(categoria_id)
         for categoria_id in categorias.values_list('id', flat=True)
     }
+
+    # FILTRO POR CATEGORIAS E MOVIMENTAÇÕES SEM CATEGORIA
     categorias_validas = [
         categoria_id
         for categoria_id in categorias_filtro
@@ -383,6 +393,7 @@ def resumo_financeiro(request):
         ['sem_categoria'] if incluir_sem_categoria else []
     )
 
+    # TOTAIS DO PERÍODO FILTRADO
     total_entradas_periodo = movimentacoes_periodo.filter(
         tipo='entrada'
     ).aggregate(total=Sum('valor'))['total'] or 0
@@ -402,6 +413,7 @@ def resumo_financeiro(request):
     resumo_por_conta = []
 
     for conta in contas:
+        # RESUMO DO PERÍODO PARA CADA CONTA
         entradas_conta = movimentacoes_periodo.filter(
             tipo='entrada',
             conta_destino=conta
@@ -440,6 +452,7 @@ def resumo_financeiro(request):
 
     patrimonio_total = sum(conta.saldo_atual for conta in contas)
 
+    # CONTEXTO USADO PELOS CARDS, TABELAS E FILTROS DO RESUMO GERAL
     return render(request, 'financeiro/resumo_financeiro.html', {
         'patrimonio_total': patrimonio_total,
         'total_entradas_periodo': total_entradas_periodo,
@@ -455,7 +468,7 @@ def resumo_financeiro(request):
         'categorias_filtro': categorias_filtro,
     })
 
-# Função para resumo financeiro por conta
+# VIEW DO RESUMO INDIVIDUAL DA CONTA
 
 
 def resumo_conta(request, conta_id):
@@ -463,6 +476,7 @@ def resumo_conta(request, conta_id):
 
     hoje = timezone.localdate()
 
+    # PERÍODO PADRÃO DO RESUMO DA CONTA
     data_inicio_str = request.GET.get('data_inicio')
     data_fim_str = request.GET.get('data_fim')
 
@@ -473,6 +487,7 @@ def resumo_conta(request, conta_id):
         data_inicio = hoje.replace(day=1)
         data_fim = hoje.replace(day=monthrange(hoje.year, hoje.month)[1])
 
+    # MOVIMENTAÇÕES DA CONTA NO PERÍODO
     movimentacoes_periodo = models.Movimentacao.objects.filter(
         data__range=[data_inicio, data_fim]
     ).filter(
@@ -484,6 +499,7 @@ def resumo_conta(request, conta_id):
 
     tipos_validos = ['entrada', 'saida', 'transferencia']
 
+    # FILTRO POR TIPO NO RESUMO DA CONTA
     tipos_filtro = [tipo for tipo in tipos_filtro if tipo in tipos_validos]
 
     if tipos_filtro:
@@ -495,6 +511,8 @@ def resumo_conta(request, conta_id):
         str(categoria_id)
         for categoria_id in categorias.values_list('id', flat=True)
     }
+
+    # FILTRO POR CATEGORIAS NO RESUMO DA CONTA
     categorias_validas = [
         categoria_id
         for categoria_id in categorias_filtro
@@ -518,6 +536,7 @@ def resumo_conta(request, conta_id):
         ['sem_categoria'] if incluir_sem_categoria else []
     )
 
+    # TOTAIS DA CONTA NO PERÍODO FILTRADO
     entradas = movimentacoes_periodo.filter(
         tipo='entrada',
         conta_destino=conta
@@ -551,6 +570,7 @@ def resumo_conta(request, conta_id):
         '-criada_em'
     )
 
+    # CONTEXTO USADO PELOS CARDS, FILTROS E TABELA DO RESUMO DA CONTA
     return render(request, 'financeiro/contas/resumo_conta.html', {
         'conta': conta,
         'data_inicio': data_inicio,

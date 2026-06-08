@@ -7,8 +7,10 @@ Resumo Financeiro
 
 {% block content %}
 
+{# CABEÇALHO DO RESUMO GERAL #}
 <h1 class="text-success mb-4">Resumo Financeiro</h1>
 
+{# FILTROS DO RESUMO GERAL #}
 <form method="get" class="card bg-dark border-secondary shadow mb-4">
     <div class="card-body">
         <h5 class="text-light mb-3">Filtrar período</h5>
@@ -168,6 +170,7 @@ Resumo Financeiro
     </div>
 </form>
 
+{# PATRIMÔNIO TOTAL NÃO É AFETADO PELOS FILTROS #}
 <div class="row mb-4">
     <div class="col-12">
         <div class="card bg-dark border-info shadow">
@@ -182,6 +185,7 @@ Resumo Financeiro
     </div>
 </div>
 
+{# CARDS DO PERÍODO FILTRADO #}
 <h2 class="text-success mb-3">Resumo do Período</h2>
 
 <div class="row g-3 mb-4">
@@ -242,6 +246,7 @@ Resumo Financeiro
 
 </div>
 
+{# SALDO ATUAL DE CADA CONTA #}
 <h2 class="text-success mb-3">Saldo por Conta</h2>
 
 <div class="card bg-dark border-secondary shadow">
@@ -283,6 +288,7 @@ Resumo Financeiro
 </div>
 
 
+{# RESUMO FILTRADO POR CONTA #}
 <h2 class="text-success mt-5 mb-3">Resumo por Conta no Período</h2>
 
 <div class="card bg-dark border-secondary shadow">

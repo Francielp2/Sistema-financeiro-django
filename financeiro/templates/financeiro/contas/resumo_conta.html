@@ -7,10 +7,12 @@ Resumo da Conta
 
 {% block content %}
 
+{# CABEÇALHO DO RESUMO DA CONTA #}
 <h1 class="text-success mb-4">
     Resumo da Conta: {{ conta.nome }}
 </h1>
 
+{# FILTROS DO RESUMO DA CONTA #}
 <form method="get" class="card bg-dark border-secondary shadow mb-4">
     <div class="card-body">
         <h5 class="text-light mb-3">
@@ -188,6 +190,7 @@ Resumo da Conta
     </div>
 </form>
 
+{# SALDO ATUAL NÃO É AFETADO PELOS FILTROS #}
 <div class="row mb-4">
     <div class="col-12">
         <div class="card bg-dark border-info shadow">
@@ -206,6 +209,7 @@ Resumo da Conta
     </div>
 </div>
 
+{# CARDS DO PERÍODO FILTRADO #}
 <h2 class="text-success mb-3">
     Resumo do Período
 </h2>
@@ -298,6 +302,7 @@ Resumo da Conta
     {% endif %}
 </div>
 
+{# AÇÕES DE NAVEGAÇÃO #}
 <div class="mb-4">
     <a href="{% url 'detalhes_conta' conta.id %}" class="btn btn-outline-info">
         Informações da Conta
@@ -308,6 +313,7 @@ Resumo da Conta
     </a>
 </div>
 
+{# TABELA DE MOVIMENTAÇÕES DA CONTA #}
 <h2 class="text-success mb-3">
     Movimentações da Conta
 </h2>

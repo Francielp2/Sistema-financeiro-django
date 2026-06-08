@@ -237,8 +237,9 @@ def resumo_financeiro(request):
 
     tipos_validos = ['entrada', 'saida', 'transferencia']
 
+    tipos_filtro = [tipo for tipo in tipos_filtro if tipo in tipos_validos]
+
     if tipos_filtro:
-        tipos_filtro = [tipo for tipo in tipos_filtro if tipo in tipos_validos]
         movimentacoes_periodo = movimentacoes_periodo.filter(
             tipo__in=tipos_filtro)
 
@@ -362,6 +363,47 @@ def resumo_conta(request, conta_id):
 
     movimentacoes_periodo = models.Movimentacao.objects.filter(
         data__range=[data_inicio, data_fim]
+    ).filter(
+        Q(conta_origem=conta) | Q(conta_destino=conta)
+    )
+
+    tipos_filtro = request.GET.getlist('tipos')
+    categorias_filtro = request.GET.getlist('categorias')
+
+    tipos_validos = ['entrada', 'saida', 'transferencia']
+
+    tipos_filtro = [tipo for tipo in tipos_filtro if tipo in tipos_validos]
+
+    if tipos_filtro:
+        movimentacoes_periodo = movimentacoes_periodo.filter(
+            tipo__in=tipos_filtro)
+
+    categorias = models.Categoria.objects.filter(ativa=True).order_by('nome')
+    categorias_ids_validos = {
+        str(categoria_id)
+        for categoria_id in categorias.values_list('id', flat=True)
+    }
+    categorias_validas = [
+        categoria_id
+        for categoria_id in categorias_filtro
+        if categoria_id in categorias_ids_validos
+    ]
+    incluir_sem_categoria = 'sem_categoria' in categorias_filtro
+
+    if categorias_validas or incluir_sem_categoria:
+        filtro_categorias = Q()
+
+        if categorias_validas:
+            filtro_categorias |= Q(categoria_id__in=categorias_validas)
+
+        if incluir_sem_categoria:
+            filtro_categorias |= Q(categoria__isnull=True)
+
+        movimentacoes_periodo = movimentacoes_periodo.filter(
+            filtro_categorias)
+
+    categorias_filtro = categorias_validas + (
+        ['sem_categoria'] if incluir_sem_categoria else []
     )
 
     entradas = movimentacoes_periodo.filter(
@@ -391,9 +433,11 @@ def resumo_conta(request, conta_id):
         - transferencias_enviadas
     )
 
-    movimentacoes_conta = movimentacoes_periodo.filter(
-        Q(conta_origem=conta) | Q(conta_destino=conta)
-    ).order_by('-data', '-hora', '-criada_em')
+    movimentacoes_conta = movimentacoes_periodo.order_by(
+        '-data',
+        '-hora',
+        '-criada_em'
+    )
 
     return render(request, 'financeiro/contas/resumo_conta.html', {
         'conta': conta,
@@ -405,4 +449,7 @@ def resumo_conta(request, conta_id):
         'transferencias_enviadas': transferencias_enviadas,
         'resultado_periodo': resultado_periodo,
         'movimentacoes_conta': movimentacoes_conta,
+        'tipos_filtro': tipos_filtro,
+        'categorias_filtro': categorias_filtro,
+        'categorias': categorias,
     })

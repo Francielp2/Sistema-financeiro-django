@@ -10,20 +10,120 @@ Resumo da Conta
 
 <form method="get" class="card bg-dark border-secondary shadow mb-4">
     <div class="card-body">
-        <h5 class="text-light mb-3">Filtrar período</h5>
+        <h5 class="text-light mb-3">Filtrar resumo</h5>
 
-        <div class="row g-3 align-items-end">
-            <div class="col-md-4">
+        <div class="row g-3">
+            <div class="col-md">
                 <label class="form-label text-light">Data inicial</label>
                 <input type="date" name="data_inicio" class="form-control" value="{{ data_inicio|date:'Y-m-d' }}">
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md">
                 <label class="form-label text-light">Data final</label>
                 <input type="date" name="data_fim" class="form-control" value="{{ data_fim|date:'Y-m-d' }}">
             </div>
 
-            <div class="col-md-4">
+            <div class="col-md">
+                <label class="form-label text-light">Tipos</label>
+
+                <div class="border rounded p-2">
+                    <div class="form-check text-light">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="tipoTodos"
+                            {% if not tipos_filtro %}checked{% endif %}
+                        >
+                        <label class="form-check-label fw-bold" for="tipoTodos">
+                            Todos
+                        </label>
+                    </div>
+
+                    <div class="form-check text-light">
+                        <input
+                            class="form-check-input tipo-opcao"
+                            type="checkbox"
+                            name="tipos"
+                            value="entrada"
+                            id="tipoEntrada"
+                            {% if 'entrada' in tipos_filtro %}checked{% endif %}
+                        >
+                        <label class="form-check-label" for="tipoEntrada">Entradas</label>
+                    </div>
+
+                    <div class="form-check text-light">
+                        <input
+                            class="form-check-input tipo-opcao"
+                            type="checkbox"
+                            name="tipos"
+                            value="saida"
+                            id="tipoSaida"
+                            {% if 'saida' in tipos_filtro %}checked{% endif %}
+                        >
+                        <label class="form-check-label" for="tipoSaida">Saídas</label>
+                    </div>
+
+                    <div class="form-check text-light">
+                        <input
+                            class="form-check-input tipo-opcao"
+                            type="checkbox"
+                            name="tipos"
+                            value="transferencia"
+                            id="tipoTransferencia"
+                            {% if 'transferencia' in tipos_filtro %}checked{% endif %}
+                        >
+                        <label class="form-check-label" for="tipoTransferencia">Transferências</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md">
+                <label class="form-label text-light">Categorias</label>
+
+                <div class="border rounded p-2">
+                    <div class="form-check text-light">
+                        <input
+                            class="form-check-input"
+                            type="checkbox"
+                            id="categoriaTodas"
+                            {% if not categorias_filtro %}checked{% endif %}
+                        >
+                        <label class="form-check-label fw-bold" for="categoriaTodas">
+                            Todas
+                        </label>
+                    </div>
+
+                    <div class="form-check text-light">
+                        <input
+                            class="form-check-input categoria-opcao"
+                            type="checkbox"
+                            name="categorias"
+                            value="sem_categoria"
+                            id="categoriaSemCategoria"
+                            {% if 'sem_categoria' in categorias_filtro %}checked{% endif %}
+                        >
+                        <label class="form-check-label" for="categoriaSemCategoria">Sem categoria</label>
+                    </div>
+
+                    {% for categoria in categorias %}
+                        <div class="form-check text-light">
+                            <input
+                                class="form-check-input categoria-opcao"
+                                type="checkbox"
+                                name="categorias"
+                                value="{{ categoria.id }}"
+                                id="categoria{{ categoria.id }}"
+                                {% if categoria.id|stringformat:"s" in categorias_filtro %}checked{% endif %}
+                            >
+                            <label class="form-check-label" for="categoria{{ categoria.id }}">
+                                {{ categoria.nome }}
+                            </label>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="col-md d-flex align-items-end">
                 <button type="submit" class="btn btn-success w-100">
                     Aplicar filtro
                 </button>
@@ -198,5 +298,53 @@ Resumo da Conta
 
     </div>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const tipoTodos = document.getElementById('tipoTodos');
+    const tipos = Array.from(document.querySelectorAll('.tipo-opcao'));
+    const categoriaTodas = document.getElementById('categoriaTodas');
+    const categorias = Array.from(document.querySelectorAll('.categoria-opcao'));
+
+    function atualizarTodos(checkboxTodos, opcoes) {
+        const algumaOpcaoMarcada = opcoes.some(function (opcao) {
+            return opcao.checked;
+        });
+
+        checkboxTodos.checked = !algumaOpcaoMarcada;
+    }
+
+    tipos.forEach(function (tipo) {
+        tipo.addEventListener('change', function () {
+            atualizarTodos(tipoTodos, tipos);
+        });
+    });
+
+    categorias.forEach(function (categoria) {
+        categoria.addEventListener('change', function () {
+            atualizarTodos(categoriaTodas, categorias);
+        });
+    });
+
+    tipoTodos.addEventListener('change', function () {
+        if (tipoTodos.checked) {
+            tipos.forEach(function (tipo) {
+                tipo.checked = false;
+            });
+        }
+    });
+
+    categoriaTodas.addEventListener('change', function () {
+        if (categoriaTodas.checked) {
+            categorias.forEach(function (categoria) {
+                categoria.checked = false;
+            });
+        }
+    });
+
+    atualizarTodos(tipoTodos, tipos);
+    atualizarTodos(categoriaTodas, categorias);
+});
+</script>
 
 {% endblock %}

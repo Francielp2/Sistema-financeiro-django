@@ -1,53 +1,28 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .import models
+from . import servicos
 from .forms import ContaForm, ContaEditarForm, CategoriaForm, MovimentacaoForm
-from django.db.models import Sum, Q
 from datetime import datetime
-from calendar import monthrange
-from django.utils import timezone
 
 # PÁGINA INICIAL DO APP FINANCEIRO
 
 
 def inicio(request):
-    hoje = timezone.localdate()
-    data_inicio_mes = hoje.replace(day=1)
-    data_fim_mes = hoje.replace(day=monthrange(hoje.year, hoje.month)[1])
-
+    data_inicio_mes, data_fim_mes = servicos.obter_periodo_mes_atual()
     contas = models.Conta.objects.all().order_by('nome')
-    movimentacoes_mes = models.Movimentacao.objects.filter(
-        data__range=[data_inicio_mes, data_fim_mes]
+    resumo_mes = servicos.calcular_resumo_periodo(
+        data_inicio_mes,
+        data_fim_mes
     )
 
-    total_entradas_mes = movimentacoes_mes.filter(
-        tipo='entrada'
-    ).aggregate(total=Sum('valor'))['total'] or 0
-
-    total_saidas_mes = movimentacoes_mes.filter(
-        tipo='saida'
-    ).aggregate(total=Sum('valor'))['total'] or 0
-
-    total_transferencias_mes = movimentacoes_mes.filter(
-        tipo='transferencia'
-    ).aggregate(total=Sum('valor'))['total'] or 0
-
-    patrimonio_total = sum(conta.saldo_atual for conta in contas)
-    resultado_mes = total_entradas_mes - total_saidas_mes
-
-    movimentacoes_recentes = models.Movimentacao.objects.all().order_by(
-        '-data',
-        '-hora',
-        '-criada_em'
-    )[:5]
-
     return render(request, 'financeiro/inicio.html', {
-        'patrimonio_total': patrimonio_total,
-        'total_entradas_mes': total_entradas_mes,
-        'total_saidas_mes': total_saidas_mes,
-        'total_transferencias_mes': total_transferencias_mes,
-        'resultado_mes': resultado_mes,
+        'patrimonio_total': servicos.calcular_patrimonio_total(contas),
+        'total_entradas_mes': resumo_mes['entradas'],
+        'total_saidas_mes': resumo_mes['saidas'],
+        'total_transferencias_mes': resumo_mes['transferencias'],
+        'resultado_mes': resumo_mes['resultado'],
         'contas': contas,
-        'movimentacoes_recentes': movimentacoes_recentes,
+        'movimentacoes_recentes': servicos.obter_movimentacoes_recentes(5),
         'data_inicio_mes': data_inicio_mes,
         'data_fim_mes': data_fim_mes,
     })
@@ -370,8 +345,6 @@ def excluir_movimentacao(request, movimentacao_id):
 # VIEW DO RESUMO FINANCEIRO GERAL
 
 def resumo_financeiro(request):
-    hoje = timezone.localdate()
-
     # PERÍODO PADRÃO DO RESUMO GERAL
     data_inicio_str = request.GET.get('data_inicio')
     data_fim_str = request.GET.get('data_fim')
@@ -380,132 +353,40 @@ def resumo_financeiro(request):
         data_inicio = datetime.strptime(data_inicio_str, '%Y-%m-%d').date()
         data_fim = datetime.strptime(data_fim_str, '%Y-%m-%d').date()
     else:
-        primeiro_dia = hoje.replace(day=1)
-        ultimo_dia = hoje.replace(day=monthrange(hoje.year, hoje.month)[1])
-
-        data_inicio = primeiro_dia
-        data_fim = ultimo_dia
+        data_inicio, data_fim = servicos.obter_periodo_mes_atual()
 
     tipos_filtro = request.GET.getlist('tipos')
     categorias_filtro = request.GET.getlist('categorias')
-
-    # MOVIMENTAÇÕES DO PERÍODO SELECIONADO
-    movimentacoes_periodo = models.Movimentacao.objects.filter(
-        data__range=[data_inicio, data_fim]
-    )
-
-    # FILTRO POR TIPO DE MOVIMENTAÇÃO
-    tipos_validos = ['entrada', 'saida', 'transferencia']
-
-    tipos_filtro = [tipo for tipo in tipos_filtro if tipo in tipos_validos]
-
-    if tipos_filtro:
-        movimentacoes_periodo = movimentacoes_periodo.filter(
-            tipo__in=tipos_filtro)
-
     categorias = models.Categoria.objects.filter(ativa=True).order_by('nome')
-    categorias_ids_validos = {
-        str(categoria_id)
-        for categoria_id in categorias.values_list('id', flat=True)
-    }
 
-    # FILTRO POR CATEGORIAS E MOVIMENTAÇÕES SEM CATEGORIA
-    categorias_validas = [
-        categoria_id
-        for categoria_id in categorias_filtro
-        if categoria_id in categorias_ids_validos
-    ]
-    incluir_sem_categoria = 'sem_categoria' in categorias_filtro
-
-    if categorias_validas or incluir_sem_categoria:
-        filtro_categorias = Q()
-
-        if categorias_validas:
-            filtro_categorias |= Q(categoria_id__in=categorias_validas)
-
-        if incluir_sem_categoria:
-            filtro_categorias |= Q(categoria__isnull=True)
-
-        movimentacoes_periodo = movimentacoes_periodo.filter(
-            filtro_categorias)
-
-    categorias_filtro = categorias_validas + (
-        ['sem_categoria'] if incluir_sem_categoria else []
+    resumo_periodo = servicos.calcular_resumo_periodo(
+        data_inicio,
+        data_fim,
+        tipos_filtro=tipos_filtro,
+        categorias_filtro=categorias_filtro,
+        categorias=categorias
     )
-
-    # TOTAIS DO PERÍODO FILTRADO
-    total_entradas_periodo = movimentacoes_periodo.filter(
-        tipo='entrada'
-    ).aggregate(total=Sum('valor'))['total'] or 0
-
-    total_saidas_periodo = movimentacoes_periodo.filter(
-        tipo='saida'
-    ).aggregate(total=Sum('valor'))['total'] or 0
-
-    total_transferencias_periodo = movimentacoes_periodo.filter(
-        tipo='transferencia'
-    ).aggregate(total=Sum('valor'))['total'] or 0
-
-    resultado_periodo = total_entradas_periodo - total_saidas_periodo
 
     contas = models.Conta.objects.all()
-
-    resumo_por_conta = []
-
-    for conta in contas:
-        # RESUMO DO PERÍODO PARA CADA CONTA
-        entradas_conta = movimentacoes_periodo.filter(
-            tipo='entrada',
-            conta_destino=conta
-        ).aggregate(total=Sum('valor'))['total'] or 0
-
-        saidas_conta = movimentacoes_periodo.filter(
-            tipo='saida',
-            conta_origem=conta
-        ).aggregate(total=Sum('valor'))['total'] or 0
-
-        transferencias_recebidas = movimentacoes_periodo.filter(
-            tipo='transferencia',
-            conta_destino=conta
-        ).aggregate(total=Sum('valor'))['total'] or 0
-
-        transferencias_enviadas = movimentacoes_periodo.filter(
-            tipo='transferencia',
-            conta_origem=conta
-        ).aggregate(total=Sum('valor'))['total'] or 0
-
-        resultado_periodo_conta = (
-            entradas_conta
-            - saidas_conta
-            + transferencias_recebidas
-            - transferencias_enviadas
-        )
-
-        resumo_por_conta.append({
-            'conta': conta,
-            'entradas': entradas_conta,
-            'saidas': saidas_conta,
-            'transferencias_recebidas': transferencias_recebidas,
-            'transferencias_enviadas': transferencias_enviadas,
-            'resultado_periodo': resultado_periodo_conta,
-        })
-
-    patrimonio_total = sum(conta.saldo_atual for conta in contas)
+    resumo_por_conta = servicos.calcular_resumo_por_conta(
+        contas,
+        resumo_periodo['movimentacoes']
+    )
 
     # CONTEXTO USADO PELOS CARDS, TABELAS E FILTROS DO RESUMO GERAL
     return render(request, 'financeiro/resumo_financeiro.html', {
-        'patrimonio_total': patrimonio_total,
-        'total_entradas_periodo': total_entradas_periodo,
-        'total_saidas_periodo': total_saidas_periodo,
-        'resultado_periodo': resultado_periodo,
+        'patrimonio_total': servicos.calcular_patrimonio_total(contas),
+        'total_entradas_periodo': resumo_periodo['entradas'],
+        'total_saidas_periodo': resumo_periodo['saidas'],
+        'resultado_periodo': resumo_periodo['resultado'],
         'data_inicio': data_inicio,
         'data_fim': data_fim,
         'contas': contas,
         'resumo_por_conta': resumo_por_conta,
-        'tipos_filtro': tipos_filtro,
-        'total_transferencias_periodo': total_transferencias_periodo,
+        'tipos_filtro': resumo_periodo['tipos_filtro'],
+        'total_transferencias_periodo': resumo_periodo['transferencias'],
         'categorias': categorias,
-        'categorias_filtro': categorias_filtro,
+        'categorias_filtro': resumo_periodo['categorias_filtro'],
     })
 
 # VIEW DO RESUMO INDIVIDUAL DA CONTA
@@ -513,8 +394,6 @@ def resumo_financeiro(request):
 
 def resumo_conta(request, conta_id):
     conta = get_object_or_404(models.Conta, id=conta_id)
-
-    hoje = timezone.localdate()
 
     # PERÍODO PADRÃO DO RESUMO DA CONTA
     data_inicio_str = request.GET.get('data_inicio')
@@ -524,90 +403,19 @@ def resumo_conta(request, conta_id):
         data_inicio = datetime.strptime(data_inicio_str, '%Y-%m-%d').date()
         data_fim = datetime.strptime(data_fim_str, '%Y-%m-%d').date()
     else:
-        data_inicio = hoje.replace(day=1)
-        data_fim = hoje.replace(day=monthrange(hoje.year, hoje.month)[1])
-
-    # MOVIMENTAÇÕES DA CONTA NO PERÍODO
-    movimentacoes_periodo = models.Movimentacao.objects.filter(
-        data__range=[data_inicio, data_fim]
-    ).filter(
-        Q(conta_origem=conta) | Q(conta_destino=conta)
-    )
+        data_inicio, data_fim = servicos.obter_periodo_mes_atual()
 
     tipos_filtro = request.GET.getlist('tipos')
     categorias_filtro = request.GET.getlist('categorias')
-
-    tipos_validos = ['entrada', 'saida', 'transferencia']
-
-    # FILTRO POR TIPO NO RESUMO DA CONTA
-    tipos_filtro = [tipo for tipo in tipos_filtro if tipo in tipos_validos]
-
-    if tipos_filtro:
-        movimentacoes_periodo = movimentacoes_periodo.filter(
-            tipo__in=tipos_filtro)
-
     categorias = models.Categoria.objects.filter(ativa=True).order_by('nome')
-    categorias_ids_validos = {
-        str(categoria_id)
-        for categoria_id in categorias.values_list('id', flat=True)
-    }
 
-    # FILTRO POR CATEGORIAS NO RESUMO DA CONTA
-    categorias_validas = [
-        categoria_id
-        for categoria_id in categorias_filtro
-        if categoria_id in categorias_ids_validos
-    ]
-    incluir_sem_categoria = 'sem_categoria' in categorias_filtro
-
-    if categorias_validas or incluir_sem_categoria:
-        filtro_categorias = Q()
-
-        if categorias_validas:
-            filtro_categorias |= Q(categoria_id__in=categorias_validas)
-
-        if incluir_sem_categoria:
-            filtro_categorias |= Q(categoria__isnull=True)
-
-        movimentacoes_periodo = movimentacoes_periodo.filter(
-            filtro_categorias)
-
-    categorias_filtro = categorias_validas + (
-        ['sem_categoria'] if incluir_sem_categoria else []
-    )
-
-    # TOTAIS DA CONTA NO PERÍODO FILTRADO
-    entradas = movimentacoes_periodo.filter(
-        tipo='entrada',
-        conta_destino=conta
-    ).aggregate(total=Sum('valor'))['total'] or 0
-
-    saidas = movimentacoes_periodo.filter(
-        tipo='saida',
-        conta_origem=conta
-    ).aggregate(total=Sum('valor'))['total'] or 0
-
-    transferencias_recebidas = movimentacoes_periodo.filter(
-        tipo='transferencia',
-        conta_destino=conta
-    ).aggregate(total=Sum('valor'))['total'] or 0
-
-    transferencias_enviadas = movimentacoes_periodo.filter(
-        tipo='transferencia',
-        conta_origem=conta
-    ).aggregate(total=Sum('valor'))['total'] or 0
-
-    resultado_periodo = (
-        entradas
-        - saidas
-        + transferencias_recebidas
-        - transferencias_enviadas
-    )
-
-    movimentacoes_conta = movimentacoes_periodo.order_by(
-        '-data',
-        '-hora',
-        '-criada_em'
+    resumo = servicos.calcular_resumo_conta(
+        conta,
+        data_inicio,
+        data_fim,
+        tipos_filtro=tipos_filtro,
+        categorias_filtro=categorias_filtro,
+        categorias=categorias
     )
 
     # CONTEXTO USADO PELOS CARDS, FILTROS E TABELA DO RESUMO DA CONTA
@@ -615,13 +423,17 @@ def resumo_conta(request, conta_id):
         'conta': conta,
         'data_inicio': data_inicio,
         'data_fim': data_fim,
-        'entradas': entradas,
-        'saidas': saidas,
-        'transferencias_recebidas': transferencias_recebidas,
-        'transferencias_enviadas': transferencias_enviadas,
-        'resultado_periodo': resultado_periodo,
-        'movimentacoes_conta': movimentacoes_conta,
-        'tipos_filtro': tipos_filtro,
-        'categorias_filtro': categorias_filtro,
+        'entradas': resumo['entradas'],
+        'saidas': resumo['saidas'],
+        'transferencias_recebidas': resumo['transferencias_recebidas'],
+        'transferencias_enviadas': resumo['transferencias_enviadas'],
+        'resultado_periodo': resumo['resultado_periodo'],
+        'movimentacoes_conta': resumo['movimentacoes'].order_by(
+            '-data',
+            '-hora',
+            '-criada_em'
+        ),
+        'tipos_filtro': resumo['tipos_filtro'],
+        'categorias_filtro': resumo['categorias_filtro'],
         'categorias': categorias,
     })

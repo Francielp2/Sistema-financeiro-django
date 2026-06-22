@@ -25,7 +25,11 @@ SECRET_KEY = 'django-insecure-vlbwx3f*tw_cu5dx%x$ju#r(rh&sw+33(w$=^d@)zr9!(j1rmc
 # MODO DE DEPURAÇÃO
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    'localhost',
+    '127.0.0.1',
+    'testserver',
+]
 
 
 # APPS INSTALADOS NO PROJETO
@@ -38,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    #Meus apps
+    # Meus apps
     'financeiro',
 ]
 

@@ -10,7 +10,47 @@ from django.utils import timezone
 
 
 def inicio(request):
-    return render(request, 'financeiro/inicio.html')
+    hoje = timezone.localdate()
+    data_inicio_mes = hoje.replace(day=1)
+    data_fim_mes = hoje.replace(day=monthrange(hoje.year, hoje.month)[1])
+
+    contas = models.Conta.objects.all().order_by('nome')
+    movimentacoes_mes = models.Movimentacao.objects.filter(
+        data__range=[data_inicio_mes, data_fim_mes]
+    )
+
+    total_entradas_mes = movimentacoes_mes.filter(
+        tipo='entrada'
+    ).aggregate(total=Sum('valor'))['total'] or 0
+
+    total_saidas_mes = movimentacoes_mes.filter(
+        tipo='saida'
+    ).aggregate(total=Sum('valor'))['total'] or 0
+
+    total_transferencias_mes = movimentacoes_mes.filter(
+        tipo='transferencia'
+    ).aggregate(total=Sum('valor'))['total'] or 0
+
+    patrimonio_total = sum(conta.saldo_atual for conta in contas)
+    resultado_mes = total_entradas_mes - total_saidas_mes
+
+    movimentacoes_recentes = models.Movimentacao.objects.all().order_by(
+        '-data',
+        '-hora',
+        '-criada_em'
+    )[:5]
+
+    return render(request, 'financeiro/inicio.html', {
+        'patrimonio_total': patrimonio_total,
+        'total_entradas_mes': total_entradas_mes,
+        'total_saidas_mes': total_saidas_mes,
+        'total_transferencias_mes': total_transferencias_mes,
+        'resultado_mes': resultado_mes,
+        'contas': contas,
+        'movimentacoes_recentes': movimentacoes_recentes,
+        'data_inicio_mes': data_inicio_mes,
+        'data_fim_mes': data_fim_mes,
+    })
 
 # VIEWS DE CONTAS
 

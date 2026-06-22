@@ -1,12 +1,257 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Inicio
+Dashboard Financeiro
 {% endblock %}
 
 {% block content %}
 
-{# TÍTULO DA PÁGINA INICIAL #}
-<h1>Sistema Financeiro</h1>
+{# CABEÇALHO DO DASHBOARD #}
+<div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
+    <div>
+        <h1 class="text-success mb-2">
+            Dashboard Financeiro
+        </h1>
+        <p class="text-secondary mb-0">
+            Visão rápida do mês atual: {{ data_inicio_mes|date:"d/m/Y" }} até {{ data_fim_mes|date:"d/m/Y" }}.
+        </p>
+    </div>
+</div>
+
+{# CARDS PRINCIPAIS #}
+<div class="row g-3 mb-4">
+    <div class="col-md-6 col-xl">
+        <div class="card bg-dark border-info shadow h-100">
+            <div class="card-body">
+                <h5 class="text-light">Patrimônio Total</h5>
+                <h3 class="text-info">R$ {{ patrimonio_total }}</h3>
+                <small class="text-secondary">Soma dos saldos atuais das contas.</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl">
+        <div class="card bg-dark border-success shadow h-100">
+            <div class="card-body">
+                <h5 class="text-light">Entradas do Mês</h5>
+                <h3 class="text-success">R$ {{ total_entradas_mes }}</h3>
+                <small class="text-secondary">Receitas registradas no mês atual.</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl">
+        <div class="card bg-dark border-danger shadow h-100">
+            <div class="card-body">
+                <h5 class="text-light">Saídas do Mês</h5>
+                <h3 class="text-danger">R$ {{ total_saidas_mes }}</h3>
+                <small class="text-secondary">Despesas registradas no mês atual.</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl">
+        <div class="card bg-dark border-secondary shadow h-100">
+            <div class="card-body">
+                <h5 class="text-light">Resultado do Mês</h5>
+
+                {% if resultado_mes >= 0 %}
+                    <h3 class="text-success">R$ {{ resultado_mes }}</h3>
+                {% else %}
+                    <h3 class="text-danger">R$ {{ resultado_mes }}</h3>
+                {% endif %}
+
+                <small class="text-secondary">Entradas menos saídas.</small>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl">
+        <div class="card bg-dark border-warning shadow h-100">
+            <div class="card-body">
+                <h5 class="text-light">Transferências Internas</h5>
+                <h3 class="text-warning">R$ {{ total_transferencias_mes }}</h3>
+                <small class="text-secondary">Não afetam patrimônio ou resultado.</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# ATALHOS RÁPIDOS #}
+<div class="card bg-dark border-secondary shadow mb-4">
+    <div class="card-body">
+        <h2 class="h5 text-light mb-3">
+            Atalhos rápidos
+        </h2>
+
+        <div class="d-flex flex-wrap gap-2">
+            <a href="{% url 'criar_movimentacao' %}" class="btn btn-success">
+                Nova movimentação
+            </a>
+            <a href="{% url 'criar_conta' %}" class="btn btn-outline-success">
+                Nova conta
+            </a>
+            <a href="{% url 'criar_categoria' %}" class="btn btn-outline-success">
+                Nova categoria
+            </a>
+            <a href="{% url 'resumo_financeiro' %}" class="btn btn-outline-info">
+                Resumo financeiro
+            </a>
+            <a href="{% url 'listar_movimentacoes' %}" class="btn btn-outline-light">
+                Listar movimentações
+            </a>
+        </div>
+    </div>
+</div>
+
+{# CONTAS E MOVIMENTAÇÕES RECENTES #}
+<div class="row g-4 mb-4">
+    <div class="col-xl-5">
+        <div class="card bg-dark border-secondary shadow h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+                    <h2 class="h5 text-light mb-0">
+                        Contas cadastradas
+                    </h2>
+                    <a href="{% url 'listar_contas' %}" class="btn btn-sm btn-outline-light">
+                        Ver todas
+                    </a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Conta</th>
+                                <th>Tipo</th>
+                                <th class="text-end">Saldo</th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for conta in contas %}
+                            <tr>
+                                <td>{{ conta.nome }}</td>
+                                <td>{{ conta.get_tipo_display }}</td>
+                                <td class="text-end text-info">R$ {{ conta.saldo_atual }}</td>
+                                <td class="text-end">
+                                    <a href="{% url 'resumo_conta' conta.id %}" class="btn btn-sm btn-outline-info">
+                                        Resumo
+                                    </a>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-secondary">
+                                    Nenhuma conta cadastrada.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-7">
+        <div class="card bg-dark border-secondary shadow h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+                    <h2 class="h5 text-light mb-0">
+                        Movimentações recentes
+                    </h2>
+                    <a href="{% url 'listar_movimentacoes' %}" class="btn btn-sm btn-outline-light">
+                        Ver lista
+                    </a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-dark table-hover align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Tipo</th>
+                                <th>Descrição</th>
+                                <th>Categoria</th>
+                                <th class="text-end">Valor</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for movimentacao in movimentacoes_recentes %}
+                            <tr>
+                                <td>{{ movimentacao.data|date:"d/m/Y" }}</td>
+                                <td>
+                                    {% if movimentacao.tipo == 'entrada' %}
+                                        <span class="badge bg-success">Entrada</span>
+                                    {% elif movimentacao.tipo == 'saida' %}
+                                        <span class="badge bg-danger">Saída</span>
+                                    {% elif movimentacao.tipo == 'transferencia' %}
+                                        <span class="badge bg-warning text-dark">Transferência</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ movimentacao.descricao }}</td>
+                                <td>
+                                    {% if movimentacao.categoria %}
+                                        {{ movimentacao.categoria.nome }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    {% if movimentacao.tipo == 'entrada' %}
+                                        <span class="text-success">+ R$ {{ movimentacao.valor }}</span>
+                                    {% elif movimentacao.tipo == 'saida' %}
+                                        <span class="text-danger">- R$ {{ movimentacao.valor }}</span>
+                                    {% elif movimentacao.tipo == 'transferencia' %}
+                                        <span class="text-warning">R$ {{ movimentacao.valor }}</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="5" class="text-secondary">
+                                    Nenhuma movimentação cadastrada.
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# ÁREA RESERVADA PARA GRÁFICOS FUTUROS #}
+<section class="mb-4">
+    <h2 class="h4 text-success mb-3">
+        Gráficos em breve
+    </h2>
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card bg-dark border-secondary shadow h-100">
+                <div class="card-body">
+                    <h3 class="h5 text-light">Gastos por categoria</h3>
+                    <p class="text-secondary mb-0">
+                        Área reservada para visualização futura com gráficos.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card bg-dark border-secondary shadow h-100">
+                <div class="card-body">
+                    <h3 class="h5 text-light">Distribuição por conta</h3>
+                    <p class="text-secondary mb-0">
+                        Área reservada para visualização futura com gráficos.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
 {% endblock %}

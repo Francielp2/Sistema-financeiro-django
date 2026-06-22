@@ -319,11 +319,17 @@ class MovimentacaoForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
+        usuario = kwargs.pop('usuario', None)
         super().__init__(*args, **kwargs)
 
-        # MOSTRA APENAS CATEGORIAS E CONTAS ATIVAS NOS SELECTS
-        self.fields['categoria'].queryset = Categoria.objects.filter(
-            ativa=True)
-        self.fields['conta_origem'].queryset = Conta.objects.filter(ativa=True)
-        self.fields['conta_destino'].queryset = Conta.objects.filter(
-            ativa=True)
+        # MOSTRA APENAS CATEGORIAS E CONTAS ATIVAS DO USUÁRIO LOGADO
+        categorias = Categoria.objects.filter(ativa=True)
+        contas = Conta.objects.filter(ativa=True)
+
+        if usuario is not None:
+            categorias = categorias.filter(usuario=usuario)
+            contas = contas.filter(usuario=usuario)
+
+        self.fields['categoria'].queryset = categorias
+        self.fields['conta_origem'].queryset = contas
+        self.fields['conta_destino'].queryset = contas

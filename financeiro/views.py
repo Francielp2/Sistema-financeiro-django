@@ -11,20 +11,27 @@ from datetime import datetime
 @login_required
 def inicio(request):
     data_inicio_mes, data_fim_mes = servicos.obter_periodo_mes_atual()
-    contas = models.Conta.objects.all().order_by('nome')
+    contas = models.Conta.objects.filter(usuario=request.user).order_by('nome')
     resumo_mes = servicos.calcular_resumo_periodo(
+        request.user,
         data_inicio_mes,
         data_fim_mes
     )
 
     return render(request, 'financeiro/inicio.html', {
-        'patrimonio_total': servicos.calcular_patrimonio_total(contas),
+        'patrimonio_total': servicos.calcular_patrimonio_total(
+            request.user,
+            contas
+        ),
         'total_entradas_mes': resumo_mes['entradas'],
         'total_saidas_mes': resumo_mes['saidas'],
         'total_transferencias_mes': resumo_mes['transferencias'],
         'resultado_mes': resumo_mes['resultado'],
         'contas': contas,
-        'movimentacoes_recentes': servicos.obter_movimentacoes_recentes(5),
+        'movimentacoes_recentes': servicos.obter_movimentacoes_recentes(
+            request.user,
+            5
+        ),
         'data_inicio_mes': data_inicio_mes,
         'data_fim_mes': data_fim_mes,
     })
@@ -34,7 +41,7 @@ def inicio(request):
 
 @login_required
 def listar_contas(request):
-    contas = models.Conta.objects.all()
+    contas = models.Conta.objects.filter(usuario=request.user)
 
     # FILTROS DA LISTAGEM DE CONTAS
     nome_filtro = request.GET.get('nome', '').strip()
@@ -80,7 +87,11 @@ def criar_conta(request):
 
 @login_required
 def editar_conta(request, conta_id):
-    conta = get_object_or_404(models.Conta, id=conta_id)
+    conta = get_object_or_404(
+        models.Conta,
+        id=conta_id,
+        usuario=request.user
+    )
 
     # BLOQUEIA ALTERAÇÃO DO SALDO INICIAL QUANDO JÁ EXISTEM MOVIMENTAÇÕES
     possui_movimentacoes = (
@@ -109,7 +120,11 @@ def editar_conta(request, conta_id):
 
 @login_required
 def excluir_conta(request, conta_id):
-    conta = get_object_or_404(models.Conta, id=conta_id)
+    conta = get_object_or_404(
+        models.Conta,
+        id=conta_id,
+        usuario=request.user
+    )
 
     if request.method == 'POST':
         conta.delete()
@@ -120,7 +135,11 @@ def excluir_conta(request, conta_id):
 
 @login_required
 def detalhes_conta(request, conta_id):
-    conta = get_object_or_404(models.Conta, id=conta_id)
+    conta = get_object_or_404(
+        models.Conta,
+        id=conta_id,
+        usuario=request.user
+    )
 
     return render(request, 'financeiro/contas/detalhes_conta.html', {
         'conta': conta
@@ -131,7 +150,7 @@ def detalhes_conta(request, conta_id):
 
 @login_required
 def listar_categorias(request):
-    categorias = models.Categoria.objects.all()
+    categorias = models.Categoria.objects.filter(usuario=request.user)
 
     # FILTROS DA LISTAGEM DE CATEGORIAS
     nome_filtro = request.GET.get('nome', '').strip()
@@ -174,7 +193,11 @@ def criar_categoria(request):
 
 @login_required
 def detalhes_categoria(request, categoria_id):
-    categoria = get_object_or_404(models.Categoria, id=categoria_id)
+    categoria = get_object_or_404(
+        models.Categoria,
+        id=categoria_id,
+        usuario=request.user
+    )
 
     return render(request, 'financeiro/categorias/detalhes_categoria.html', {
         'categoria': categoria
@@ -183,7 +206,11 @@ def detalhes_categoria(request, categoria_id):
 
 @login_required
 def editar_categoria(request, categoria_id):
-    categoria = get_object_or_404(models.Categoria, id=categoria_id)
+    categoria = get_object_or_404(
+        models.Categoria,
+        id=categoria_id,
+        usuario=request.user
+    )
 
     if request.method == 'POST':
         form = CategoriaForm(request.POST, instance=categoria)
@@ -201,7 +228,11 @@ def editar_categoria(request, categoria_id):
 
 @login_required
 def excluir_categoria(request, categoria_id):
-    categoria = get_object_or_404(models.Categoria, id=categoria_id)
+    categoria = get_object_or_404(
+        models.Categoria,
+        id=categoria_id,
+        usuario=request.user
+    )
 
     if request.method == 'POST':
         categoria.delete()
@@ -216,7 +247,7 @@ def excluir_categoria(request, categoria_id):
 
 @login_required
 def listar_movimentacoes(request):
-    movimentacoes = models.Movimentacao.objects.all()
+    movimentacoes = models.Movimentacao.objects.filter(usuario=request.user)
 
     # FILTROS DA LISTAGEM DE MOVIMENTAÇÕES
     data_inicio_filtro = request.GET.get('data_inicio', '')
@@ -255,18 +286,36 @@ def listar_movimentacoes(request):
 
     if categoria_filtro == 'sem_categoria':
         movimentacoes = movimentacoes.filter(categoria__isnull=True)
-    elif categoria_filtro.isdigit():
+    elif (
+        categoria_filtro.isdigit()
+        and models.Categoria.objects.filter(
+            id=categoria_filtro,
+            usuario=request.user
+        ).exists()
+    ):
         movimentacoes = movimentacoes.filter(categoria_id=categoria_filtro)
     else:
         categoria_filtro = ''
 
-    if conta_origem_filtro.isdigit():
+    if (
+        conta_origem_filtro.isdigit()
+        and models.Conta.objects.filter(
+            id=conta_origem_filtro,
+            usuario=request.user
+        ).exists()
+    ):
         movimentacoes = movimentacoes.filter(
             conta_origem_id=conta_origem_filtro)
     else:
         conta_origem_filtro = ''
 
-    if conta_destino_filtro.isdigit():
+    if (
+        conta_destino_filtro.isdigit()
+        and models.Conta.objects.filter(
+            id=conta_destino_filtro,
+            usuario=request.user
+        ).exists()
+    ):
         movimentacoes = movimentacoes.filter(
             conta_destino_id=conta_destino_filtro)
     else:
@@ -282,8 +331,11 @@ def listar_movimentacoes(request):
         '-criada_em'
     )
 
-    categorias = models.Categoria.objects.filter(ativa=True).order_by('nome')
-    contas = models.Conta.objects.all().order_by('nome')
+    categorias = models.Categoria.objects.filter(
+        usuario=request.user,
+        ativa=True
+    ).order_by('nome')
+    contas = models.Conta.objects.filter(usuario=request.user).order_by('nome')
 
     # DADOS PARA TABELA E CAMPOS DO FORMULÁRIO DE FILTROS
     return render(request, 'financeiro/movimentacoes/listar_movimentacoes.html', {
@@ -304,7 +356,7 @@ def listar_movimentacoes(request):
 @login_required
 def criar_movimentacao(request):
     if request.method == 'POST':
-        form = MovimentacaoForm(request.POST)
+        form = MovimentacaoForm(request.POST, usuario=request.user)
 
         if form.is_valid():
             movimentacao = form.save(commit=False)
@@ -312,7 +364,7 @@ def criar_movimentacao(request):
             movimentacao.save()
             return redirect('listar_movimentacoes')
     else:
-        form = MovimentacaoForm()
+        form = MovimentacaoForm(usuario=request.user)
 
     return render(request, 'financeiro/movimentacoes/form_movimentacao.html', {
         'form': form
@@ -321,7 +373,11 @@ def criar_movimentacao(request):
 
 @login_required
 def detalhes_movimentacao(request, movimentacao_id):
-    movimentacao = get_object_or_404(models.Movimentacao, id=movimentacao_id)
+    movimentacao = get_object_or_404(
+        models.Movimentacao,
+        id=movimentacao_id,
+        usuario=request.user
+    )
 
     return render(request, 'financeiro/movimentacoes/detalhes_movimentacao.html', {
         'movimentacao': movimentacao
@@ -330,16 +386,24 @@ def detalhes_movimentacao(request, movimentacao_id):
 
 @login_required
 def editar_movimentacao(request, movimentacao_id):
-    movimentacao = get_object_or_404(models.Movimentacao, id=movimentacao_id)
+    movimentacao = get_object_or_404(
+        models.Movimentacao,
+        id=movimentacao_id,
+        usuario=request.user
+    )
 
     if request.method == 'POST':
-        form = MovimentacaoForm(request.POST, instance=movimentacao)
+        form = MovimentacaoForm(
+            request.POST,
+            instance=movimentacao,
+            usuario=request.user
+        )
 
         if form.is_valid():
             form.save()
             return redirect('listar_movimentacoes')
     else:
-        form = MovimentacaoForm(instance=movimentacao)
+        form = MovimentacaoForm(instance=movimentacao, usuario=request.user)
 
     return render(request, 'financeiro/movimentacoes/form_movimentacao.html', {
         'form': form
@@ -348,7 +412,11 @@ def editar_movimentacao(request, movimentacao_id):
 
 @login_required
 def excluir_movimentacao(request, movimentacao_id):
-    movimentacao = get_object_or_404(models.Movimentacao, id=movimentacao_id)
+    movimentacao = get_object_or_404(
+        models.Movimentacao,
+        id=movimentacao_id,
+        usuario=request.user
+    )
 
     if request.method == 'POST':
         movimentacao.delete()
@@ -375,9 +443,13 @@ def resumo_financeiro(request):
 
     tipos_filtro = request.GET.getlist('tipos')
     categorias_filtro = request.GET.getlist('categorias')
-    categorias = models.Categoria.objects.filter(ativa=True).order_by('nome')
+    categorias = models.Categoria.objects.filter(
+        usuario=request.user,
+        ativa=True
+    ).order_by('nome')
 
     resumo_periodo = servicos.calcular_resumo_periodo(
+        request.user,
         data_inicio,
         data_fim,
         tipos_filtro=tipos_filtro,
@@ -385,15 +457,19 @@ def resumo_financeiro(request):
         categorias=categorias
     )
 
-    contas = models.Conta.objects.all()
+    contas = models.Conta.objects.filter(usuario=request.user)
     resumo_por_conta = servicos.calcular_resumo_por_conta(
+        request.user,
         contas,
         resumo_periodo['movimentacoes']
     )
 
     # CONTEXTO USADO PELOS CARDS, TABELAS E FILTROS DO RESUMO GERAL
     return render(request, 'financeiro/resumo_financeiro.html', {
-        'patrimonio_total': servicos.calcular_patrimonio_total(contas),
+        'patrimonio_total': servicos.calcular_patrimonio_total(
+            request.user,
+            contas
+        ),
         'total_entradas_periodo': resumo_periodo['entradas'],
         'total_saidas_periodo': resumo_periodo['saidas'],
         'resultado_periodo': resumo_periodo['resultado'],
@@ -412,7 +488,11 @@ def resumo_financeiro(request):
 
 @login_required
 def resumo_conta(request, conta_id):
-    conta = get_object_or_404(models.Conta, id=conta_id)
+    conta = get_object_or_404(
+        models.Conta,
+        id=conta_id,
+        usuario=request.user
+    )
 
     # PERÍODO PADRÃO DO RESUMO DA CONTA
     data_inicio_str = request.GET.get('data_inicio')
@@ -426,9 +506,13 @@ def resumo_conta(request, conta_id):
 
     tipos_filtro = request.GET.getlist('tipos')
     categorias_filtro = request.GET.getlist('categorias')
-    categorias = models.Categoria.objects.filter(ativa=True).order_by('nome')
+    categorias = models.Categoria.objects.filter(
+        usuario=request.user,
+        ativa=True
+    ).order_by('nome')
 
     resumo = servicos.calcular_resumo_conta(
+        request.user,
         conta,
         data_inicio,
         data_fim,

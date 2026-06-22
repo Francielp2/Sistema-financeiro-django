@@ -17,9 +17,9 @@ def obter_periodo_mes_atual():
     return data_inicio, data_fim
 
 
-def calcular_patrimonio_total(contas=None):
+def calcular_patrimonio_total(usuario, contas=None):
     if contas is None:
-        contas = models.Conta.objects.all()
+        contas = models.Conta.objects.filter(usuario=usuario)
 
     return sum(conta.saldo_atual for conta in contas)
 
@@ -107,6 +107,7 @@ def calcular_resumo_movimentacoes(movimentacoes):
 
 
 def calcular_resumo_periodo(
+    usuario,
     data_inicio,
     data_fim,
     tipos_filtro=None,
@@ -114,6 +115,7 @@ def calcular_resumo_periodo(
     categorias=None
 ):
     movimentacoes_periodo = models.Movimentacao.objects.filter(
+        usuario=usuario,
         data__range=[data_inicio, data_fim]
     )
 
@@ -134,7 +136,9 @@ def calcular_resumo_periodo(
     return resumo
 
 
-def calcular_resumo_por_conta(contas, movimentacoes_periodo):
+def calcular_resumo_por_conta(usuario, contas, movimentacoes_periodo):
+    contas = contas.filter(usuario=usuario)
+    movimentacoes_periodo = movimentacoes_periodo.filter(usuario=usuario)
     resumo_por_conta = []
 
     for conta in contas:
@@ -178,6 +182,7 @@ def calcular_resumo_por_conta(contas, movimentacoes_periodo):
 
 
 def calcular_resumo_conta(
+    usuario,
     conta,
     data_inicio,
     data_fim,
@@ -186,6 +191,7 @@ def calcular_resumo_conta(
     categorias=None
 ):
     movimentacoes_periodo = models.Movimentacao.objects.filter(
+        usuario=usuario,
         data__range=[data_inicio, data_fim]
     ).filter(
         Q(conta_origem=conta) | Q(conta_destino=conta)
@@ -239,8 +245,8 @@ def calcular_resumo_conta(
     }
 
 
-def obter_movimentacoes_recentes(limite=10):
-    return models.Movimentacao.objects.all().order_by(
+def obter_movimentacoes_recentes(usuario, limite=10):
+    return models.Movimentacao.objects.filter(usuario=usuario).order_by(
         '-data',
         '-hora',
         '-criada_em'

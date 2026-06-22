@@ -8,6 +8,36 @@ from . import models
 
 TIPOS_MOVIMENTACAO_VALIDOS = ['entrada', 'saida', 'transferencia']
 
+CATEGORIAS_PADRAO = [
+    ('Salário', 'Recebimento recorrente de salário.'),
+    ('Alimentação', 'Gastos com alimentação.'),
+    ('Transporte', 'Gastos com transporte.'),
+    ('Moradia', 'Gastos com moradia.'),
+    ('Saúde', 'Gastos com saúde.'),
+    ('Educação', 'Gastos com educação.'),
+    ('Lazer', 'Gastos com lazer.'),
+    ('Outros', 'Outras entradas ou saídas financeiras.'),
+]
+
+
+def criar_categorias_padrao(usuario):
+    categorias_criadas = []
+
+    for nome, descricao in CATEGORIAS_PADRAO:
+        categoria, criada = models.Categoria.objects.get_or_create(
+            usuario=usuario,
+            nome=nome,
+            defaults={
+                'descricao': descricao,
+                'ativa': True,
+            }
+        )
+
+        if criada:
+            categorias_criadas.append(categoria)
+
+    return categorias_criadas
+
 
 def obter_periodo_mes_atual():
     hoje = timezone.localdate()

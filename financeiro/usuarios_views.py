@@ -10,6 +10,7 @@ from .forms import (
     EditarPerfilForm,
     LoginUsuarioForm,
 )
+from .servicos import criar_categorias_padrao
 
 
 def usuario_e_administrador(usuario):
@@ -26,7 +27,8 @@ def cadastro_usuario(request):
         form = CadastroUsuarioForm(request.POST)
 
         if form.is_valid():
-            form.save()
+            usuario = form.save()
+            criar_categorias_padrao(usuario)
             messages.success(
                 request,
                 'Cadastro realizado com sucesso. Faça login para continuar.'

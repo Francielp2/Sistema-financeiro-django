@@ -4,4 +4,4 @@ __pycache__/
 db.sqlite3
 .env
 .vscode/
-ERROS_ATUAIS.md
+PROBLEMAS_PARA_RESOLVER.md

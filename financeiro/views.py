@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .import models
 from . import servicos
@@ -7,6 +8,7 @@ from datetime import datetime
 # PÁGINA INICIAL DO APP FINANCEIRO
 
 
+@login_required
 def inicio(request):
     data_inicio_mes, data_fim_mes = servicos.obter_periodo_mes_atual()
     contas = models.Conta.objects.all().order_by('nome')
@@ -30,6 +32,7 @@ def inicio(request):
 # VIEWS DE CONTAS
 
 
+@login_required
 def listar_contas(request):
     contas = models.Conta.objects.all()
 
@@ -60,6 +63,7 @@ def listar_contas(request):
     })
 
 
+@login_required
 def criar_conta(request):
     if request.method == 'POST':
         form = ContaForm(request.POST)
@@ -74,6 +78,7 @@ def criar_conta(request):
     return render(request, 'financeiro/contas/form_conta.html', {'form': form})
 
 
+@login_required
 def editar_conta(request, conta_id):
     conta = get_object_or_404(models.Conta, id=conta_id)
 
@@ -102,6 +107,7 @@ def editar_conta(request, conta_id):
     return render(request, 'financeiro/contas/form_conta.html', {'form': form})
 
 
+@login_required
 def excluir_conta(request, conta_id):
     conta = get_object_or_404(models.Conta, id=conta_id)
 
@@ -112,6 +118,7 @@ def excluir_conta(request, conta_id):
     return render(request, 'financeiro/contas/excluir_conta.html', {'conta': conta})
 
 
+@login_required
 def detalhes_conta(request, conta_id):
     conta = get_object_or_404(models.Conta, id=conta_id)
 
@@ -122,6 +129,7 @@ def detalhes_conta(request, conta_id):
 
 # VIEWS DE CATEGORIAS
 
+@login_required
 def listar_categorias(request):
     categorias = models.Categoria.objects.all()
 
@@ -146,6 +154,7 @@ def listar_categorias(request):
     })
 
 
+@login_required
 def criar_categoria(request):
     if request.method == 'POST':
         form = CategoriaForm(request.POST)
@@ -163,6 +172,7 @@ def criar_categoria(request):
     })
 
 
+@login_required
 def detalhes_categoria(request, categoria_id):
     categoria = get_object_or_404(models.Categoria, id=categoria_id)
 
@@ -171,6 +181,7 @@ def detalhes_categoria(request, categoria_id):
     })
 
 
+@login_required
 def editar_categoria(request, categoria_id):
     categoria = get_object_or_404(models.Categoria, id=categoria_id)
 
@@ -188,6 +199,7 @@ def editar_categoria(request, categoria_id):
     })
 
 
+@login_required
 def excluir_categoria(request, categoria_id):
     categoria = get_object_or_404(models.Categoria, id=categoria_id)
 
@@ -202,6 +214,7 @@ def excluir_categoria(request, categoria_id):
 
 # VIEWS DE MOVIMENTAÇÕES
 
+@login_required
 def listar_movimentacoes(request):
     movimentacoes = models.Movimentacao.objects.all()
 
@@ -288,6 +301,7 @@ def listar_movimentacoes(request):
     })
 
 
+@login_required
 def criar_movimentacao(request):
     if request.method == 'POST':
         form = MovimentacaoForm(request.POST)
@@ -305,6 +319,7 @@ def criar_movimentacao(request):
     })
 
 
+@login_required
 def detalhes_movimentacao(request, movimentacao_id):
     movimentacao = get_object_or_404(models.Movimentacao, id=movimentacao_id)
 
@@ -313,6 +328,7 @@ def detalhes_movimentacao(request, movimentacao_id):
     })
 
 
+@login_required
 def editar_movimentacao(request, movimentacao_id):
     movimentacao = get_object_or_404(models.Movimentacao, id=movimentacao_id)
 
@@ -330,6 +346,7 @@ def editar_movimentacao(request, movimentacao_id):
     })
 
 
+@login_required
 def excluir_movimentacao(request, movimentacao_id):
     movimentacao = get_object_or_404(models.Movimentacao, id=movimentacao_id)
 
@@ -344,6 +361,7 @@ def excluir_movimentacao(request, movimentacao_id):
 
 # VIEW DO RESUMO FINANCEIRO GERAL
 
+@login_required
 def resumo_financeiro(request):
     # PERÍODO PADRÃO DO RESUMO GERAL
     data_inicio_str = request.GET.get('data_inicio')
@@ -392,6 +410,7 @@ def resumo_financeiro(request):
 # VIEW DO RESUMO INDIVIDUAL DA CONTA
 
 
+@login_required
 def resumo_conta(request, conta_id):
     conta = get_object_or_404(models.Conta, id=conta_id)
 

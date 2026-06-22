@@ -1,5 +1,23 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+from django.contrib.auth.models import User
 from .models import Conta, Categoria, Movimentacao
+
+
+admin.site.unregister(User)
+
+
+@admin.register(User)
+class UsuarioAdmin(UserAdmin):
+    # EVITA QUE UM SUPERUSUÁRIO REMOVA DE SI MESMO ACESSOS CRÍTICOS
+    def save_model(self, request, obj, form, change):
+        if change and obj.pk == request.user.pk and request.user.is_superuser:
+            usuario_original = User.objects.get(pk=obj.pk)
+            obj.is_staff = usuario_original.is_staff
+            obj.is_superuser = usuario_original.is_superuser
+            obj.is_active = usuario_original.is_active
+
+        super().save_model(request, obj, form, change)
 
 
 @admin.register(Conta)

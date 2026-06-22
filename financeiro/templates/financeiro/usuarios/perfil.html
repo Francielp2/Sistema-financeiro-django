@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Meu perfil
+{% endblock %}
+
+{% block content %}
+
+<div class="d-flex justify-content-between align-items-center gap-3 mb-4">
+    <div>
+        <h1 class="text-success mb-1">
+            Meu perfil
+        </h1>
+        <p class="text-secondary mb-0">
+            Dados da sua conta no sistema.
+        </p>
+    </div>
+</div>
+
+<div class="card bg-dark border-secondary shadow">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-dark align-middle mb-0">
+                <tbody>
+                    <tr>
+                        <th>Usuário</th>
+                        <td>{{ request.user.username }}</td>
+                    </tr>
+                    <tr>
+                        <th>Nome</th>
+                        <td>{{ request.user.first_name|default:"-" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Sobrenome</th>
+                        <td>{{ request.user.last_name|default:"-" }}</td>
+                    </tr>
+                    <tr>
+                        <th>E-mail</th>
+                        <td>{{ request.user.email|default:"-" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Tipo de usuário</th>
+                        <td>
+                            {% if request.user.is_staff or request.user.is_superuser %}
+                                <span class="badge bg-success">Administrador</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Usuário comum</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="d-flex flex-wrap gap-2 mt-4">
+            <a href="{% url 'editar_perfil' %}" class="btn btn-success">
+                Editar dados
+            </a>
+            <a href="{% url 'alterar_senha' %}" class="btn btn-outline-light">
+                Alterar senha
+            </a>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

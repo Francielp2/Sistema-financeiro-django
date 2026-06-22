@@ -1,7 +1,17 @@
 from django.urls import path
 from . import views
+from . import usuarios_views
 
 urlpatterns = [
+    # ROTAS DE USUÁRIOS
+    path('cadastro/', usuarios_views.cadastro_usuario, name='cadastro'),
+    path('login/', usuarios_views.login_usuario, name='login'),
+    path('logout/', usuarios_views.logout_usuario, name='logout'),
+    path('perfil/', usuarios_views.perfil_usuario, name='perfil'),
+    path('perfil/editar/', usuarios_views.editar_perfil, name='editar_perfil'),
+    path('perfil/alterar-senha/', usuarios_views.alterar_senha, name='alterar_senha'),
+    path('usuarios/', usuarios_views.listar_usuarios, name='listar_usuarios'),
+
     # ROTAS DA PÁGINA INICIAL
     path('', views.inicio, name='inicio'),
 

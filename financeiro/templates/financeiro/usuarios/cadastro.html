@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Cadastro
+{% endblock %}
+
+{% block content %}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card bg-dark border-secondary shadow">
+            <div class="card-body">
+                <h1 class="h3 text-success mb-3">
+                    Criar conta
+                </h1>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {{ form.non_field_errors }}
+                        </div>
+                    {% endif %}
+
+                    {% for campo in form %}
+                        <div class="mb-3">
+                            <label class="form-label text-light" for="{{ campo.id_for_label }}">
+                                {{ campo.label }}
+                            </label>
+                            {{ campo }}
+
+                            {% if campo.help_text %}
+                                <div class="form-text text-secondary">
+                                    {{ campo.help_text }}
+                                </div>
+                            {% endif %}
+
+                            {% for erro in campo.errors %}
+                                <div class="text-danger small mt-1">
+                                    {{ erro }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endfor %}
+
+                    <button type="submit" class="btn btn-success w-100">
+                        Cadastrar
+                    </button>
+                </form>
+
+                <p class="text-secondary mt-3 mb-0">
+                    Já possui conta?
+                    <a href="{% url 'login' %}" class="text-success">Entrar</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

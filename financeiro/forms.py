@@ -1,5 +1,170 @@
 from django import forms
+from django.contrib.auth.forms import (
+    AuthenticationForm,
+    PasswordChangeForm,
+    UserCreationForm,
+)
+from django.contrib.auth.models import User
 from .models import Conta, Categoria, Movimentacao
+
+
+class CadastroUsuarioForm(UserCreationForm):
+    # FORMULÁRIO PARA CADASTRO PÚBLICO DE USUÁRIOS COMUNS
+    first_name = forms.CharField(
+        label='Nome',
+        max_length=150,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Seu nome'
+        })
+    )
+    last_name = forms.CharField(
+        label='Sobrenome',
+        max_length=150,
+        required=True,
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Seu sobrenome'
+        })
+    )
+    email = forms.EmailField(
+        label='E-mail',
+        required=True,
+        widget=forms.EmailInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'seu@email.com'
+        })
+    )
+
+    class Meta:
+        model = User
+        fields = [
+            'username',
+            'first_name',
+            'last_name',
+            'email',
+            'password1',
+            'password2',
+        ]
+        widgets = {
+            'username': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Nome de usuário'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['password1'].widget.attrs.update({
+            'class': 'form-control',
+            'placeholder': 'Senha'
+        })
+        self.fields['password2'].widget.attrs.update({
+            'class': 'form-control',
+            'placeholder': 'Confirme a senha'
+        })
+
+    def save(self, commit=True):
+        usuario = super().save(commit=False)
+        usuario.is_staff = False
+        usuario.is_superuser = False
+
+        if commit:
+            usuario.save()
+
+        return usuario
+
+
+class LoginUsuarioForm(AuthenticationForm):
+    # FORMULÁRIO DE LOGIN COM ESTILO DO PROJETO
+    username = forms.CharField(
+        label='Usuário',
+        widget=forms.TextInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Nome de usuário',
+            'autofocus': True
+        })
+    )
+    password = forms.CharField(
+        label='Senha',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Senha'
+        })
+    )
+
+
+class EditarPerfilForm(forms.ModelForm):
+    # FORMULÁRIO PARA EDITAR DADOS PESSOAIS EXIGINDO SENHA ATUAL
+    senha_atual = forms.CharField(
+        label='Senha atual',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirme sua senha atual'
+        })
+    )
+
+    class Meta:
+        model = User
+        fields = ['first_name', 'last_name', 'email']
+        labels = {
+            'first_name': 'Nome',
+            'last_name': 'Sobrenome',
+            'email': 'E-mail',
+        }
+        widgets = {
+            'first_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Seu nome'
+            }),
+            'last_name': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Seu sobrenome'
+            }),
+            'email': forms.EmailInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'seu@email.com'
+            }),
+        }
+
+    def __init__(self, *args, **kwargs):
+        self.usuario = kwargs.pop('usuario')
+        super().__init__(*args, **kwargs)
+
+    def clean_senha_atual(self):
+        senha_atual = self.cleaned_data['senha_atual']
+
+        if not self.usuario.check_password(senha_atual):
+            raise forms.ValidationError('Senha atual incorreta.')
+
+        return senha_atual
+
+
+class AlterarSenhaForm(PasswordChangeForm):
+    # FORMULÁRIO DE ALTERAÇÃO DE SENHA COM VALIDAÇÕES NATIVAS DO DJANGO
+    old_password = forms.CharField(
+        label='Senha atual',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Senha atual'
+        })
+    )
+    new_password1 = forms.CharField(
+        label='Nova senha',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Nova senha'
+        })
+    )
+    new_password2 = forms.CharField(
+        label='Confirmar nova senha',
+        widget=forms.PasswordInput(attrs={
+            'class': 'form-control',
+            'placeholder': 'Confirme a nova senha'
+        })
+    )
 
 
 class ContaForm(forms.ModelForm):

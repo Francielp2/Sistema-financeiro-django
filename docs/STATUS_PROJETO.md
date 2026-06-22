@@ -2,87 +2,68 @@
 
 Atualizado em: 22/06/2026
 
-## Visão Geral
+## 1. Visão Geral
 
-O projeto é um sistema de controle financeiro pessoal desenvolvido em Django.
+O projeto é um sistema de controle financeiro pessoal desenvolvido em Django. O app principal é `financeiro`.
 
-A aplicação está sendo construída para funcionar de forma independente, sem depender de inteligência artificial. A IA continua planejada como módulo futuro e complementar, responsável apenas por interpretar linguagem natural e gerar dados estruturados para o backend validar.
+A base financeira principal já está implementada: o sistema possui contas, categorias, movimentações, dashboard inicial, resumos financeiros, autenticação de usuários e isolamento dos dados por usuário autenticado.
 
-Toda a lógica financeira permanece centralizada no backend, garantindo consistência, segurança e independência da IA.
+O sistema foi projetado para funcionar sem inteligência artificial. A IA continua planejada como módulo futuro e complementar: ela deverá interpretar linguagem natural e gerar dados estruturados em JSON para o backend validar. A IA não deverá salvar diretamente no banco de dados.
 
 ---
 
-## Regras de Negócio Definidas
+## 2. Regras Principais
 
 ### Contas
 
 * Toda movimentação financeira ocorre através de contas.
 * Contas representam bancos, dinheiro físico, carteiras digitais, investimentos ou caixinhas.
+* Caixinhas são contas independentes, não categorias.
 * O saldo inicial é informado na criação da conta.
 * O saldo atual não é editado manualmente.
 * O saldo atual é calculado automaticamente pelas movimentações.
 * O saldo inicial fica bloqueado para edição quando a conta já possui movimentações.
 
-### Caixinhas
-
-* Caixinhas são tratadas como contas independentes.
-* Não são categorias.
-* Participam normalmente dos cálculos de patrimônio.
-
 ### Categorias
 
-* Categorias são utilizadas para classificação financeira.
+* Categorias classificam entradas e saídas.
 * Categorias podem ser ativadas ou desativadas.
 * Categorias inativas não aparecem nos formulários de criação de movimentações.
+* Novos usuários recebem categorias padrão copiadas para sua própria conta.
+* Categorias padrão não são globais nem compartilhadas entre usuários.
+* Usuários antigos não recebem categorias padrão automaticamente.
 
-### Entradas
+### Movimentações
 
-* Representam receitas.
-* Exigem conta de destino.
-* Não devem possuir conta de origem.
-* Podem possuir categoria.
+* Entradas representam receitas.
+* Saídas representam despesas e transferências para terceiros.
+* Transferências internas representam movimentações entre contas próprias.
+* Transferências internas não alteram o patrimônio geral.
+* Transferências internas não devem possuir categoria.
+* Saídas e transferências internas são bloqueadas quando a conta de origem não possui saldo suficiente.
+* Validações financeiras principais ficam no backend/model.
 
-### Saídas
+### Patrimônio e Resultado
 
-* Representam despesas.
-* Exigem conta de origem.
-* Não devem possuir conta de destino.
-* Podem possuir categoria.
-* São bloqueadas quando a conta de origem não possui saldo suficiente.
-
-### Transferências Internas
-
-* Representam movimentações entre contas próprias.
-* Exigem conta de origem e conta de destino.
-* A conta de origem e a conta de destino não podem ser iguais.
-* Não alteram o patrimônio total.
-* Não devem possuir categoria.
-* São bloqueadas quando a conta de origem não possui saldo suficiente.
-
-### Patrimônio
-
-* Patrimônio representa a soma dos saldos atuais de todas as contas.
-* Não sofre influência dos filtros dos relatórios.
-
-### Resultado do Período
-
-* Calculado com base nas entradas e saídas do período filtrado.
-* Pode ser positivo ou negativo.
-* Não altera o patrimônio acumulado.
+* Patrimônio total é a soma dos saldos atuais das contas do usuário.
+* Patrimônio é acumulado e não sofre influência dos filtros dos relatórios.
+* Resultado do período é calculado por entradas menos saídas dentro do período filtrado.
+* Transferências internas aparecem separadamente, mas não entram no resultado geral.
+* Filtros afetam relatórios e listagens, mas não alteram o patrimônio real acumulado.
 
 ---
 
-## Funcionalidades Implementadas
+## 3. Funcionalidades Implementadas
 
 ### Estrutura Base
 
 * Projeto Django criado.
 * App `financeiro` criado.
-* Configuração principal do Django organizada em `config`.
+* Configuração principal organizada em `config`.
 * Templates configurados.
 * Arquivos estáticos configurados.
 * Bootstrap integrado via CDN.
-* Tema dark iniciado.
+* Tema dark/verde iniciado.
 * Navbar global criada.
 * Template base criado.
 * Projeto versionado no GitHub.
@@ -90,7 +71,7 @@ Toda a lógica financeira permanece centralizada no backend, garantindo consist�
 ### Modelos e Validações
 
 * Models principais definidos: `Conta`, `Categoria` e `Movimentacao`.
-* Relacionamentos entre usuário, contas, categorias e movimentações implementados.
+* Relacionamentos com o usuário padrão do Django implementados.
 * Validações financeiras centralizadas no model `Movimentacao`.
 * `clean()` implementado para regras de movimentação.
 * `save()` usando `full_clean()` antes de persistir.
@@ -120,6 +101,15 @@ Toda a lógica financeira permanece centralizada no backend, garantindo consist�
 * Página de detalhes da categoria.
 * Controle de categorias ativas e inativas.
 * Filtro na listagem por nome e status ativa/inativa.
+* Categorias padrão criadas automaticamente para novos usuários:
+  * Salário;
+  * Alimentação;
+  * Transporte;
+  * Moradia;
+  * Saúde;
+  * Educação;
+  * Lazer;
+  * Outros.
 
 ### Movimentações
 
@@ -128,10 +118,9 @@ Toda a lógica financeira permanece centralizada no backend, garantindo consist�
 * Página de detalhes da movimentação.
 * Registro de data e hora.
 * Controle de criação e atualização.
-* Mensagens de erro gerais no formulário de movimentação.
 * Listagem ordenada da movimentação mais recente para a mais antiga.
 * Tabela com data, hora, tipo, descrição, categoria, contas, valor e ações.
-* Filtros implementados por:
+* Filtros avançados por:
   * data inicial;
   * data final;
   * tipo;
@@ -141,13 +130,24 @@ Toda a lógica financeira permanece centralizada no backend, garantindo consist�
   * conta de destino;
   * descrição.
 
----
+### Dashboard Inicial
 
-## Relatórios Implementados
+* Página inicial transformada em dashboard financeiro.
+* Dashboard usa o mês atual como referência.
+* Cards financeiros implementados:
+  * patrimônio total;
+  * entradas do mês;
+  * saídas do mês;
+  * resultado do mês;
+  * transferências internas do mês.
+* Atalhos rápidos para criação e navegação.
+* Listagem de contas cadastradas.
+* Listagem de movimentações recentes.
+* Área reservada para gráficos futuros.
 
-### Resumo Financeiro Geral
+### Resumos Financeiros
 
-Implementado com:
+#### Resumo Financeiro Geral
 
 * Patrimônio total.
 * Entradas do período.
@@ -158,9 +158,7 @@ Implementado com:
 * Período padrão baseado no mês atual.
 * Patrimônio isolado dos filtros.
 
-### Resumo Financeiro por Conta
-
-Implementado com:
+#### Resumo Individual por Conta
 
 * Saldo atual da conta.
 * Entradas da conta.
@@ -172,159 +170,87 @@ Implementado com:
 * Período padrão baseado no mês atual.
 * Saldo atual isolado dos filtros.
 
----
+### Filtros dos Relatórios
 
-## Sistema de Filtros Implementado
-
-### Resumo Financeiro Geral
-
-Filtros por:
-
-* Período.
-* Múltiplos tipos.
-* Múltiplas categorias.
-* Sem categoria.
-
-Recursos:
-
-* Dropdowns avançados.
-* Seleção múltipla.
-* Opção "Todos".
+* Filtros por período.
+* Filtros por múltiplos tipos.
+* Filtros por múltiplas categorias.
 * Opção "Sem categoria".
-* Patrimônio isolado dos filtros.
+* Dropdowns com seleção múltipla.
+* Opção "Todos".
 
-### Resumo Financeiro por Conta
+### Usuários e Autenticação
 
-Filtros por:
+* Cadastro de usuários usando o model `User` padrão do Django.
+* Login.
+* Logout.
+* Página "Meu perfil".
+* Edição de dados pessoais com confirmação da senha atual.
+* Alteração de senha usando validações nativas do Django.
+* Listagem simples de usuários restrita a administradores/staff.
+* Diferenciação visual entre usuário comum e administrador.
+* Django Admin preservado para manutenção.
 
-* Período.
-* Múltiplos tipos.
-* Múltiplas categorias.
-* Sem categoria.
+### Isolamento por Usuário
 
-Recursos:
+* Views financeiras protegidas por login.
+* Contas, categorias e movimentações filtradas por `request.user`.
+* Detalhes, edição, exclusão e resumo individual buscam objetos pelo usuário autenticado.
+* Formulários de movimentação exibem apenas contas e categorias do usuário logado.
+* Administradores/staff usam o sistema comum como usuários normais e veem apenas os próprios dados.
+* Superusuários continuam podendo acessar todos os dados pelo Django Admin.
 
-* Cards adaptativos.
-* Resultado contextualizado conforme filtros.
-* Movimentações filtradas.
-* Saldo atual da conta isolado dos filtros.
+### Camada de Serviços
 
-### Listagem de Movimentações
-
-Filtros por:
-
-* Período.
-* Tipo.
-* Categoria.
-* Sem categoria.
-* Conta de origem.
-* Conta de destino.
-* Descrição.
-
-### Listagem de Contas
-
-Filtros por:
-
-* Nome.
-* Tipo.
-* Status ativa/inativa.
-
-### Listagem de Categorias
-
-Filtros por:
-
-* Nome.
-* Status ativa/inativa.
+* Arquivo `financeiro/servicos.py` iniciado.
+* Cálculos financeiros comuns foram centralizados parcialmente.
+* Serviços existentes incluem:
+  * período do mês atual;
+  * patrimônio total;
+  * totais por período;
+  * filtros por tipo e categoria;
+  * resumo por conta;
+  * resumo individual de conta;
+  * movimentações recentes;
+  * criação de categorias padrão.
 
 ---
 
-## Etapa Atual
+## 4. Funcionalidades em Andamento
 
-O projeto está na fase de estabilização das regras financeiras, revisão de segurança multiusuário e refinamento das telas administrativas.
-
-Os cadastros principais, relatórios e filtros já existem. O foco agora deve ser transformar o protótipo funcional em uma base mais segura e validada, antes de avançar para dashboards, gráficos, deploy ou inteligência artificial.
-
----
-
-## Pontos de Atenção Atuais
-
-Os pontos abaixo estão detalhados em `docs/ERROS_ATUAIS.md` e devem ser tratados antes de novas funcionalidades maiores:
-
-* Views de criação ainda permitem tentativa de POST sem login, causando erro 500.
-* Consultas ainda não isolam os dados por `request.user`, o que mistura dados entre usuários.
-* Datas inválidas nos filtros dos resumos podem gerar erro 500.
-* Validação de saldo pode bloquear edições válidas de movimentações existentes.
-* Templates de formulários ainda não exibem todos os erros de campo.
-* Edição de movimentação pode falhar quando conta ou categoria usada foi inativada.
-* Lista vazia de contas possui HTML inválido no bloco `{% empty %}`.
-* Exclusão de conta usa `CASCADE` e pode apagar movimentações relacionadas.
-* Não há testes automatizados implementados.
+* Refinar a página de resumo individual da conta.
+* Melhorar a navegação entre dashboard, resumo geral e resumo por conta.
+* Separar melhor informações cadastrais da conta e relatórios financeiros.
+* Continuar centralizando cálculos financeiros na camada de serviços.
+* Padronizar exibição de erros nos formulários financeiros.
+* Revisar casos de edição de movimentações antigas.
+* Melhorar responsividade e organização visual dos templates.
 
 ---
 
-## Próximos Passos Recomendados
+## 5. Próximas Etapas
 
-### 1. Segurança e Autenticação
-
-* Implementar login obrigatório nas views financeiras.
-* Adicionar cadastro, login e logout.
-* Filtrar listagens, detalhes, edições, exclusões e relatórios por usuário autenticado.
-* Ajustar formulários para exibir apenas contas e categorias do usuário correto.
-* Validar que um usuário não consegue acessar dados de outro por URL direta.
-
-### 2. Correções de Estabilidade
+### Estabilidade e Regras Financeiras
 
 * Tratar datas inválidas nos filtros dos resumos sem gerar erro 500.
 * Corrigir a validação de saldo ao editar saídas e transferências existentes.
-* Exibir erros de campo nos formulários de conta, categoria e movimentação.
 * Permitir edição de movimentações antigas que usam conta ou categoria atualmente inativa.
-* Corrigir o HTML da tabela vazia de contas.
-* Definir regra de exclusão de conta com movimentações: bloquear exclusão, inativar conta ou manter exclusão em cascata.
+* Definir regra de exclusão de conta com movimentações:
+  * bloquear exclusão;
+  * inativar conta;
+  * ou manter exclusão em cascata.
+* Definir política de exclusão/inativação de usuários e retenção dos dados financeiros.
 
-### 3. Testes
+### Interface e Navegação
 
-* Recriar banco de dados de desenvolvimento, se necessário.
-* Inserir dados de teste controlados.
-* Criar testes automatizados para:
-  * cálculo de saldo atual;
-  * entradas, saídas e transferências;
-  * bloqueio de saldo insuficiente;
-  * edição de movimentações;
-  * filtros dos relatórios;
-  * isolamento de dados por usuário;
-  * respostas sem erro 500 para entradas inválidas.
-* Executar `python3 manage.py check` e `python3 manage.py test` como rotina.
+* Implementar dashboard individual por conta.
+* Melhorar navegação entre dashboard, resumo geral e resumo individual.
+* Reorganizar templates de dashboard e relatórios.
+* Implementar sidebar.
+* Melhorar interface dark/verde.
+* Melhorar responsividade das listagens e relatórios.
 
-### 4. Melhorias de Interface
-
-* Revisar tabelas e botões das telas administrativas.
-* Melhorar responsividade das listagens.
-* Padronizar exibição de erros de formulário.
-* Melhorar a página inicial para funcionar como dashboard ou ponto de navegação útil.
-* Revisar organização visual dos cards de resumo.
-
-### 5. Dashboard Geral
-
-Implementar após estabilização:
-
-* Patrimônio total.
-* Entradas.
-* Saídas.
-* Resultado.
-* Contas cadastradas.
-* Movimentações recentes.
-* Atalhos para criação de conta, categoria e movimentação.
-
-### 6. Dashboard por Conta
-
-Implementar ou ampliar:
-
-* Resumo individual.
-* Navegação integrada a partir da listagem e do resumo geral.
-* Indicadores específicos por conta.
-* Últimas movimentações da conta.
-
-### 7. Gráficos
+### Gráficos
 
 Implementar com Chart.js:
 
@@ -333,28 +259,82 @@ Implementar com Chart.js:
 * Distribuição do patrimônio.
 * Evolução por período.
 * Gráficos individuais por conta.
+* Integração entre filtros e gráficos.
 
-### 8. Banco de Dados
+### Usuários e Administração
+
+* Revisar permissões e segurança.
+* Implementar funcionalidades administrativas complementares para gestão de usuários.
+* Manter promoção, rebaixamento e permissões detalhadas no Django Admin enquanto não houver tela própria completa.
+
+### Testes
+
+* Criar testes automatizados para:
+  * cálculo de saldo atual;
+  * entradas, saídas e transferências;
+  * bloqueio de saldo insuficiente;
+  * edição de movimentações;
+  * filtros dos relatórios;
+  * isolamento de dados por usuário;
+  * formulários com dados inválidos;
+  * categorias padrão para novos usuários.
+* Continuar executando `python3 manage.py check`.
+* Executar `python3 manage.py test` após criação dos testes.
+
+### Banco de Dados e Deploy
 
 * Manter SQLite durante desenvolvimento local.
-* Planejar migração para PostgreSQL antes do deploy.
+* Planejar migração para PostgreSQL no final do desenvolvimento.
 * Testar regras financeiras e relatórios no PostgreSQL.
-
-### 9. Deploy
-
+* Preparar configuração de produção.
 * Configurar variáveis de ambiente.
-* Separar configurações de desenvolvimento e produção.
 * Configurar arquivos estáticos para produção.
 * Publicar a aplicação.
 
-### 10. Inteligência Artificial
+---
 
-Implementar somente após conclusão e estabilização do sistema financeiro:
+## 6. Decisões Técnicas Importantes
 
-* Chat financeiro.
-* Interpretação de linguagem natural.
-* Geração de JSON estruturado.
-* Validação obrigatória pelo backend.
-* Confirmação antes do salvamento.
+* O model de usuário continua sendo o `User` padrão do Django.
+* Não há model customizado de usuário neste momento.
+* Cada usuário possui seus próprios dados financeiros.
+* Categorias padrão são copiadas para novos usuários e podem ser editadas, excluídas ou desativadas.
+* O sistema comum isola dados por usuário, inclusive para staff e superusuários.
+* O Django Admin continua separado para manutenção e pode visualizar todos os registros.
+* A lógica financeira principal permanece no backend.
+* O saldo atual é uma propriedade calculada, não um campo editável manualmente.
+* O dashboard é uma visão rápida do mês atual.
+* O resumo financeiro é a área analítica com filtros.
+* Transferências internas não alteram patrimônio geral nem resultado geral.
 
-A IA nunca terá acesso direto ao banco de dados. Todo salvamento continuará passando pelas mesmas validações do sistema.
+---
+
+## 7. IA Futura
+
+A inteligência artificial será implementada por último, após estabilização do sistema financeiro.
+
+Planejado:
+
+* Criar estrutura isolada para IA.
+* Implementar chat financeiro.
+* Interpretar mensagens em linguagem natural.
+* Gerar JSON estruturado.
+* Validar todo dado gerado no backend.
+* Exigir confirmação do usuário antes de salvar.
+
+Restrições:
+
+* A IA não terá acesso direto ao banco de dados.
+* A IA não poderá salvar movimentações diretamente.
+* Todo salvamento continuará passando pelas validações do sistema.
+* O sistema financeiro deve continuar funcionando sem IA.
+
+---
+
+## 8. Estado Atual do Projeto
+
+O projeto está em fase de estabilização e refinamento.
+
+A base financeira, autenticação, dashboard, resumos, filtros e isolamento por usuário já estão implementados. O foco atual deve ser corrigir pontos de estabilidade, padronizar formulários, ampliar testes e melhorar a experiência visual antes de avançar para gráficos, deploy, PostgreSQL e IA.
+
+Pontos de atenção detalhados ficam no arquivo local `docs/PROBLEMAS_PARA_RESOLVER.md`, que não faz parte do repositório remoto.

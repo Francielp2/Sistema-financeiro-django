@@ -4,5 +4,7 @@ __pycache__/
 db.sqlite3
 .env
 .vscode/
+.codex/
+.agents/
 PROBLEMAS_PARA_RESOLVER.md
 docs/PROBLEMAS_PARA_RESOLVER.md

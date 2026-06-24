@@ -687,6 +687,89 @@ class ViewsFinanceirasTestCase(FinanceiroTestMixin, TestCase):
             self.outra_conta,
             resposta.context['contas']
         )
+        self.assertEqual(
+            resposta.context['dados_entradas_por_categoria'],
+            {
+                'labels': ['Sem categoria'],
+                'valores': [Decimal('200.00')],
+            }
+        )
+        self.assertNotIn(
+            'Conta de outro usuário',
+            resposta.context['dados_patrimonio_por_conta']['labels']
+        )
+
+    def test_inicio_envia_dados_dos_graficos_para_o_contexto(self):
+        self.client.force_login(self.usuario)
+        inicio_mes = date(2026, 1, 1)
+        fim_mes = date(2026, 1, 31)
+        gastos = {'labels': ['Alimentação'], 'valores': [Decimal('50.00')]}
+        entradas = {'labels': ['Salário'], 'valores': [Decimal('500.00')]}
+        patrimonio = {
+            'labels': ['Conta principal'],
+            'valores': [Decimal('1000.00')],
+        }
+        meses = {
+            'labels': ['Jan/2026'],
+            'entradas': [Decimal('500.00')],
+            'saidas': [Decimal('50.00')],
+        }
+
+        with (
+            patch(
+                'financeiro.servicos.obter_periodo_mes_atual',
+                return_value=(inicio_mes, fim_mes)
+            ),
+            patch(
+                'financeiro.servicos.obter_gastos_por_categoria',
+                return_value=gastos
+            ) as gastos_mock,
+            patch(
+                'financeiro.servicos.obter_entradas_por_categoria',
+                return_value=entradas
+            ) as entradas_mock,
+            patch(
+                'financeiro.servicos.obter_patrimonio_por_conta',
+                return_value=patrimonio
+            ) as patrimonio_mock,
+            patch(
+                'financeiro.servicos.obter_entradas_saidas_ultimos_meses',
+                return_value=meses
+            ) as meses_mock,
+        ):
+            resposta = self.client.get(reverse('inicio'))
+
+        gastos_mock.assert_called_once_with(
+            self.usuario,
+            inicio_mes,
+            fim_mes
+        )
+        entradas_mock.assert_called_once_with(
+            self.usuario,
+            inicio_mes,
+            fim_mes
+        )
+        patrimonio_mock.assert_called_once_with(self.usuario)
+        meses_mock.assert_called_once_with(
+            self.usuario,
+            quantidade_meses=6
+        )
+        self.assertEqual(
+            resposta.context['dados_gastos_por_categoria'],
+            gastos
+        )
+        self.assertEqual(
+            resposta.context['dados_entradas_por_categoria'],
+            entradas
+        )
+        self.assertEqual(
+            resposta.context['dados_patrimonio_por_conta'],
+            patrimonio
+        )
+        self.assertEqual(
+            resposta.context['dados_entradas_saidas_meses'],
+            meses
+        )
 
     def test_crud_conta_e_bloqueio_de_objeto_alheio(self):
         self.client.force_login(self.usuario)

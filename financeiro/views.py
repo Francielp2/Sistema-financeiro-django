@@ -17,6 +17,25 @@ def inicio(request):
         data_inicio_mes,
         data_fim_mes
     )
+    dados_gastos_por_categoria = servicos.obter_gastos_por_categoria(
+        request.user,
+        data_inicio_mes,
+        data_fim_mes
+    )
+    dados_entradas_por_categoria = servicos.obter_entradas_por_categoria(
+        request.user,
+        data_inicio_mes,
+        data_fim_mes
+    )
+    dados_patrimonio_por_conta = servicos.obter_patrimonio_por_conta(
+        request.user
+    )
+    dados_entradas_saidas_meses = (
+        servicos.obter_entradas_saidas_ultimos_meses(
+            request.user,
+            quantidade_meses=6
+        )
+    )
 
     return render(request, 'financeiro/inicio.html', {
         'patrimonio_total': servicos.calcular_patrimonio_total(
@@ -34,6 +53,10 @@ def inicio(request):
         ),
         'data_inicio_mes': data_inicio_mes,
         'data_fim_mes': data_fim_mes,
+        'dados_gastos_por_categoria': dados_gastos_por_categoria,
+        'dados_entradas_por_categoria': dados_entradas_por_categoria,
+        'dados_patrimonio_por_conta': dados_patrimonio_por_conta,
+        'dados_entradas_saidas_meses': dados_entradas_saidas_meses,
     })
 
 # VIEWS DE CONTAS

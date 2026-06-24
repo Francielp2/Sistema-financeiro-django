@@ -7,6 +7,10 @@ from . import models
 
 
 TIPOS_MOVIMENTACAO_VALIDOS = ['entrada', 'saida', 'transferencia']
+MESES_ABREVIADOS = [
+    'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+    'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez',
+]
 
 CATEGORIAS_PADRAO = [
     ('Salário', 'Recebimento recorrente de salário.'),
@@ -281,3 +285,124 @@ def obter_movimentacoes_recentes(usuario, limite=10):
         '-hora',
         '-criada_em'
     )[:limite]
+
+
+def _obter_movimentacoes_por_categoria(
+    usuario,
+    tipo,
+    data_inicio,
+    data_fim
+):
+    totais = models.Movimentacao.objects.filter(
+        usuario=usuario,
+        tipo=tipo,
+        data__range=[data_inicio, data_fim]
+    ).values(
+        'categoria__nome'
+    ).annotate(
+        total=Sum('valor')
+    ).order_by(
+        '-total',
+        'categoria__nome'
+    )
+
+    return {
+        'labels': [
+            item['categoria__nome'] or 'Sem categoria'
+            for item in totais
+        ],
+        'valores': [item['total'] for item in totais],
+    }
+
+
+def obter_gastos_por_categoria(usuario, data_inicio, data_fim):
+    return _obter_movimentacoes_por_categoria(
+        usuario,
+        'saida',
+        data_inicio,
+        data_fim
+    )
+
+
+def obter_entradas_por_categoria(usuario, data_inicio, data_fim):
+    return _obter_movimentacoes_por_categoria(
+        usuario,
+        'entrada',
+        data_inicio,
+        data_fim
+    )
+
+
+def obter_patrimonio_por_conta(usuario):
+    contas = models.Conta.objects.filter(usuario=usuario)
+    contas_com_saldo = sorted(
+        (
+            (conta.nome, conta.saldo_atual)
+            for conta in contas
+        ),
+        key=lambda conta: conta[1],
+        reverse=True
+    )
+
+    return {
+        'labels': [nome for nome, saldo in contas_com_saldo],
+        'valores': [saldo for nome, saldo in contas_com_saldo],
+    }
+
+
+def _obter_ultimos_meses(quantidade_meses, hoje):
+    meses = []
+    indice_mes_atual = hoje.year * 12 + hoje.month - 1
+
+    for meses_anteriores in range(quantidade_meses - 1, -1, -1):
+        indice_mes = indice_mes_atual - meses_anteriores
+        ano, mes_indice = divmod(indice_mes, 12)
+        meses.append(hoje.replace(year=ano, month=mes_indice + 1, day=1))
+
+    return meses
+
+
+def obter_entradas_saidas_ultimos_meses(usuario, quantidade_meses=6):
+    if quantidade_meses <= 0:
+        return {
+            'labels': [],
+            'entradas': [],
+            'saidas': [],
+        }
+
+    hoje = timezone.localdate()
+    meses = _obter_ultimos_meses(quantidade_meses, hoje)
+    fim_mes_atual = hoje.replace(
+        day=monthrange(hoje.year, hoje.month)[1]
+    )
+    totais = models.Movimentacao.objects.filter(
+        usuario=usuario,
+        tipo__in=['entrada', 'saida'],
+        data__range=[meses[0], fim_mes_atual]
+    ).values(
+        'data__year',
+        'data__month',
+        'tipo'
+    ).annotate(
+        total=Sum('valor')
+    )
+
+    totais_por_mes = {
+        (item['data__year'], item['data__month'], item['tipo']): item['total']
+        for item in totais
+    }
+
+    return {
+        'labels': [
+            f'{MESES_ABREVIADOS[mes.month - 1]}/{mes.year}'
+            for mes in meses
+        ],
+        'entradas': [
+            totais_por_mes.get((mes.year, mes.month, 'entrada'), 0)
+            for mes in meses
+        ],
+        'saidas': [
+            totais_por_mes.get((mes.year, mes.month, 'saida'), 0)
+            for mes in meses
+        ],
+    }

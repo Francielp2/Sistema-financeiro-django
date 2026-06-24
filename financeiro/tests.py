@@ -772,6 +772,8 @@ class ViewsFinanceirasTestCase(FinanceiroTestMixin, TestCase):
         )
         self.assertContains(resposta, 'id="graficoEntradasSaidas"')
         self.assertContains(resposta, 'id="graficoGastosCategoria"')
+        self.assertContains(resposta, 'id="graficoPatrimonioConta"')
+        self.assertContains(resposta, 'id="graficoEntradasCategoria"')
         self.assertContains(
             resposta,
             'id="dados-entradas-saidas-meses"'
@@ -782,7 +784,23 @@ class ViewsFinanceirasTestCase(FinanceiroTestMixin, TestCase):
         )
         self.assertContains(
             resposta,
+            'id="dados-patrimonio-por-conta"'
+        )
+        self.assertContains(
+            resposta,
+            'id="dados-entradas-por-categoria"'
+        )
+        self.assertContains(
+            resposta,
             'Nenhum gasto encontrado no mês atual.'
+        )
+        self.assertContains(
+            resposta,
+            'Nenhum patrimônio disponível para exibir.'
+        )
+        self.assertContains(
+            resposta,
+            'Nenhuma entrada encontrada no mês atual.'
         )
 
     def test_crud_conta_e_bloqueio_de_objeto_alheio(self):

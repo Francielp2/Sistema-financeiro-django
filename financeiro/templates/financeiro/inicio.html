@@ -223,30 +223,58 @@ Dashboard Financeiro
     </div>
 </div>
 
-{# ÁREA RESERVADA PARA GRÁFICOS FUTUROS #}
+{# GRÁFICOS FINANCEIROS #}
 <section class="mb-4">
     <h2 class="h4 text-success mb-3">
-        Gráficos em breve
+        Visão financeira
     </h2>
 
-    <div class="row g-3">
-        <div class="col-md-6">
+    <div class="row g-4">
+        <div class="col-xl-7">
             <div class="card bg-dark border-secondary shadow h-100">
                 <div class="card-body">
-                    <h3 class="h5 text-light">Gastos por categoria</h3>
-                    <p class="text-secondary mb-0">
-                        Área reservada para visualização futura com gráficos.
+                    <h3 class="h5 text-light mb-3">
+                        Entradas x Saídas - Últimos 6 meses
+                    </h3>
+
+                    <div
+                        id="containerGraficoEntradasSaidas"
+                        class="position-relative"
+                        style="height: 320px;"
+                    >
+                        <canvas id="graficoEntradasSaidas"></canvas>
+                    </div>
+
+                    <p
+                        id="mensagemEntradasSaidas"
+                        class="text-secondary text-center py-5 mb-0 d-none"
+                    >
+                        Nenhuma movimentação encontrada nos últimos meses.
                     </p>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-6">
+        <div class="col-xl-5">
             <div class="card bg-dark border-secondary shadow h-100">
                 <div class="card-body">
-                    <h3 class="h5 text-light">Distribuição por conta</h3>
-                    <p class="text-secondary mb-0">
-                        Área reservada para visualização futura com gráficos.
+                    <h3 class="h5 text-light mb-3">
+                        Gastos por Categoria - Mês atual
+                    </h3>
+
+                    <div
+                        id="containerGraficoGastosCategoria"
+                        class="position-relative"
+                        style="height: 320px;"
+                    >
+                        <canvas id="graficoGastosCategoria"></canvas>
+                    </div>
+
+                    <p
+                        id="mensagemGastosCategoria"
+                        class="text-secondary text-center py-5 mb-0 d-none"
+                    >
+                        Nenhum gasto encontrado no mês atual.
                     </p>
                 </div>
             </div>
@@ -254,4 +282,227 @@ Dashboard Financeiro
     </div>
 </section>
 
+{% endblock %}
+
+{% block extra_js %}
+{{ dados_entradas_saidas_meses|json_script:"dados-entradas-saidas-meses" }}
+{{ dados_gastos_por_categoria|json_script:"dados-gastos-por-categoria" }}
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const corTexto = '#d1d5db';
+        const corGrade = 'rgba(148, 163, 184, 0.18)';
+        const formatarMoeda = function (valor) {
+            return new Intl.NumberFormat('pt-BR', {
+                style: 'currency',
+                currency: 'BRL'
+            }).format(valor);
+        };
+
+        const elementoDadosMeses = document.getElementById(
+            'dados-entradas-saidas-meses'
+        );
+        const canvasEntradasSaidas = document.getElementById(
+            'graficoEntradasSaidas'
+        );
+        const containerEntradasSaidas = document.getElementById(
+            'containerGraficoEntradasSaidas'
+        );
+        const mensagemEntradasSaidas = document.getElementById(
+            'mensagemEntradasSaidas'
+        );
+
+        if (
+            elementoDadosMeses &&
+            canvasEntradasSaidas &&
+            containerEntradasSaidas &&
+            mensagemEntradasSaidas &&
+            window.Chart
+        ) {
+            const dadosMeses = JSON.parse(elementoDadosMeses.textContent);
+            const labelsMeses = dadosMeses.labels || [];
+            const entradas = (dadosMeses.entradas || []).map(Number);
+            const saidas = (dadosMeses.saidas || []).map(Number);
+            const dadosMesesValidos = (
+                labelsMeses.length > 0 &&
+                entradas.length === labelsMeses.length &&
+                saidas.length === labelsMeses.length
+            );
+
+            if (dadosMesesValidos) {
+                new Chart(canvasEntradasSaidas, {
+                    type: 'bar',
+                    data: {
+                        labels: labelsMeses,
+                        datasets: [
+                            {
+                                label: 'Entradas',
+                                data: entradas,
+                                backgroundColor: 'rgba(29, 185, 84, 0.78)',
+                                borderColor: '#1ed760',
+                                borderWidth: 1,
+                                borderRadius: 4
+                            },
+                            {
+                                label: 'Saídas',
+                                data: saidas,
+                                backgroundColor: 'rgba(220, 53, 69, 0.78)',
+                                borderColor: '#ff5c6c',
+                                borderWidth: 1,
+                                borderRadius: 4
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: corTexto
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (contexto) {
+                                        return (
+                                            contexto.dataset.label + ': ' +
+                                            formatarMoeda(contexto.parsed.y)
+                                        );
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: {
+                                    color: corTexto
+                                },
+                                grid: {
+                                    color: corGrade
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: corTexto,
+                                    callback: function (valor) {
+                                        return formatarMoeda(valor);
+                                    }
+                                },
+                                grid: {
+                                    color: corGrade
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                containerEntradasSaidas.classList.add('d-none');
+                mensagemEntradasSaidas.classList.remove('d-none');
+            }
+        }
+
+        const elementoDadosGastos = document.getElementById(
+            'dados-gastos-por-categoria'
+        );
+        const canvasGastos = document.getElementById(
+            'graficoGastosCategoria'
+        );
+        const containerGastos = document.getElementById(
+            'containerGraficoGastosCategoria'
+        );
+        const mensagemGastos = document.getElementById(
+            'mensagemGastosCategoria'
+        );
+
+        if (
+            elementoDadosGastos &&
+            canvasGastos &&
+            containerGastos &&
+            mensagemGastos &&
+            window.Chart
+        ) {
+            const dadosGastos = JSON.parse(elementoDadosGastos.textContent);
+            const categorias = (dadosGastos.labels || [])
+                .map(function (label, indice) {
+                    return {
+                        label: label,
+                        valor: Number((dadosGastos.valores || [])[indice])
+                    };
+                })
+                .filter(function (item) {
+                    return Number.isFinite(item.valor) && item.valor > 0;
+                });
+
+            if (categorias.length > 0) {
+                new Chart(canvasGastos, {
+                    type: 'bar',
+                    data: {
+                        labels: categorias.map(function (item) {
+                            return item.label;
+                        }),
+                        datasets: [{
+                            label: 'Gastos',
+                            data: categorias.map(function (item) {
+                                return item.valor;
+                            }),
+                            backgroundColor: 'rgba(255, 193, 7, 0.78)',
+                            borderColor: '#ffc107',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (contexto) {
+                                        return formatarMoeda(contexto.parsed.x);
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                beginAtZero: true,
+                                ticks: {
+                                    color: corTexto,
+                                    callback: function (valor) {
+                                        return formatarMoeda(valor);
+                                    }
+                                },
+                                grid: {
+                                    color: corGrade
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    color: corTexto
+                                },
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                containerGastos.classList.add('d-none');
+                mensagemGastos.classList.remove('d-none');
+            }
+        }
+    });
+</script>
 {% endblock %}

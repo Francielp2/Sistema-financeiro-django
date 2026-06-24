@@ -770,6 +770,20 @@ class ViewsFinanceirasTestCase(FinanceiroTestMixin, TestCase):
             resposta.context['dados_entradas_saidas_meses'],
             meses
         )
+        self.assertContains(resposta, 'id="graficoEntradasSaidas"')
+        self.assertContains(resposta, 'id="graficoGastosCategoria"')
+        self.assertContains(
+            resposta,
+            'id="dados-entradas-saidas-meses"'
+        )
+        self.assertContains(
+            resposta,
+            'id="dados-gastos-por-categoria"'
+        )
+        self.assertContains(
+            resposta,
+            'Nenhum gasto encontrado no mês atual.'
+        )
 
     def test_crud_conta_e_bloqueio_de_objeto_alheio(self):
         self.client.force_login(self.usuario)

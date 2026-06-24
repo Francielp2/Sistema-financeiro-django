@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .import models
@@ -378,6 +379,19 @@ def listar_movimentacoes(request):
 
 @login_required
 def criar_movimentacao(request):
+    possui_conta_ativa = models.Conta.objects.filter(
+        usuario=request.user,
+        ativa=True
+    ).exists()
+
+    if not possui_conta_ativa:
+        messages.warning(
+            request,
+            'Você precisa ter uma conta ativa para cadastrar movimentações.',
+            extra_tags='criar-conta'
+        )
+        return redirect('listar_movimentacoes')
+
     if request.method == 'POST':
         form = MovimentacaoForm(request.POST, usuario=request.user)
 

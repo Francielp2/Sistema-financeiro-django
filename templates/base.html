@@ -133,8 +133,16 @@
         {% if messages %}
             <div class="mb-4">
                 {% for message in messages %}
-                    <div class="alert {% if message.tags == 'error' %}alert-danger{% else %}alert-{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
-                        {{ message }}
+                    <div class="alert {% if message.level_tag == 'error' %}alert-danger{% else %}alert-{{ message.level_tag }}{% endif %} alert-dismissible fade show" role="alert">
+                        <div class="d-flex flex-wrap align-items-center gap-3 pe-4">
+                            <span>{{ message }}</span>
+
+                            {% if message.extra_tags == 'criar-conta' %}
+                                <a href="{% url 'criar_conta' %}" class="btn btn-sm btn-success">
+                                    Criar conta agora
+                                </a>
+                            {% endif %}
+                        </div>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Fechar"></button>
                     </div>
                 {% endfor %}

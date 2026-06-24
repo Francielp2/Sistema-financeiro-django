@@ -952,6 +952,50 @@ class ViewsFinanceirasTestCase(FinanceiroTestMixin, TestCase):
             models.Movimentacao.objects.filter(id=movimentacao.id).exists()
         )
 
+    def test_criar_movimentacao_exige_conta_ativa(self):
+        usuario_sem_conta = User.objects.create_user(
+            username='sem_conta',
+            password=self.senha
+        )
+        self.client.force_login(usuario_sem_conta)
+
+        resposta = self.client.get(
+            reverse('criar_movimentacao'),
+            follow=True
+        )
+
+        self.assertRedirects(
+            resposta,
+            reverse('listar_movimentacoes')
+        )
+        self.assertContains(
+            resposta,
+            'Você precisa ter uma conta ativa para cadastrar movimentações.'
+        )
+        self.assertContains(resposta, 'Criar conta agora')
+        self.assertContains(resposta, reverse('criar_conta'))
+
+        resposta_post = self.client.post(
+            reverse('criar_movimentacao'),
+            {
+                'descricao': 'Movimentação sem conta',
+                'valor': '100.00',
+                'tipo': 'entrada',
+                'data': '2026-01-10',
+                'hora': '10:00',
+            }
+        )
+
+        self.assertRedirects(
+            resposta_post,
+            reverse('listar_movimentacoes')
+        )
+        self.assertFalse(
+            models.Movimentacao.objects.filter(
+                usuario=usuario_sem_conta
+            ).exists()
+        )
+
     def test_listar_movimentacoes_aplica_filtros_e_descarta_invalidos(self):
         self.client.force_login(self.usuario)
         esperada = self.criar_movimentacao(

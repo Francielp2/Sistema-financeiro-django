@@ -406,3 +406,42 @@ def obter_entradas_saidas_ultimos_meses(usuario, quantidade_meses=6):
             for mes in meses
         ],
     }
+
+
+def obter_dashboard_geral(usuario):
+    data_inicio_mes, data_fim_mes = obter_periodo_mes_atual()
+    contas = models.Conta.objects.filter(usuario=usuario).order_by('nome')
+    resumo_mes = calcular_resumo_periodo(
+        usuario,
+        data_inicio_mes,
+        data_fim_mes
+    )
+
+    return {
+        'patrimonio_total': calcular_patrimonio_total(usuario, contas),
+        'total_entradas_mes': resumo_mes['entradas'],
+        'total_saidas_mes': resumo_mes['saidas'],
+        'total_transferencias_mes': resumo_mes['transferencias'],
+        'resultado_mes': resumo_mes['resultado'],
+        'contas': contas,
+        'movimentacoes_recentes': obter_movimentacoes_recentes(usuario, 5),
+        'data_inicio_mes': data_inicio_mes,
+        'data_fim_mes': data_fim_mes,
+        'dados_gastos_por_categoria': obter_gastos_por_categoria(
+            usuario,
+            data_inicio_mes,
+            data_fim_mes
+        ),
+        'dados_entradas_por_categoria': obter_entradas_por_categoria(
+            usuario,
+            data_inicio_mes,
+            data_fim_mes
+        ),
+        'dados_patrimonio_por_conta': obter_patrimonio_por_conta(usuario),
+        'dados_entradas_saidas_meses': (
+            obter_entradas_saidas_ultimos_meses(
+                usuario,
+                quantidade_meses=6
+            )
+        ),
+    }

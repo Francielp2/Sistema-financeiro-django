@@ -11,54 +11,13 @@ from datetime import datetime
 
 @login_required
 def inicio(request):
-    data_inicio_mes, data_fim_mes = servicos.obter_periodo_mes_atual()
-    contas = models.Conta.objects.filter(usuario=request.user).order_by('nome')
-    resumo_mes = servicos.calcular_resumo_periodo(
-        request.user,
-        data_inicio_mes,
-        data_fim_mes
-    )
-    dados_gastos_por_categoria = servicos.obter_gastos_por_categoria(
-        request.user,
-        data_inicio_mes,
-        data_fim_mes
-    )
-    dados_entradas_por_categoria = servicos.obter_entradas_por_categoria(
-        request.user,
-        data_inicio_mes,
-        data_fim_mes
-    )
-    dados_patrimonio_por_conta = servicos.obter_patrimonio_por_conta(
-        request.user
-    )
-    dados_entradas_saidas_meses = (
-        servicos.obter_entradas_saidas_ultimos_meses(
-            request.user,
-            quantidade_meses=6
-        )
-    )
+    dados_dashboard = servicos.obter_dashboard_geral(request.user)
 
-    return render(request, 'financeiro/inicio.html', {
-        'patrimonio_total': servicos.calcular_patrimonio_total(
-            request.user,
-            contas
-        ),
-        'total_entradas_mes': resumo_mes['entradas'],
-        'total_saidas_mes': resumo_mes['saidas'],
-        'total_transferencias_mes': resumo_mes['transferencias'],
-        'resultado_mes': resumo_mes['resultado'],
-        'contas': contas,
-        'movimentacoes_recentes': servicos.obter_movimentacoes_recentes(
-            request.user,
-            5
-        ),
-        'data_inicio_mes': data_inicio_mes,
-        'data_fim_mes': data_fim_mes,
-        'dados_gastos_por_categoria': dados_gastos_por_categoria,
-        'dados_entradas_por_categoria': dados_entradas_por_categoria,
-        'dados_patrimonio_por_conta': dados_patrimonio_por_conta,
-        'dados_entradas_saidas_meses': dados_entradas_saidas_meses,
-    })
+    return render(
+        request,
+        'financeiro/inicio.html',
+        dados_dashboard
+    )
 
 # VIEWS DE CONTAS
 

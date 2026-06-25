@@ -304,13 +304,22 @@ def _obter_movimentacoes_por_categoria(
     usuario,
     tipo,
     data_inicio,
-    data_fim
+    data_fim,
+    conta=None
 ):
-    totais = models.Movimentacao.objects.filter(
+    movimentacoes = models.Movimentacao.objects.filter(
         usuario=usuario,
         tipo=tipo,
         data__range=[data_inicio, data_fim]
-    ).values(
+    )
+
+    if conta is not None:
+        if tipo == 'entrada':
+            movimentacoes = movimentacoes.filter(conta_destino=conta)
+        elif tipo == 'saida':
+            movimentacoes = movimentacoes.filter(conta_origem=conta)
+
+    totais = movimentacoes.values(
         'categoria__nome'
     ).annotate(
         total=Sum('valor')
@@ -375,7 +384,11 @@ def _obter_ultimos_meses(quantidade_meses, hoje):
     return meses
 
 
-def obter_entradas_saidas_ultimos_meses(usuario, quantidade_meses=6):
+def obter_entradas_saidas_ultimos_meses(
+    usuario,
+    quantidade_meses=6,
+    conta=None
+):
     if quantidade_meses <= 0:
         return {
             'labels': [],
@@ -388,11 +401,22 @@ def obter_entradas_saidas_ultimos_meses(usuario, quantidade_meses=6):
     fim_mes_atual = hoje.replace(
         day=monthrange(hoje.year, hoje.month)[1]
     )
-    totais = models.Movimentacao.objects.filter(
+    movimentacoes = models.Movimentacao.objects.filter(
         usuario=usuario,
-        tipo__in=['entrada', 'saida'],
         data__range=[meses[0], fim_mes_atual]
-    ).values(
+    )
+
+    if conta is None:
+        movimentacoes = movimentacoes.filter(
+            tipo__in=['entrada', 'saida']
+        )
+    else:
+        movimentacoes = movimentacoes.filter(
+            Q(tipo='entrada', conta_destino=conta)
+            | Q(tipo='saida', conta_origem=conta)
+        )
+
+    totais = movimentacoes.values(
         'data__year',
         'data__month',
         'tipo'
@@ -416,6 +440,98 @@ def obter_entradas_saidas_ultimos_meses(usuario, quantidade_meses=6):
         ],
         'saidas': [
             totais_por_mes.get((mes.year, mes.month, 'saida'), 0)
+            for mes in meses
+        ],
+    }
+
+
+def obter_entradas_saidas_conta_ultimos_meses(
+    usuario,
+    conta,
+    quantidade_meses=6
+):
+    return obter_entradas_saidas_ultimos_meses(
+        usuario,
+        quantidade_meses=quantidade_meses,
+        conta=conta
+    )
+
+
+def obter_gastos_por_categoria_conta(
+    usuario,
+    conta,
+    data_inicio,
+    data_fim
+):
+    return _obter_movimentacoes_por_categoria(
+        usuario,
+        'saida',
+        data_inicio,
+        data_fim,
+        conta=conta
+    )
+
+
+def obter_transferencias_conta_ultimos_meses(
+    usuario,
+    conta,
+    quantidade_meses=6
+):
+    if quantidade_meses <= 0:
+        return {
+            'labels': [],
+            'recebidas': [],
+            'enviadas': [],
+        }
+
+    hoje = timezone.localdate()
+    meses = _obter_ultimos_meses(quantidade_meses, hoje)
+    fim_mes_atual = hoje.replace(
+        day=monthrange(hoje.year, hoje.month)[1]
+    )
+    transferencias = models.Movimentacao.objects.filter(
+        usuario=usuario,
+        tipo='transferencia',
+        data__range=[meses[0], fim_mes_atual]
+    ).filter(
+        Q(conta_destino=conta) | Q(conta_origem=conta)
+    )
+    recebidas = transferencias.filter(
+        conta_destino=conta
+    ).values(
+        'data__year',
+        'data__month'
+    ).annotate(
+        total=Sum('valor')
+    )
+    enviadas = transferencias.filter(
+        conta_origem=conta
+    ).values(
+        'data__year',
+        'data__month'
+    ).annotate(
+        total=Sum('valor')
+    )
+    recebidas_por_mes = {
+        (item['data__year'], item['data__month']): item['total']
+        for item in recebidas
+    }
+    enviadas_por_mes = {
+        (item['data__year'], item['data__month']): item['total']
+        for item in enviadas
+    }
+
+    return {
+        'labels': [
+            f'{MESES_ABREVIADOS[mes.month - 1]}/{mes.year}'
+            for mes in meses
+        ],
+        'recebidas': [
+            recebidas_por_mes.get((mes.year, mes.month), 0)
+            for mes in meses
+        ],
+        'enviadas': [
+            enviadas_por_mes.get((mes.year, mes.month), 0)
             for mes in meses
         ],
     }
@@ -489,5 +605,25 @@ def obter_dashboard_conta(usuario, conta):
             usuario,
             limite=5,
             conta=conta
+        ),
+        'dados_entradas_saidas_conta_meses': (
+            obter_entradas_saidas_conta_ultimos_meses(
+                usuario,
+                conta,
+                quantidade_meses=6
+            )
+        ),
+        'dados_gastos_categoria_conta': obter_gastos_por_categoria_conta(
+            usuario,
+            conta,
+            data_inicio_mes,
+            data_fim_mes
+        ),
+        'dados_transferencias_conta_meses': (
+            obter_transferencias_conta_ultimos_meses(
+                usuario,
+                conta,
+                quantidade_meses=6
+            )
         ),
     }

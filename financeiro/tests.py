@@ -689,6 +689,141 @@ class ServicosTestCase(FinanceiroTestMixin, TestCase):
             {'labels': [], 'entradas': [], 'saidas': []}
         )
 
+    @patch('financeiro.servicos.timezone.localdate')
+    def test_entradas_saidas_conta_meses_isola_conta_e_preenche_zeros(
+        self,
+        localdate_mock
+    ):
+        localdate_mock.return_value = date(2026, 2, 15)
+        self.criar_movimentacao(
+            'entrada', '500.00', data_movimentacao=date(2025, 11, 10)
+        )
+        self.criar_movimentacao(
+            'saida', '80.00', data_movimentacao=date(2026, 1, 10)
+        )
+        self.criar_movimentacao(
+            'entrada',
+            '300.00',
+            conta_destino=self.conta_destino,
+            data_movimentacao=date(2026, 2, 10)
+        )
+        self.criar_movimentacao(
+            'transferencia',
+            '100.00',
+            data_movimentacao=date(2026, 2, 11)
+        )
+        self.criar_movimentacao(
+            'entrada',
+            '900.00',
+            usuario=self.outro_usuario,
+            conta_destino=self.outra_conta,
+            data_movimentacao=date(2026, 2, 12)
+        )
+
+        resultado = servicos.obter_entradas_saidas_conta_ultimos_meses(
+            self.usuario,
+            self.conta,
+            4
+        )
+
+        self.assertEqual(
+            resultado,
+            {
+                'labels': [
+                    'Nov/2025', 'Dez/2025', 'Jan/2026', 'Fev/2026'
+                ],
+                'entradas': [
+                    Decimal('500.00'), 0, 0, 0
+                ],
+                'saidas': [0, 0, Decimal('80.00'), 0],
+            }
+        )
+        self.assertEqual(
+            servicos.obter_entradas_saidas_conta_ultimos_meses(
+                self.usuario,
+                self.conta,
+                0
+            ),
+            {'labels': [], 'entradas': [], 'saidas': []}
+        )
+
+    def test_gastos_categoria_conta_agrupa_e_isola_conta(self):
+        self.criar_movimentacao(
+            'saida',
+            '100.00',
+            categoria=self.categoria
+        )
+        self.criar_movimentacao('saida', '50.00')
+        self.criar_movimentacao(
+            'saida',
+            '200.00',
+            conta_origem=self.conta_destino
+        )
+
+        resultado = servicos.obter_gastos_por_categoria_conta(
+            self.usuario,
+            self.conta,
+            date(2026, 1, 1),
+            date(2026, 1, 31)
+        )
+
+        self.assertEqual(
+            resultado,
+            {
+                'labels': ['Alimentação', 'Sem categoria'],
+                'valores': [Decimal('100.00'), Decimal('50.00')],
+            }
+        )
+
+    @patch('financeiro.servicos.timezone.localdate')
+    def test_transferencias_conta_meses_separa_direcoes_e_preenche_zeros(
+        self,
+        localdate_mock
+    ):
+        localdate_mock.return_value = date(2026, 2, 15)
+        self.criar_movimentacao(
+            'transferencia',
+            '200.00',
+            data_movimentacao=date(2025, 11, 10)
+        )
+        self.criar_movimentacao(
+            'transferencia',
+            '50.00',
+            conta_origem=self.conta_destino,
+            conta_destino=self.conta,
+            data_movimentacao=date(2026, 1, 10)
+        )
+        self.criar_movimentacao(
+            'entrada',
+            '300.00',
+            data_movimentacao=date(2026, 2, 10)
+        )
+
+        resultado = servicos.obter_transferencias_conta_ultimos_meses(
+            self.usuario,
+            self.conta,
+            4
+        )
+
+        self.assertEqual(
+            resultado,
+            {
+                'labels': [
+                    'Nov/2025', 'Dez/2025', 'Jan/2026', 'Fev/2026'
+                ],
+                'recebidas': [0, 0, Decimal('50.00'), 0],
+                'enviadas': [Decimal('200.00'), 0, 0, 0],
+            }
+        )
+        self.assertEqual(
+            servicos.obter_transferencias_conta_ultimos_meses(
+                self.usuario,
+                self.conta,
+                0
+            ),
+            {'labels': [], 'recebidas': [], 'enviadas': []}
+        )
+
 
 class ViewsFinanceirasTestCase(FinanceiroTestMixin, TestCase):
     def setUp(self):
@@ -908,6 +1043,41 @@ class ViewsFinanceirasTestCase(FinanceiroTestMixin, TestCase):
         self.assertContains(
             resposta,
             reverse('editar_conta', args=[self.conta.id])
+        )
+        self.assertContains(
+            resposta,
+            'id="graficoEntradasSaidasConta"'
+        )
+        self.assertContains(
+            resposta,
+            'id="graficoGastosCategoriaConta"'
+        )
+        self.assertContains(
+            resposta,
+            'id="graficoTransferenciasConta"'
+        )
+        self.assertContains(
+            resposta,
+            'id="dados-entradas-saidas-conta-meses"'
+        )
+        self.assertContains(
+            resposta,
+            'id="dados-gastos-categoria-conta"'
+        )
+        self.assertContains(
+            resposta,
+            'id="dados-transferencias-conta-meses"'
+        )
+        self.assertContains(
+            resposta,
+            'Nenhum gasto encontrado nesta conta no mês atual.'
+        )
+        self.assertContains(
+            resposta,
+            (
+                'Nenhuma transferência encontrada nesta conta '
+                'nos últimos 6 meses.'
+            )
         )
         self.assertEqual(
             self.client.get(

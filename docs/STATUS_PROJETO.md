@@ -1,6 +1,6 @@
 # Status Atual do Projeto
 
-Atualizado em: 22/06/2026
+Atualizado em: 24/06/2026
 
 ## 1. Visão Geral
 
@@ -63,9 +63,11 @@ O sistema foi projetado para funcionar sem inteligência artificial. A IA contin
 * Templates configurados.
 * Arquivos estáticos configurados.
 * Bootstrap integrado via CDN.
+* Chart.js integrado via CDN no dashboard.
 * Tema dark/verde iniciado.
 * Navbar global criada.
 * Template base criado.
+* Sistema global de notificações usando Django Messages.
 * Projeto versionado no GitHub.
 
 ### Modelos e Validações
@@ -120,6 +122,8 @@ O sistema foi projetado para funcionar sem inteligência artificial. A IA contin
 * Controle de criação e atualização.
 * Listagem ordenada da movimentação mais recente para a mais antiga.
 * Tabela com data, hora, tipo, descrição, categoria, contas, valor e ações.
+* Criação de movimentação bloqueada quando o usuário não possui conta ativa.
+* Aviso com atalho "Criar conta agora" quando não há conta disponível.
 * Filtros avançados por:
   * data inicial;
   * data final;
@@ -143,7 +147,15 @@ O sistema foi projetado para funcionar sem inteligência artificial. A IA contin
 * Atalhos rápidos para criação e navegação.
 * Listagem de contas cadastradas.
 * Listagem de movimentações recentes.
-* Área reservada para gráficos futuros.
+* Gráficos implementados com Chart.js:
+  * entradas x saídas dos últimos seis meses;
+  * gastos por categoria no mês atual;
+  * entradas por categoria no mês atual;
+  * patrimônio por conta.
+* Patrimônio total exibido também no centro do gráfico de patrimônio.
+* Dados dos gráficos enviados ao JavaScript com `json_script`.
+* Gráficos sem dados são substituídos por mensagens amigáveis.
+* Gráficos e indicadores respeitam o isolamento por usuário.
 
 ### Resumos Financeiros
 
@@ -212,7 +224,29 @@ O sistema foi projetado para funcionar sem inteligência artificial. A IA contin
   * resumo por conta;
   * resumo individual de conta;
   * movimentações recentes;
+  * gastos por categoria;
+  * entradas por categoria;
+  * patrimônio por conta;
+  * entradas e saídas dos últimos meses;
   * criação de categorias padrão.
+
+### Testes Automatizados
+
+* Suíte com 40 testes automatizados.
+* Cobertura atual inclui:
+  * regras e validações dos models;
+  * cálculo de saldo e patrimônio;
+  * entradas, saídas e transferências;
+  * bloqueio por saldo insuficiente;
+  * formulários e recursos ativos por usuário;
+  * serviços financeiros e dados dos gráficos;
+  * CRUDs e filtros;
+  * isolamento de dados por usuário;
+  * autenticação, perfil e permissões administrativas;
+  * categorias padrão para novos usuários;
+  * bloqueio de movimentações sem conta ativa.
+* `python3 manage.py check` executado sem problemas.
+* `python3 manage.py test` executado com os 40 testes aprovados.
 
 ---
 
@@ -225,6 +259,7 @@ O sistema foi projetado para funcionar sem inteligência artificial. A IA contin
 * Padronizar exibição de erros nos formulários financeiros.
 * Revisar casos de edição de movimentações antigas.
 * Melhorar responsividade e organização visual dos templates.
+* Validar visualmente os gráficos com diferentes quantidades de contas e categorias.
 
 ---
 
@@ -252,14 +287,12 @@ O sistema foi projetado para funcionar sem inteligência artificial. A IA contin
 
 ### Gráficos
 
-Implementar com Chart.js:
+Os quatro gráficos iniciais do dashboard já foram implementados. Próximas possibilidades:
 
-* Gastos por categoria.
-* Entradas por categoria.
-* Distribuição do patrimônio.
 * Evolução por período.
 * Gráficos individuais por conta.
 * Integração entre filtros e gráficos.
+* Refinar comportamento de legendas quando houver muitas contas ou categorias.
 
 ### Usuários e Administração
 
@@ -269,17 +302,12 @@ Implementar com Chart.js:
 
 ### Testes
 
-* Criar testes automatizados para:
-  * cálculo de saldo atual;
-  * entradas, saídas e transferências;
-  * bloqueio de saldo insuficiente;
-  * edição de movimentações;
-  * filtros dos relatórios;
-  * isolamento de dados por usuário;
-  * formulários com dados inválidos;
-  * categorias padrão para novos usuários.
+* Ampliar testes para cenários de edição de movimentações antigas.
+* Adicionar testes para datas inválidas nos filtros.
+* Adicionar testes para decisões futuras sobre exclusão de contas e usuários.
+* Manter testes de contexto e estrutura dos gráficos.
 * Continuar executando `python3 manage.py check`.
-* Executar `python3 manage.py test` após criação dos testes.
+* Executar `python3 manage.py test` após cada alteração relevante.
 
 ### Banco de Dados e Deploy
 
@@ -304,6 +332,9 @@ Implementar com Chart.js:
 * A lógica financeira principal permanece no backend.
 * O saldo atual é uma propriedade calculada, não um campo editável manualmente.
 * O dashboard é uma visão rápida do mês atual.
+* O patrimônio exibido no dashboard é acumulado e não depende do mês atual.
+* Os dados do dashboard são preparados no backend e enviados aos gráficos com `json_script`.
+* Chart.js é usado apenas para apresentação; os cálculos permanecem no backend.
 * O resumo financeiro é a área analítica com filtros.
 * Transferências internas não alteram patrimônio geral nem resultado geral.
 
@@ -335,6 +366,6 @@ Restrições:
 
 O projeto está em fase de estabilização e refinamento.
 
-A base financeira, autenticação, dashboard, resumos, filtros e isolamento por usuário já estão implementados. O foco atual deve ser corrigir pontos de estabilidade, padronizar formulários, ampliar testes e melhorar a experiência visual antes de avançar para gráficos, deploy, PostgreSQL e IA.
+A base financeira, autenticação, dashboard com quatro gráficos, resumos, filtros, notificações, testes automatizados e isolamento por usuário já estão implementados. O conjunto inicial do dashboard está funcional e os dados analíticos permanecem calculados no backend.
 
-Pontos de atenção detalhados ficam no arquivo local `docs/PROBLEMAS_PARA_RESOLVER.md`, que não faz parte do repositório remoto.
+O foco atual deve ser corrigir os pontos conhecidos de edição e filtros, definir políticas de exclusão, melhorar responsividade e navegação e ampliar os testes para casos extremos. PostgreSQL, deploy e inteligência artificial permanecem como etapas posteriores.

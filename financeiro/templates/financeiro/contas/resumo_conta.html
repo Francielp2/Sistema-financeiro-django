@@ -8,9 +8,23 @@ Resumo da Conta
 {% block content %}
 
 {# CABEÇALHO DO RESUMO DA CONTA #}
-<h1 class="text-success mb-4">
-    Resumo da Conta: {{ conta.nome }}
-</h1>
+<div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
+    <h1 class="text-success mb-0">
+        Resumo da Conta: {{ conta.nome }}
+    </h1>
+
+    <div class="d-flex flex-wrap align-items-start gap-2">
+        <a href="{% url 'dashboard_conta' conta.id %}" class="btn btn-outline-info">
+            Voltar ao Dashboard
+        </a>
+        <a href="{% url 'editar_conta' conta.id %}" class="btn btn-outline-light">
+            Editar Conta
+        </a>
+        <a href="{% url 'inicio' %}" class="btn btn-outline-secondary">
+            Voltar ao Dashboard Geral
+        </a>
+    </div>
+</div>
 
 {# FILTROS DO RESUMO DA CONTA #}
 <form method="get" class="card bg-dark border-secondary shadow mb-4">
@@ -300,17 +314,6 @@ Resumo da Conta
         </div>
     </div>
     {% endif %}
-</div>
-
-{# AÇÕES DE NAVEGAÇÃO #}
-<div class="mb-4">
-    <a href="{% url 'detalhes_conta' conta.id %}" class="btn btn-outline-info">
-        Informações da Conta
-    </a>
-
-    <a href="{% url 'resumo_financeiro' %}" class="btn btn-outline-secondary">
-        Voltar ao Resumo Geral
-    </a>
 </div>
 
 {# TABELA DE MOVIMENTAÇÕES DA CONTA #}

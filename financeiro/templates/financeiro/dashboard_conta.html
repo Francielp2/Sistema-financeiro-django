@@ -22,10 +22,13 @@ Dashboard da Conta
 
     <div class="d-flex flex-wrap align-items-start gap-2">
         <a href="{% url 'resumo_conta' conta.id %}" class="btn btn-outline-info">
-            Resumo Financeiro da Conta
+            Resumo Financeiro
         </a>
         <a href="{% url 'editar_conta' conta.id %}" class="btn btn-outline-light">
             Editar Conta
+        </a>
+        <a href="{% url 'inicio' %}" class="btn btn-outline-secondary">
+            Voltar ao Dashboard Geral
         </a>
     </div>
 </div>

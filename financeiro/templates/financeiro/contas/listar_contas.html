@@ -100,7 +100,13 @@ Contas
 
                 {% for conta in contas %}
 
-                <tr>
+                <tr
+                    role="link"
+                    tabindex="0"
+                    style="cursor: pointer;"
+                    onclick="window.location.href='{% url 'detalhes_conta' conta.id %}'"
+                    onkeydown="if (event.key === 'Enter' && event.target === event.currentTarget) { window.location.href='{% url 'detalhes_conta' conta.id %}'; }"
+                >
                     <td>{{ conta.nome }}</td>
 
                     <td>{{ conta.get_tipo_display }}</td>
@@ -119,10 +125,10 @@ Contas
                         {% endif %}
                     </td>
 
-                    <td>
+                    <td onclick="event.stopPropagation();">
 
-                        <a href="{% url 'detalhes_conta' conta.id %}" class="btn btn-sm btn-outline-success">
-                            Detalhes
+                        <a href="{% url 'dashboard_conta' conta.id %}" class="btn btn-sm btn-outline-info">
+                            Dashboard
                         </a>
                         
                         <a href="{% url 'editar_conta' conta.id %}" class="btn btn-sm btn-outline-light">

@@ -271,8 +271,8 @@ Resumo Financeiro
                     <td>R$ {{ conta.saldo_inicial }}</td>
                     <td>R$ {{ conta.saldo_atual }}</td>
                     <td>
-                        <a href="{% url 'resumo_conta' conta.id %}" class="btn btn-sm btn-outline-success">
-                            Ver resumo
+                        <a href="{% url 'dashboard_conta' conta.id %}" class="btn btn-sm btn-outline-info">
+                            Dashboard
                         </a>
                     </td>
                 </tr>

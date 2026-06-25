@@ -10,37 +10,84 @@ Detalhes da Conta
 <div class="card bg-dark border-secondary shadow">
     <div class="card-body">
 
-        <h2 class="text-success mb-4">{{ conta.nome }}</h2>
+        <h1 class="h3 text-success mb-4">Dados da Conta</h1>
 
-        <p class="text-light">
-            <strong>Tipo:</strong> {{ conta.get_tipo_display }}
-        </p>
-        <p class="text-light">
-            <strong>Saldo inicial:</strong> R$ {{ conta.saldo_inicial }}
-        </p>
-        <p class="text-light">
-            <strong>Saldo atual:</strong> R$ {{ conta.saldo_atual }}
-        </p>
-        <p class="text-light">
-            <strong>Status:</strong>
-            {% if conta.ativa %}
-                Ativa
-            {% else %}
-                Inativa
-            {% endif %}
-        </p>
+        <div class="row g-3">
+            <div class="col-md-6">
+                <div class="card bg-dark border-secondary h-100">
+                    <div class="card-body">
+                        <p class="text-secondary mb-1">Nome</p>
+                        <p class="text-light mb-0">{{ conta.nome }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-dark border-secondary h-100">
+                    <div class="card-body">
+                        <p class="text-secondary mb-1">Tipo</p>
+                        <p class="text-light mb-0">{{ conta.get_tipo_display }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-dark border-secondary h-100">
+                    <div class="card-body">
+                        <p class="text-secondary mb-1">Saldo inicial</p>
+                        <p class="text-light mb-0">R$ {{ conta.saldo_inicial }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-dark border-secondary h-100">
+                    <div class="card-body">
+                        <p class="text-secondary mb-1">Saldo atual</p>
+                        <p class="text-info mb-0">R$ {{ conta.saldo_atual }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-dark border-secondary h-100">
+                    <div class="card-body">
+                        <p class="text-secondary mb-1">Status</p>
+                        <p class="text-light mb-0">
+                            {% if conta.ativa %}Ativa{% else %}Inativa{% endif %}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card bg-dark border-secondary h-100">
+                    <div class="card-body">
+                        <p class="text-secondary mb-1">Data de criação</p>
+                        <p class="text-light mb-0">{{ conta.criada_em|date:"d/m/Y H:i" }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card bg-dark border-secondary">
+                    <div class="card-body">
+                        <p class="text-secondary mb-1">Observações</p>
+                        <p class="text-light mb-0">{{ conta.descricao|default:"Sem observações" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-        <p class="text-light">
-            <strong>Descrição:</strong> {{ conta.descricao|default:"Sem descrição" }}
-        </p>
-
-        <div class="mt-4">
-            <a href="{% url 'editar_conta' conta.id %}" class="btn btn-success">
+        <div class="d-flex flex-wrap gap-2 mt-4">
+            <a href="{% url 'dashboard_conta' conta.id %}" class="btn btn-outline-info">
+                Dashboard
+            </a>
+            <a href="{% url 'resumo_conta' conta.id %}" class="btn btn-outline-success">
+                Resumo Financeiro
+            </a>
+            <a href="{% url 'editar_conta' conta.id %}" class="btn btn-outline-light">
                 Editar
             </a>
-
-            <a href="{% url 'listar_contas' %}" class="btn btn-outline-light">
-                Voltar
+            <a href="{% url 'excluir_conta' conta.id %}" class="btn btn-outline-danger">
+                Excluir
+            </a>
+            <a href="{% url 'listar_contas' %}" class="btn btn-outline-secondary">
+                Voltar para Listagem
             </a>
         </div>
 

@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Criar Conta
+{% if form.instance.pk %}Editar Conta{% else %}Nova Conta{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -16,7 +16,11 @@ Criar Conta
             <div class="card-body">
 
                 <h2 class="mb-4 text-success">
-                     Nova Conta
+                    {% if form.instance.pk %}
+                        Editar Conta
+                    {% else %}
+                        Nova Conta
+                    {% endif %}
                 </h2>
 
                 <form method="POST">
@@ -63,9 +67,14 @@ Criar Conta
                         </label>
                     </div>
                     
-                    <button type="submit" class="btn btn-success w-100">
-                        Salvar Conta
-                    </button>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-success">
+                            Salvar Conta
+                        </button>
+                        <a href="{% url 'listar_contas' %}" class="btn btn-outline-light">
+                            Cancelar
+                        </a>
+                    </div>
 
                 </form>
 

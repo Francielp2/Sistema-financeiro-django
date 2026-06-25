@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Nova Categoria
+{% if form.instance.pk %}Editar Categoria{% else %}Nova Categoria{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -16,7 +16,11 @@ Nova Categoria
             <div class="card-body">
 
                 <h2 class="text-success mb-4">
-                    Nova Categoria
+                    {% if form.instance.pk %}
+                        Editar Categoria
+                    {% else %}
+                        Nova Categoria
+                    {% endif %}
                 </h2>
 
                 <form method="POST">
@@ -53,9 +57,14 @@ Nova Categoria
 
                     </div>
 
-                    <button type="submit" class="btn btn-success w-100">
-                        Salvar Categoria
-                    </button>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-success">
+                            Salvar Categoria
+                        </button>
+                        <a href="{% url 'listar_categorias' %}" class="btn btn-outline-light">
+                            Cancelar
+                        </a>
+                    </div>
 
                 </form>
 

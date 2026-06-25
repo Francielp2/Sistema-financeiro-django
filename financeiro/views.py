@@ -201,9 +201,14 @@ def detalhes_categoria(request, categoria_id):
         id=categoria_id,
         usuario=request.user
     )
+    quantidade_movimentacoes = models.Movimentacao.objects.filter(
+        usuario=request.user,
+        categoria=categoria
+    ).count()
 
     return render(request, 'financeiro/categorias/detalhes_categoria.html', {
-        'categoria': categoria
+        'categoria': categoria,
+        'quantidade_movimentacoes': quantidade_movimentacoes,
     })
 
 

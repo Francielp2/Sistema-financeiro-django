@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block title %}
-Nova Movimentação
+{% if form.instance.pk %}Editar Movimentação{% else %}Nova Movimentação{% endif %}
 {% endblock %}
 
 {% block content %}
@@ -13,7 +13,13 @@ Nova Movimentação
         <div class="card bg-dark border-secondary shadow">
             <div class="card-body">
 
-                <h2 class="text-success mb-4">Nova Movimentação</h2>
+                <h2 class="text-success mb-4">
+                    {% if form.instance.pk %}
+                        Editar Movimentação
+                    {% else %}
+                        Nova Movimentação
+                    {% endif %}
+                </h2>
 
                 <form method="POST">
                     {% csrf_token %}
@@ -71,9 +77,14 @@ Nova Movimentação
                         {{ form.observacao }}
                     </div>
 
-                    <button type="submit" class="btn btn-success w-100">
-                        Salvar Movimentação
-                    </button>
+                    <div class="d-flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-success">
+                            Salvar Movimentação
+                        </button>
+                        <a href="{% url 'listar_movimentacoes' %}" class="btn btn-outline-light">
+                            Cancelar
+                        </a>
+                    </div>
                 </form>
 
             </div>

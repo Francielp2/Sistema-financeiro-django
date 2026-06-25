@@ -195,10 +195,13 @@ Resumo da Conta
                 </div>
             </div>
 
-            <div class="col-md d-flex align-items-end">
+            <div class="col-md d-flex gap-2 align-items-end">
                 <button type="submit" class="btn btn-success w-100">
                     Aplicar filtro
                 </button>
+                <a href="{% url 'resumo_conta' conta.id %}" class="btn btn-outline-light w-100">
+                    Limpar filtros
+                </a>
             </div>
         </div>
     </div>
@@ -239,6 +242,7 @@ Resumo da Conta
                 <h3 class="text-success">
                     R$ {{ entradas }}
                 </h3>
+                {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
             </div>
         </div>
     </div>
@@ -254,6 +258,7 @@ Resumo da Conta
                 <h3 class="text-danger">
                     R$ {{ saidas }}
                 </h3>
+                {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
             </div>
         </div>
     </div>
@@ -269,6 +274,7 @@ Resumo da Conta
                 <h3 class="text-success">
                     R$ {{ transferencias_recebidas }}
                 </h3>
+                {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
             </div>
         </div>
     </div>
@@ -284,6 +290,7 @@ Resumo da Conta
                 <h3 class="text-warning">
                     R$ {{ transferencias_enviadas }}
                 </h3>
+                {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
             </div>
         </div>
     </div>
@@ -310,6 +317,7 @@ Resumo da Conta
                         R$ {{ resultado_periodo }}
                     </h3>
                 {% endif %}
+                {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
             </div>
         </div>
     </div>

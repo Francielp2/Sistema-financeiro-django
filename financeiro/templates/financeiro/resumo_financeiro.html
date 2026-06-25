@@ -161,10 +161,13 @@ Resumo Financeiro
                 </div>
             </div>
 
-            <div class="col-md d-flex align-items-end">
+            <div class="col-md d-flex gap-2 align-items-end">
                 <button type="submit" class="btn btn-success w-100">
                     Aplicar filtro
                 </button>
+                <a href="{% url 'resumo_financeiro' %}" class="btn btn-outline-light w-100">
+                    Limpar filtros
+                </a>
             </div>
         </div>
     </div>
@@ -196,7 +199,7 @@ Resumo Financeiro
             <div class="card-body">
                 <h5 class="text-light">Entradas do Período</h5>
                 <h3 class="text-success">R$ {{ total_entradas_periodo }}</h3>
-                <small class="text-secondary">{{ data_inicio|date:'d/m/Y' }} até {{ data_fim|date:'d/m/Y' }}</small>
+                {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
             </div>
         </div>
     </div>
@@ -208,7 +211,7 @@ Resumo Financeiro
             <div class="card-body">
                 <h5 class="text-light">Saídas do Período</h5>
                 <h3 class="text-danger">R$ {{ total_saidas_periodo }}</h3>
-                <small class="text-secondary">{{ data_inicio|date:'d/m/Y' }} até {{ data_fim|date:'d/m/Y' }}</small>
+                {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
             </div>
         </div>
     </div>
@@ -220,7 +223,7 @@ Resumo Financeiro
             <div class="card-body">
                 <h5 class="text-light">Transferências Internas</h5>
                 <h3 class="text-warning">R$ {{ total_transferencias_periodo }}</h3>
-                <small class="text-secondary">Movimentações entre contas próprias</small>
+                {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
             </div>
         </div>
     </div>
@@ -238,7 +241,7 @@ Resumo Financeiro
                     <h3 class="text-danger">R$ {{ resultado_periodo }}</h3>
                 {% endif %}
 
-                <small class="text-secondary">Entradas menos saídas</small>
+                {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
             </div>
         </div>
     </div>
@@ -290,6 +293,14 @@ Resumo Financeiro
 
 {# RESUMO FILTRADO POR CONTA #}
 <h2 class="text-success mt-5 mb-3">Resumo por Conta no Período</h2>
+<div class="d-flex flex-wrap gap-2 mb-3">
+    <span class="badge text-bg-secondary">
+        De {{ data_inicio|date:"d/m/Y" }}
+    </span>
+    <span class="badge text-bg-secondary">
+        Até {{ data_fim|date:"d/m/Y" }}
+    </span>
+</div>
 
 <div class="card bg-dark border-secondary shadow">
     <div class="card-body">

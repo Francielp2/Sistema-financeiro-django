@@ -22,6 +22,56 @@ def _obter_url_retorno_segura(request, rota_padrao):
     return reverse(rota_padrao)
 
 
+def _resumir_rotulos_filtro(rotulos, rotulo_padrao):
+    if not rotulos:
+        return rotulo_padrao
+
+    if len(rotulos) <= 2:
+        return ', '.join(rotulos)
+
+    return f'{len(rotulos)} selecionados'
+
+
+def _obter_rotulos_filtros_resumo(
+    tipos_filtro,
+    categorias_filtro,
+    categorias
+):
+    tipos_por_valor = dict(models.Movimentacao.TIPO_MOVIMENTACAO_CHOICES)
+    rotulos_tipos = [
+        tipos_por_valor[tipo]
+        for tipo in tipos_filtro
+        if tipo in tipos_por_valor
+    ]
+    categorias_por_id = {
+        str(categoria.id): categoria.nome
+        for categoria in categorias
+    }
+    rotulos_categorias = [
+        (
+            'Sem categoria'
+            if categoria_id == 'sem_categoria'
+            else categorias_por_id[categoria_id]
+        )
+        for categoria_id in categorias_filtro
+        if (
+            categoria_id == 'sem_categoria'
+            or categoria_id in categorias_por_id
+        )
+    ]
+
+    return {
+        'tipos_filtro_rotulo': _resumir_rotulos_filtro(
+            rotulos_tipos,
+            'Todos'
+        ),
+        'categorias_filtro_rotulo': _resumir_rotulos_filtro(
+            rotulos_categorias,
+            'Todas'
+        ),
+    }
+
+
 # PÁGINA INICIAL DO APP FINANCEIRO
 
 
@@ -506,15 +556,24 @@ def resumo_financeiro(request):
         categorias=categorias
     )
 
+    movimentacoes_periodo_completo = models.Movimentacao.objects.filter(
+        usuario=request.user,
+        data__range=[data_inicio, data_fim]
+    )
     contas = models.Conta.objects.filter(usuario=request.user)
     resumo_por_conta = servicos.calcular_resumo_por_conta(
         request.user,
         contas,
-        resumo_periodo['movimentacoes']
+        movimentacoes_periodo_completo
+    )
+    rotulos_filtros = _obter_rotulos_filtros_resumo(
+        resumo_periodo['tipos_filtro'],
+        resumo_periodo['categorias_filtro'],
+        categorias
     )
 
     # CONTEXTO USADO PELOS CARDS, TABELAS E FILTROS DO RESUMO GERAL
-    return render(request, 'financeiro/resumo_financeiro.html', {
+    contexto = {
         'patrimonio_total': servicos.calcular_patrimonio_total(
             request.user,
             contas
@@ -530,7 +589,14 @@ def resumo_financeiro(request):
         'total_transferencias_periodo': resumo_periodo['transferencias'],
         'categorias': categorias,
         'categorias_filtro': resumo_periodo['categorias_filtro'],
-    })
+    }
+    contexto.update(rotulos_filtros)
+
+    return render(
+        request,
+        'financeiro/resumo_financeiro.html',
+        contexto
+    )
 
 # VIEW DO RESUMO INDIVIDUAL DA CONTA
 
@@ -569,9 +635,14 @@ def resumo_conta(request, conta_id):
         categorias_filtro=categorias_filtro,
         categorias=categorias
     )
+    rotulos_filtros = _obter_rotulos_filtros_resumo(
+        resumo['tipos_filtro'],
+        resumo['categorias_filtro'],
+        categorias
+    )
 
     # CONTEXTO USADO PELOS CARDS, FILTROS E TABELA DO RESUMO DA CONTA
-    return render(request, 'financeiro/contas/resumo_conta.html', {
+    contexto = {
         'conta': conta,
         'data_inicio': data_inicio,
         'data_fim': data_fim,
@@ -588,4 +659,11 @@ def resumo_conta(request, conta_id):
         'tipos_filtro': resumo['tipos_filtro'],
         'categorias_filtro': resumo['categorias_filtro'],
         'categorias': categorias,
-    })
+    }
+    contexto.update(rotulos_filtros)
+
+    return render(
+        request,
+        'financeiro/contas/resumo_conta.html',
+        contexto
+    )

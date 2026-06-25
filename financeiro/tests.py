@@ -1446,6 +1446,77 @@ class ViewsFinanceirasTestCase(FinanceiroTestMixin, TestCase):
             404
         )
 
+    def test_resumo_por_conta_ignora_filtros_de_tipo_e_categoria(self):
+        self.client.force_login(self.usuario)
+        self.criar_movimentacao('entrada', '300.00')
+        self.criar_movimentacao(
+            'saida',
+            '100.00',
+            categoria=self.categoria
+        )
+        self.criar_movimentacao('transferencia', '50.00')
+        self.criar_movimentacao(
+            'entrada',
+            '900.00',
+            data_movimentacao=date(2026, 2, 1)
+        )
+
+        resposta = self.client.get(reverse('resumo_financeiro'), {
+            'data_inicio': '2026-01-01',
+            'data_fim': '2026-01-31',
+            'tipos': ['saida'],
+            'categorias': [str(self.categoria.id)],
+        })
+
+        self.assertEqual(
+            resposta.context['total_entradas_periodo'],
+            0
+        )
+        self.assertEqual(
+            resposta.context['total_saidas_periodo'],
+            Decimal('100.00')
+        )
+
+        resumo_conta = next(
+            item
+            for item in resposta.context['resumo_por_conta']
+            if item['conta'] == self.conta
+        )
+        self.assertEqual(resumo_conta['entradas'], Decimal('300.00'))
+        self.assertEqual(resumo_conta['saidas'], Decimal('100.00'))
+        self.assertEqual(
+            resumo_conta['transferencias_recebidas'],
+            0
+        )
+        self.assertEqual(
+            resumo_conta['transferencias_enviadas'],
+            Decimal('50.00')
+        )
+        self.assertEqual(
+            resumo_conta['resultado_periodo'],
+            Decimal('150.00')
+        )
+        self.assertContains(
+            resposta,
+            'De 01/01/2026'
+        )
+        self.assertContains(
+            resposta,
+            'Até 31/01/2026'
+        )
+        self.assertEqual(
+            resposta.context['tipos_filtro_rotulo'],
+            'Saída'
+        )
+        self.assertEqual(
+            resposta.context['categorias_filtro_rotulo'],
+            'Alimentação'
+        )
+        self.assertContains(
+            resposta,
+            'Limpar filtros'
+        )
+
 
 class UsuariosViewsTestCase(FinanceiroTestMixin, TestCase):
     def setUp(self):

@@ -118,7 +118,12 @@ Dashboard da Conta
                 </thead>
                 <tbody>
                     {% for movimentacao in movimentacoes_recentes %}
-                    <tr>
+                    <tr
+                        class="linha-clicavel"
+                        data-href="{% url 'detalhes_movimentacao' movimentacao.id %}?voltar_para={{ request.get_full_path|urlencode }}"
+                        role="link"
+                        tabindex="0"
+                    >
                         <td>{{ movimentacao.data|date:"d/m/Y" }}</td>
                         <td>{{ movimentacao.get_tipo_display }}</td>
                         <td>{{ movimentacao.descricao }}</td>

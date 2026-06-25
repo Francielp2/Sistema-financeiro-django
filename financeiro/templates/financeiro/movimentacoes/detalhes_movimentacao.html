@@ -115,8 +115,8 @@ Detalhes da Movimentação
             <a href="{% url 'excluir_movimentacao' movimentacao.id %}" class="btn btn-outline-danger">
                 Excluir
             </a>
-            <a href="{% url 'listar_movimentacoes' %}" class="btn btn-outline-secondary">
-                Voltar para Movimentações
+            <a href="{{ voltar_para }}" class="btn btn-outline-secondary">
+                Voltar
             </a>
         </div>
 

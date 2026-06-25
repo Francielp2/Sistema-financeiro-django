@@ -64,7 +64,7 @@ Detalhes da Categoria
             <a href="{% url 'excluir_categoria' categoria.id %}" class="btn btn-outline-danger">
                 Excluir
             </a>
-            <a href="{% url 'listar_categorias' %}" class="btn btn-outline-secondary">
+            <a href="{{ voltar_para }}" class="btn btn-outline-secondary">
                 Voltar para Categorias
             </a>
         </div>

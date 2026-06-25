@@ -72,3 +72,12 @@ body {
 .text-muted {
   color: #b3b3b3 !important;
 }
+
+/* LINHAS DE TABELA COM ACESSO A DETALHES */
+.linha-clicavel {
+  cursor: pointer;
+}
+
+.linha-clicavel [data-no-row-link] {
+  cursor: default;
+}

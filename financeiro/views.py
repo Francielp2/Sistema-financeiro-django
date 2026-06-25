@@ -1,10 +1,26 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
+from django.urls import reverse
+from django.utils.http import url_has_allowed_host_and_scheme
 from .import models
 from . import servicos
 from .forms import ContaForm, ContaEditarForm, CategoriaForm, MovimentacaoForm
 from datetime import datetime
+
+
+def _obter_url_retorno_segura(request, rota_padrao):
+    voltar_para = request.GET.get('voltar_para')
+
+    if voltar_para and url_has_allowed_host_and_scheme(
+        voltar_para,
+        allowed_hosts={request.get_host()},
+        require_https=request.is_secure()
+    ):
+        return voltar_para
+
+    return reverse(rota_padrao)
+
 
 # PÁGINA INICIAL DO APP FINANCEIRO
 
@@ -145,7 +161,11 @@ def detalhes_conta(request, conta_id):
     )
 
     return render(request, 'financeiro/contas/detalhes_conta.html', {
-        'conta': conta
+        'conta': conta,
+        'voltar_para': _obter_url_retorno_segura(
+            request,
+            'listar_contas'
+        ),
     })
 
 
@@ -209,6 +229,10 @@ def detalhes_categoria(request, categoria_id):
     return render(request, 'financeiro/categorias/detalhes_categoria.html', {
         'categoria': categoria,
         'quantidade_movimentacoes': quantidade_movimentacoes,
+        'voltar_para': _obter_url_retorno_segura(
+            request,
+            'listar_categorias'
+        ),
     })
 
 
@@ -401,7 +425,11 @@ def detalhes_movimentacao(request, movimentacao_id):
     )
 
     return render(request, 'financeiro/movimentacoes/detalhes_movimentacao.html', {
-        'movimentacao': movimentacao
+        'movimentacao': movimentacao,
+        'voltar_para': _obter_url_retorno_segura(
+            request,
+            'listar_movimentacoes'
+        ),
     })
 
 

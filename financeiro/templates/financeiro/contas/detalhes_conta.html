@@ -86,7 +86,7 @@ Detalhes da Conta
             <a href="{% url 'excluir_conta' conta.id %}" class="btn btn-outline-danger">
                 Excluir
             </a>
-            <a href="{% url 'listar_contas' %}" class="btn btn-outline-secondary">
+            <a href="{{ voltar_para }}" class="btn btn-outline-secondary">
                 Voltar para Listagem
             </a>
         </div>

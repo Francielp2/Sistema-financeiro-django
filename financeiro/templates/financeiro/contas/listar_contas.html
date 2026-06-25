@@ -101,11 +101,10 @@ Contas
                 {% for conta in contas %}
 
                 <tr
+                    class="linha-clicavel"
+                    data-href="{% url 'detalhes_conta' conta.id %}?voltar_para={{ request.get_full_path|urlencode }}"
                     role="link"
                     tabindex="0"
-                    style="cursor: pointer;"
-                    onclick="window.location.href='{% url 'detalhes_conta' conta.id %}'"
-                    onkeydown="if (event.key === 'Enter' && event.target === event.currentTarget) { window.location.href='{% url 'detalhes_conta' conta.id %}'; }"
                 >
                     <td>{{ conta.nome }}</td>
 
@@ -125,7 +124,7 @@ Contas
                         {% endif %}
                     </td>
 
-                    <td onclick="event.stopPropagation();">
+                    <td data-no-row-link>
 
                         <a href="{% url 'dashboard_conta' conta.id %}" class="btn btn-sm btn-outline-info">
                             Dashboard

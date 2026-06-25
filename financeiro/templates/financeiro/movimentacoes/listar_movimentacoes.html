@@ -159,7 +159,12 @@ Movimentações
 
                 <tbody>
                     {% for movimentacao in movimentacoes %}
-                    <tr>
+                    <tr
+                        class="linha-clicavel"
+                        data-href="{% url 'detalhes_movimentacao' movimentacao.id %}?voltar_para={{ request.get_full_path|urlencode }}"
+                        role="link"
+                        tabindex="0"
+                    >
                         <td>{{ movimentacao.data|date:"d/m/Y" }}</td>
 
                         <td>
@@ -216,12 +221,8 @@ Movimentações
                             {% endif %}
                         </td>
 
-                        <td>
+                        <td data-no-row-link>
                             <div class="d-flex flex-wrap gap-2">
-                                <a href="{% url 'detalhes_movimentacao' movimentacao.id %}" class="btn btn-sm btn-outline-info">
-                                    Detalhes
-                                </a>
-
                                 <a href="{% url 'editar_movimentacao' movimentacao.id %}" class="btn btn-sm btn-outline-primary">
                                     Editar
                                 </a>

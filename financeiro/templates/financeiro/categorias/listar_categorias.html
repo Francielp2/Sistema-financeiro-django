@@ -95,7 +95,12 @@ Categorias
 
                 {% for categoria in categorias %}
 
-                <tr>
+                <tr
+                    class="linha-clicavel"
+                    data-href="{% url 'detalhes_categoria' categoria.id %}?voltar_para={{ request.get_full_path|urlencode }}"
+                    role="link"
+                    tabindex="0"
+                >
 
                     <td>{{ categoria.nome }}</td>
 
@@ -107,12 +112,7 @@ Categorias
                         {% endif %}
                     </td>
 
-                    <td>
-
-                        <a href="{% url 'detalhes_categoria' categoria.id %}" class="btn btn-sm btn-outline-success">
-                            Detalhes
-                        </a>
-
+                    <td data-no-row-link>
                         <a href="{% url 'editar_categoria' categoria.id %}" class="btn btn-sm btn-outline-light">
                             Editar
                         </a>

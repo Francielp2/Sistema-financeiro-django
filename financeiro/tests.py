@@ -1173,6 +1173,25 @@ class ViewsFinanceirasTestCase(FinanceiroTestMixin, TestCase):
             [self.conta_destino]
         )
 
+    def test_detalhes_conta_valida_url_de_retorno(self):
+        self.client.force_login(self.usuario)
+        url = reverse('detalhes_conta', args=[self.conta.id])
+        retorno_filtrado = '/contas/?nome=principal&ativa=sim'
+
+        resposta = self.client.get(url, {
+            'voltar_para': retorno_filtrado
+        })
+        self.assertEqual(resposta.context['voltar_para'], retorno_filtrado)
+        self.assertContains(resposta, f'href="{retorno_filtrado.replace("&", "&amp;")}"')
+
+        resposta = self.client.get(url, {
+            'voltar_para': 'https://site-malicioso.example/contas/'
+        })
+        self.assertEqual(
+            resposta.context['voltar_para'],
+            reverse('listar_contas')
+        )
+
     def test_crud_categoria_filtros_e_isolamento(self):
         self.client.force_login(self.usuario)
         resposta = self.client.post(reverse('criar_categoria'), {
@@ -1216,6 +1235,24 @@ class ViewsFinanceirasTestCase(FinanceiroTestMixin, TestCase):
         self.assertRedirects(resposta, reverse('listar_categorias'))
         self.assertFalse(
             models.Categoria.objects.filter(id=categoria.id).exists()
+        )
+
+    def test_detalhes_categoria_valida_url_de_retorno(self):
+        self.client.force_login(self.usuario)
+        url = reverse('detalhes_categoria', args=[self.categoria.id])
+        retorno_filtrado = '/categorias/?nome=Alimenta%C3%A7%C3%A3o&ativa=sim'
+
+        resposta = self.client.get(url, {
+            'voltar_para': retorno_filtrado
+        })
+        self.assertEqual(resposta.context['voltar_para'], retorno_filtrado)
+
+        resposta = self.client.get(url, {
+            'voltar_para': '//site-malicioso.example/categorias/'
+        })
+        self.assertEqual(
+            resposta.context['voltar_para'],
+            reverse('listar_categorias')
         )
 
     def test_crud_movimentacao_e_isolamento(self):
@@ -1262,6 +1299,28 @@ class ViewsFinanceirasTestCase(FinanceiroTestMixin, TestCase):
         self.assertRedirects(resposta, reverse('listar_movimentacoes'))
         self.assertFalse(
             models.Movimentacao.objects.filter(id=movimentacao.id).exists()
+        )
+
+    def test_detalhes_movimentacao_valida_url_de_retorno(self):
+        self.client.force_login(self.usuario)
+        movimentacao = self.criar_movimentacao('entrada', '100.00')
+        url = reverse(
+            'detalhes_movimentacao',
+            args=[movimentacao.id]
+        )
+        retorno_filtrado = '/movimentacoes/?tipo=entrada&descricao=salario'
+
+        resposta = self.client.get(url, {
+            'voltar_para': retorno_filtrado
+        })
+        self.assertEqual(resposta.context['voltar_para'], retorno_filtrado)
+
+        resposta = self.client.get(url, {
+            'voltar_para': 'javascript:alert(1)'
+        })
+        self.assertEqual(
+            resposta.context['voltar_para'],
+            reverse('listar_movimentacoes')
         )
 
     def test_criar_movimentacao_exige_conta_ativa(self):

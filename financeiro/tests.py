@@ -524,6 +524,70 @@ class ServicosTestCase(FinanceiroTestMixin, TestCase):
 
         self.assertEqual(resultado, [recente, antiga])
 
+    @patch('financeiro.servicos.obter_periodo_mes_atual')
+    def test_dashboard_conta_reutiliza_resumo_e_isola_movimentacoes(
+        self,
+        periodo_mock
+    ):
+        periodo_mock.return_value = (
+            date(2026, 1, 1),
+            date(2026, 1, 31)
+        )
+        entrada = self.criar_movimentacao('entrada', '300.00')
+        self.criar_movimentacao('saida', '100.00')
+        self.criar_movimentacao('transferencia', '200.00')
+        self.criar_movimentacao(
+            'transferencia',
+            '50.00',
+            conta_origem=self.conta_destino,
+            conta_destino=self.conta
+        )
+        recente_fora_do_mes = self.criar_movimentacao(
+            'entrada',
+            '20.00',
+            data_movimentacao=date(2026, 2, 1)
+        )
+        self.criar_movimentacao(
+            'entrada',
+            '900.00',
+            conta_destino=self.conta_destino
+        )
+
+        dashboard = servicos.obter_dashboard_conta(
+            self.usuario,
+            self.conta
+        )
+
+        self.assertEqual(dashboard['conta'], self.conta)
+        self.assertEqual(dashboard['saldo_inicial'], Decimal('1000.00'))
+        self.assertEqual(dashboard['saldo_atual'], Decimal('1070.00'))
+        self.assertEqual(dashboard['entradas_mes'], Decimal('300.00'))
+        self.assertEqual(dashboard['saidas_mes'], Decimal('100.00'))
+        self.assertEqual(
+            dashboard['transferencias_recebidas_mes'],
+            Decimal('50.00')
+        )
+        self.assertEqual(
+            dashboard['transferencias_enviadas_mes'],
+            Decimal('200.00')
+        )
+        self.assertEqual(dashboard['resultado_mes'], Decimal('50.00'))
+        self.assertEqual(
+            list(dashboard['movimentacoes_recentes'])[0],
+            recente_fora_do_mes
+        )
+        self.assertIn(
+            entrada,
+            dashboard['movimentacoes_recentes']
+        )
+
+    def test_dashboard_conta_rejeita_conta_de_outro_usuario(self):
+        with self.assertRaises(ValueError):
+            servicos.obter_dashboard_conta(
+                self.usuario,
+                self.outra_conta
+            )
+
     def test_gastos_por_categoria_agrupa_ordena_e_isola_usuario(self):
         self.criar_movimentacao(
             'saida', '100.00', categoria=self.categoria
@@ -647,6 +711,7 @@ class ViewsFinanceirasTestCase(FinanceiroTestMixin, TestCase):
             reverse('criar_movimentacao'),
             reverse('resumo_financeiro'),
             reverse('resumo_conta', args=[self.conta.id]),
+            reverse('dashboard_conta', args=[self.conta.id]),
         ]
 
         for url in urls:
@@ -804,6 +869,63 @@ class ViewsFinanceirasTestCase(FinanceiroTestMixin, TestCase):
             resposta,
             'Nenhuma entrada encontrada no mês atual.'
         )
+
+    @patch('financeiro.servicos.obter_periodo_mes_atual')
+    def test_dashboard_conta_exibe_dados_e_bloqueia_conta_alheia(
+        self,
+        periodo_mock
+    ):
+        periodo_mock.return_value = (
+            date(2026, 1, 1),
+            date(2026, 1, 31)
+        )
+        self.client.force_login(self.usuario)
+        movimentacao = self.criar_movimentacao('entrada', '300.00')
+
+        resposta = self.client.get(
+            reverse('dashboard_conta', args=[self.conta.id])
+        )
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertTemplateUsed(
+            resposta,
+            'financeiro/dashboard_conta.html'
+        )
+        self.assertEqual(resposta.context['conta'], self.conta)
+        self.assertEqual(
+            resposta.context['entradas_mes'],
+            Decimal('300.00')
+        )
+        self.assertIn(
+            movimentacao,
+            resposta.context['movimentacoes_recentes']
+        )
+        self.assertContains(resposta, 'Dashboard da Conta')
+        self.assertContains(
+            resposta,
+            reverse('resumo_conta', args=[self.conta.id])
+        )
+        self.assertContains(
+            resposta,
+            reverse('editar_conta', args=[self.conta.id])
+        )
+        self.assertEqual(
+            self.client.get(
+                reverse('dashboard_conta', args=[self.outra_conta.id])
+            ).status_code,
+            404
+        )
+
+    def test_inicio_aponta_contas_para_dashboard_individual(self):
+        self.client.force_login(self.usuario)
+
+        resposta = self.client.get(reverse('inicio'))
+
+        self.assertContains(
+            resposta,
+            reverse('dashboard_conta', args=[self.conta.id])
+        )
+        self.assertContains(resposta, 'Dashboard')
 
     def test_crud_conta_e_bloqueio_de_objeto_alheio(self):
         self.client.force_login(self.usuario)

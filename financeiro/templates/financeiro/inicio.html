@@ -135,8 +135,8 @@ Dashboard Financeiro
                                 <td>{{ conta.get_tipo_display }}</td>
                                 <td class="text-end text-info">R$ {{ conta.saldo_atual }}</td>
                                 <td class="text-end">
-                                    <a href="{% url 'resumo_conta' conta.id %}" class="btn btn-sm btn-outline-info">
-                                        Resumo
+                                    <a href="{% url 'dashboard_conta' conta.id %}" class="btn btn-sm btn-outline-info">
+                                        Dashboard
                                     </a>
                                 </td>
                             </tr>

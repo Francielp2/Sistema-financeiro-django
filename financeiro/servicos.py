@@ -224,11 +224,11 @@ def calcular_resumo_conta(
     categorias_filtro=None,
     categorias=None
 ):
-    movimentacoes_periodo = models.Movimentacao.objects.filter(
-        usuario=usuario,
-        data__range=[data_inicio, data_fim]
+    movimentacoes_periodo = obter_movimentacoes_conta(
+        usuario,
+        conta
     ).filter(
-        Q(conta_origem=conta) | Q(conta_destino=conta)
+        data__range=[data_inicio, data_fim]
     )
 
     movimentacoes_periodo, tipos_filtro, categorias_filtro = (
@@ -279,8 +279,21 @@ def calcular_resumo_conta(
     }
 
 
-def obter_movimentacoes_recentes(usuario, limite=10):
-    return models.Movimentacao.objects.filter(usuario=usuario).order_by(
+def obter_movimentacoes_conta(usuario, conta):
+    return models.Movimentacao.objects.filter(
+        usuario=usuario
+    ).filter(
+        Q(conta_origem=conta) | Q(conta_destino=conta)
+    )
+
+
+def obter_movimentacoes_recentes(usuario, limite=10, conta=None):
+    if conta is None:
+        movimentacoes = models.Movimentacao.objects.filter(usuario=usuario)
+    else:
+        movimentacoes = obter_movimentacoes_conta(usuario, conta)
+
+    return movimentacoes.order_by(
         '-data',
         '-hora',
         '-criada_em'
@@ -443,5 +456,38 @@ def obter_dashboard_geral(usuario):
                 usuario,
                 quantidade_meses=6
             )
+        ),
+    }
+
+
+def obter_dashboard_conta(usuario, conta):
+    if conta.usuario_id != usuario.id:
+        raise ValueError('A conta não pertence ao usuário informado.')
+
+    data_inicio_mes, data_fim_mes = obter_periodo_mes_atual()
+    resumo_mes = calcular_resumo_conta(
+        usuario,
+        conta,
+        data_inicio_mes,
+        data_fim_mes
+    )
+
+    return {
+        'conta': conta,
+        'saldo_atual': conta.saldo_atual,
+        'saldo_inicial': conta.saldo_inicial,
+        'entradas_mes': resumo_mes['entradas'],
+        'saidas_mes': resumo_mes['saidas'],
+        'transferencias_recebidas_mes': (
+            resumo_mes['transferencias_recebidas']
+        ),
+        'transferencias_enviadas_mes': (
+            resumo_mes['transferencias_enviadas']
+        ),
+        'resultado_mes': resumo_mes['resultado_periodo'],
+        'movimentacoes_recentes': obter_movimentacoes_recentes(
+            usuario,
+            limite=5,
+            conta=conta
         ),
     }

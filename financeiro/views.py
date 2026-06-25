@@ -19,6 +19,26 @@ def inicio(request):
         dados_dashboard
     )
 
+
+@login_required
+def dashboard_conta(request, conta_id):
+    conta = get_object_or_404(
+        models.Conta,
+        id=conta_id,
+        usuario=request.user
+    )
+    dados_dashboard = servicos.obter_dashboard_conta(
+        request.user,
+        conta
+    )
+
+    return render(
+        request,
+        'financeiro/dashboard_conta.html',
+        dados_dashboard
+    )
+
+
 # VIEWS DE CONTAS
 
 

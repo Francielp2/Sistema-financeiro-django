@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+
+{% block title %}
+Dashboard da Conta
+{% endblock %}
+
+{% block content %}
+
+{# CABEÇALHO DO DASHBOARD DA CONTA #}
+<div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
+    <div>
+        <h1 class="text-success mb-2">
+            Dashboard da Conta
+        </h1>
+        <h2 class="h4 text-light mb-1">
+            {{ conta.nome }}
+        </h2>
+        <p class="text-secondary mb-0">
+            {{ conta.get_tipo_display }}
+        </p>
+    </div>
+
+    <div class="d-flex flex-wrap align-items-start gap-2">
+        <a href="{% url 'resumo_conta' conta.id %}" class="btn btn-outline-info">
+            Resumo Financeiro da Conta
+        </a>
+        <a href="{% url 'editar_conta' conta.id %}" class="btn btn-outline-light">
+            Editar Conta
+        </a>
+    </div>
+</div>
+
+{# CARDS FINANCEIROS DO MÊS ATUAL #}
+<div class="row g-3 mb-4">
+    <div class="col-md-6 col-xl-4">
+        <div class="card bg-dark border-info shadow h-100">
+            <div class="card-body">
+                <h3 class="h5 text-light">Saldo Atual</h3>
+                <p class="h3 text-info mb-0">R$ {{ saldo_atual }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4">
+        <div class="card bg-dark border-success shadow h-100">
+            <div class="card-body">
+                <h3 class="h5 text-light">Entradas do Mês</h3>
+                <p class="h3 text-success mb-0">R$ {{ entradas_mes }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4">
+        <div class="card bg-dark border-danger shadow h-100">
+            <div class="card-body">
+                <h3 class="h5 text-light">Saídas do Mês</h3>
+                <p class="h3 text-danger mb-0">R$ {{ saidas_mes }}</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4">
+        <div class="card bg-dark border-secondary shadow h-100">
+            <div class="card-body">
+                <h3 class="h5 text-light">Resultado do Mês</h3>
+                {% if resultado_mes >= 0 %}
+                    <p class="h3 text-success mb-0">R$ {{ resultado_mes }}</p>
+                {% else %}
+                    <p class="h3 text-danger mb-0">R$ {{ resultado_mes }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4">
+        <div class="card bg-dark border-warning shadow h-100">
+            <div class="card-body">
+                <h3 class="h5 text-light">Transferências Recebidas</h3>
+                <p class="h3 text-warning mb-0">
+                    R$ {{ transferencias_recebidas_mes }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-xl-4">
+        <div class="card bg-dark border-warning shadow h-100">
+            <div class="card-body">
+                <h3 class="h5 text-light">Transferências Enviadas</h3>
+                <p class="h3 text-warning mb-0">
+                    R$ {{ transferencias_enviadas_mes }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+{# MOVIMENTAÇÕES RECENTES DA CONTA #}
+<div class="card bg-dark border-secondary shadow mb-4">
+    <div class="card-body">
+        <h2 class="h5 text-light mb-3">
+            Últimas movimentações da conta
+        </h2>
+
+        <div class="table-responsive">
+            <table class="table table-dark table-hover align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Tipo</th>
+                        <th>Descrição</th>
+                        <th>Categoria</th>
+                        <th class="text-end">Valor</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for movimentacao in movimentacoes_recentes %}
+                    <tr>
+                        <td>{{ movimentacao.data|date:"d/m/Y" }}</td>
+                        <td>{{ movimentacao.get_tipo_display }}</td>
+                        <td>{{ movimentacao.descricao }}</td>
+                        <td>{{ movimentacao.categoria.nome|default:"-" }}</td>
+                        <td class="text-end">R$ {{ movimentacao.valor }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-secondary">
+                            Nenhuma movimentação cadastrada para esta conta.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+{# ÁREAS RESERVADAS PARA OS GRÁFICOS DA PRÓXIMA ETAPA #}
+<section>
+    <h2 class="h4 text-success mb-3">
+        Visão financeira
+    </h2>
+
+    <div class="row g-4">
+        <div class="col-lg-4">
+            <div class="card bg-dark border-secondary shadow h-100">
+                <div class="card-body">
+                    <h3 class="h5 text-light mb-0">Entradas x Saídas</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card bg-dark border-secondary shadow h-100">
+                <div class="card-body">
+                    <h3 class="h5 text-light mb-0">Gastos por Categoria</h3>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card bg-dark border-secondary shadow h-100">
+                <div class="card-body">
+                    <h3 class="h5 text-light mb-0">Transferências</h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

@@ -293,6 +293,19 @@ Dashboard Financeiro
                         style="height: 320px;"
                     >
                         <canvas id="graficoPatrimonioConta"></canvas>
+                        <div
+                            id="totalPatrimonioConta"
+                            class="position-absolute top-50 start-50 translate-middle text-center"
+                            style="pointer-events: none;"
+                        >
+                            <small class="d-block text-secondary">
+                                Patrimônio total
+                            </small>
+                            <strong
+                                id="valorTotalPatrimonioConta"
+                                class="d-block text-info fs-5"
+                            ></strong>
+                        </div>
                     </div>
 
                     <p
@@ -568,12 +581,20 @@ Dashboard Financeiro
         const mensagemPatrimonio = document.getElementById(
             'mensagemPatrimonioConta'
         );
+        const totalPatrimonio = document.getElementById(
+            'totalPatrimonioConta'
+        );
+        const valorTotalPatrimonio = document.getElementById(
+            'valorTotalPatrimonioConta'
+        );
 
         if (
             elementoDadosPatrimonio &&
             canvasPatrimonio &&
             containerPatrimonio &&
             mensagemPatrimonio &&
+            totalPatrimonio &&
+            valorTotalPatrimonio &&
             window.Chart
         ) {
             const dadosPatrimonio = JSON.parse(
@@ -593,6 +614,16 @@ Dashboard Financeiro
                 });
 
             if (contasComSaldo.length > 0) {
+                const somaPatrimonio = contasComSaldo.reduce(
+                    function (total, item) {
+                        return total + item.valor;
+                    },
+                    0
+                );
+                valorTotalPatrimonio.textContent = formatarMoeda(
+                    somaPatrimonio
+                );
+
                 const coresPatrimonio = [
                     '#1db954',
                     '#0dcaf0',
@@ -654,6 +685,7 @@ Dashboard Financeiro
                 });
             } else {
                 containerPatrimonio.classList.add('d-none');
+                totalPatrimonio.classList.add('d-none');
                 mensagemPatrimonio.classList.remove('d-none');
             }
         }

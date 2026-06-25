@@ -773,6 +773,8 @@ class ViewsFinanceirasTestCase(FinanceiroTestMixin, TestCase):
         self.assertContains(resposta, 'id="graficoEntradasSaidas"')
         self.assertContains(resposta, 'id="graficoGastosCategoria"')
         self.assertContains(resposta, 'id="graficoPatrimonioConta"')
+        self.assertContains(resposta, 'id="totalPatrimonioConta"')
+        self.assertContains(resposta, 'id="valorTotalPatrimonioConta"')
         self.assertContains(resposta, 'id="graficoEntradasCategoria"')
         self.assertContains(
             resposta,

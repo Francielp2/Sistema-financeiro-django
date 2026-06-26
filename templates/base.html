@@ -78,7 +78,7 @@
                 <div class="sidebar-menu">
                     <ul class="menu">
                         {% if user.is_authenticated %}
-                        <li class="sidebar-item {% if request.resolver_match.url_name == 'inicio' %}active{% endif %}">
+                        <li class="sidebar-item sidebar-accent-dashboard {% if request.resolver_match.url_name == 'inicio' %}active{% endif %}">
                             <a href="{% url 'inicio' %}" class="sidebar-link">
                                 <i class="bi bi-grid-fill"></i>
                                 <span>Dashboard Geral</span>
@@ -87,21 +87,21 @@
 
                         <li class="sidebar-title">Financeiro</li>
 
-                        <li class="sidebar-item {% if request.resolver_match.url_name == 'listar_contas' %}active{% endif %}">
+                        <li class="sidebar-item sidebar-accent-contas {% if request.resolver_match.url_name == 'listar_contas' %}active{% endif %}">
                             <a href="{% url 'listar_contas' %}" class="sidebar-link">
                                 <i class="bi bi-wallet2"></i>
                                 <span>Contas</span>
                             </a>
                         </li>
 
-                        <li class="sidebar-item {% if request.resolver_match.url_name == 'listar_categorias' %}active{% endif %}">
+                        <li class="sidebar-item sidebar-accent-categorias {% if request.resolver_match.url_name == 'listar_categorias' %}active{% endif %}">
                             <a href="{% url 'listar_categorias' %}" class="sidebar-link">
                                 <i class="bi bi-tags-fill"></i>
                                 <span>Categorias</span>
                             </a>
                         </li>
 
-                        <li class="sidebar-item {% if request.resolver_match.url_name == 'listar_movimentacoes' %}active{% endif %}">
+                        <li class="sidebar-item sidebar-accent-movimentacoes {% if request.resolver_match.url_name == 'listar_movimentacoes' %}active{% endif %}">
                             <a href="{% url 'listar_movimentacoes' %}" class="sidebar-link">
                                 <i class="bi bi-arrow-left-right"></i>
                                 <span>Movimentações</span>
@@ -110,7 +110,7 @@
 
                         <li class="sidebar-title">Relatórios</li>
 
-                        <li class="sidebar-item {% if request.resolver_match.url_name == 'resumo_financeiro' %}active{% endif %}">
+                        <li class="sidebar-item sidebar-accent-resumo {% if request.resolver_match.url_name == 'resumo_financeiro' %}active{% endif %}">
                             <a href="{% url 'resumo_financeiro' %}" class="sidebar-link">
                                 <i class="bi bi-bar-chart-fill"></i>
                                 <span>Resumo Financeiro</span>
@@ -119,21 +119,21 @@
 
                         <li class="sidebar-title">Usuário</li>
 
-                        <li class="sidebar-item {% if request.resolver_match.url_name == 'perfil' %}active{% endif %}">
+                        <li class="sidebar-item sidebar-accent-perfil {% if request.resolver_match.url_name == 'perfil' %}active{% endif %}">
                             <a href="{% url 'perfil' %}" class="sidebar-link">
                                 <i class="bi bi-person-circle"></i>
                                 <span>Perfil</span>
                             </a>
                         </li>
 
-                        <li class="sidebar-item {% if request.resolver_match.url_name == 'alterar_senha' %}active{% endif %}">
+                        <li class="sidebar-item sidebar-accent-senha {% if request.resolver_match.url_name == 'alterar_senha' %}active{% endif %}">
                             <a href="{% url 'alterar_senha' %}" class="sidebar-link">
                                 <i class="bi bi-key-fill"></i>
                                 <span>Alterar Senha</span>
                             </a>
                         </li>
 
-                        <li class="sidebar-item">
+                        <li class="sidebar-item sidebar-accent-sair">
                             <form method="post" action="{% url 'logout' %}" class="sidebar-form">
                                 {% csrf_token %}
                                 <button type="submit" class="sidebar-link sidebar-button">
@@ -146,7 +146,7 @@
                         {% if request.user.is_staff %}
                         <li class="sidebar-title">Administração</li>
 
-                        <li class="sidebar-item">
+                        <li class="sidebar-item sidebar-accent-admin">
                             <a href="{% url 'admin:index' %}" class="sidebar-link">
                                 <i class="bi bi-shield-lock-fill"></i>
                                 <span>Painel Administrativo</span>
@@ -156,14 +156,14 @@
                         {% else %}
                         <li class="sidebar-title">Acesso</li>
 
-                        <li class="sidebar-item {% if request.resolver_match.url_name == 'login' %}active{% endif %}">
+                        <li class="sidebar-item sidebar-accent-login {% if request.resolver_match.url_name == 'login' %}active{% endif %}">
                             <a href="{% url 'login' %}" class="sidebar-link">
                                 <i class="bi bi-box-arrow-in-right"></i>
                                 <span>Login</span>
                             </a>
                         </li>
 
-                        <li class="sidebar-item {% if request.resolver_match.url_name == 'cadastro' %}active{% endif %}">
+                        <li class="sidebar-item sidebar-accent-cadastro {% if request.resolver_match.url_name == 'cadastro' %}active{% endif %}">
                             <a href="{% url 'cadastro' %}" class="sidebar-link">
                                 <i class="bi bi-person-plus-fill"></i>
                                 <span>Cadastro</span>

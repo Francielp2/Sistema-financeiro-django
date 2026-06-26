@@ -1,49 +1,49 @@
 /* ESTILO GLOBAL DO PROJETO */
-body {
+body.theme-dark {
   background-color: #121212;
   color: #ffffff;
 }
 
 /* CARDS PADRÃO DO SISTEMA */
-.card {
+body.theme-dark .card {
   background-color: #1f232a !important;
   border: 1px solid #3a4250 !important;
   border-radius: 14px;
 }
 
 /* CAMPOS DOS FORMULÁRIOS */
-.form-label {
+body.theme-dark .form-label {
   color: #f1f1f1;
   font-weight: 500;
 }
 
-.form-control,
-.form-select {
+body.theme-dark .form-control,
+body.theme-dark .form-select {
   background-color: #121212;
   color: #ffffff;
   border: 1px solid #3a4250;
 }
 
-.form-control::placeholder {
+body.theme-dark .form-control::placeholder {
   color: #8f8f8f;
   opacity: 1;
 }
 
-.form-control:focus,
-.form-select:focus {
+body.theme-dark .form-control:focus,
+body.theme-dark .form-select:focus {
   background-color: #121212;
   color: #ffffff;
   border-color: #1db954;
   box-shadow: 0 0 0 0.2rem rgba(29, 185, 84, 0.25);
 }
 
-.form-select option {
+body.theme-dark .form-select option {
   background-color: #121212;
   color: #ffffff;
 }
 
 /* CHECKBOXES E BOTÕES */
-.form-check-label {
+body.theme-dark .form-check-label {
   color: #f1f1f1;
 }
 
@@ -58,19 +58,87 @@ body {
 }
 
 /* TEXTOS DENTRO DOS CARDS */
-.card {
+body.theme-dark .card {
   color: #ffffff;
 }
 
-.card p,
-.card span,
-.card td,
-.card th {
+body.theme-dark .card p,
+body.theme-dark .card span,
+body.theme-dark .card td,
+body.theme-dark .card th {
   color: #f1f1f1;
 }
 
-.text-muted {
+body.theme-dark .text-muted {
   color: #b3b3b3 !important;
+}
+
+.app-logo .app-logo-text {
+  color: #25396f;
+  display: inline-block;
+  font-size: 1.35rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.sidebar-form {
+  margin: 0;
+}
+
+.sidebar-wrapper .menu .sidebar-button {
+  background: transparent;
+  border: 0;
+  font-weight: 600;
+  text-align: left;
+  width: 100%;
+}
+
+body.theme-dark .sidebar-wrapper {
+  background-color: #1f232a;
+}
+
+body.theme-dark .app-logo .app-logo-text,
+body.theme-dark .sidebar-wrapper .menu .sidebar-title,
+body.theme-dark .sidebar-wrapper .menu .sidebar-link,
+body.theme-dark .sidebar-wrapper .menu .submenu .submenu-item a {
+  color: #f1f1f1;
+}
+
+body.theme-dark .sidebar-wrapper .menu .sidebar-link i,
+body.theme-dark .sidebar-wrapper .menu .sidebar-link svg {
+  color: #b3b3b3;
+}
+
+body.theme-dark .sidebar-wrapper .menu .sidebar-link:hover {
+  background-color: #2b313b;
+}
+
+body.theme-dark #main {
+  background-color: #121212;
+}
+
+.sidebar-wrapper .menu .theme-toggle-wrapper {
+  list-style: none;
+  margin-top: 1rem;
+}
+
+.sidebar-wrapper .menu .theme-toggle {
+  color: #25396f;
+  padding: 0.7rem 1rem;
+}
+
+.sidebar-wrapper .menu .theme-toggle .form-switch {
+  min-height: auto;
+  padding-left: 2.5em;
+}
+
+.sidebar-wrapper .menu .theme-toggle .form-check-input {
+  float: none;
+  margin-left: -2.5em;
+}
+
+body.theme-dark .sidebar-wrapper .menu .theme-toggle {
+  color: #f1f1f1;
 }
 
 /* LINHAS DE TABELA COM ACESSO A DETALHES */

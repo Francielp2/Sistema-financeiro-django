@@ -1,9 +1,17 @@
-<small class="text-secondary d-block">
-    Período: {{ data_inicio|date:"d/m/Y" }}–{{ data_fim|date:"d/m/Y" }}
-</small>
-<small class="text-secondary d-block">
-    Tipo: {{ tipos_filtro_rotulo }}
-</small>
-<small class="text-secondary d-block">
-    Categoria: {{ categorias_filtro_rotulo }}
-</small>
+<div class="resumo-filter-summary">
+    <span>
+        {% if data_inicio|date:"m/Y" == data_fim|date:"m/Y" %}
+            {{ data_inicio|date:"M/Y" }}
+        {% else %}
+            {{ data_inicio|date:"d/m" }} → {{ data_fim|date:"d/m" }}
+        {% endif %}
+    </span>
+
+    {% if tipos_filtro %}
+        <span>{{ tipos_filtro_rotulo }}</span>
+    {% endif %}
+
+    {% if categorias_filtro %}
+        <span>{{ categorias_filtro_rotulo }}</span>
+    {% endif %}
+</div>

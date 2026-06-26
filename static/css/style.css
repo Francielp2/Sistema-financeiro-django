@@ -692,6 +692,7 @@ body.theme-dark .finance-page .table .text-info {
 .dashboard-table-card .finance-table thead th {
   background-color: #f8fafc;
   border-bottom: 1px solid #e4eaf3 !important;
+  font-size: 0.86rem;
   padding: 0.85rem 0.95rem;
 }
 
@@ -820,6 +821,229 @@ body.theme-dark .dashboard-chart-card .text-muted {
 
   .dashboard-table-card .card-header .btn,
   .dashboard-table-card .card-header .d-flex {
+    width: 100%;
+  }
+}
+
+/* DASHBOARD INDIVIDUAL DA CONTA */
+.dashboard-conta-page {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1480px;
+  padding-bottom: 2rem;
+  width: 100%;
+}
+
+.dashboard-conta-page > .page-heading:first-child {
+  margin-bottom: 1.75rem;
+}
+
+.dashboard-conta-actions .btn {
+  white-space: nowrap;
+}
+
+.dashboard-conta-stats-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  margin-bottom: 2rem;
+}
+
+.dashboard-conta-stat-item {
+  min-width: 0;
+}
+
+.dashboard-conta-stat-card {
+  min-height: 126px;
+}
+
+.dashboard-conta-stat-card .finance-card-body {
+  align-items: center;
+  flex-direction: row;
+  gap: 0.85rem;
+  justify-content: flex-start;
+  padding: 1rem;
+}
+
+.dashboard-conta-stat-card .finance-card-icon {
+  align-items: center;
+  display: inline-flex;
+  height: 2.5rem;
+  justify-content: center;
+  width: 2.5rem;
+}
+
+.dashboard-conta-stat-card .finance-card-title {
+  margin-bottom: 0.35rem;
+}
+
+.dashboard-conta-stat-card .finance-card-value {
+  font-size: clamp(1.25rem, 1.7vw, 1.75rem);
+  letter-spacing: 0;
+}
+
+.dashboard-conta-stat-card .finance-card-description {
+  margin-top: 0.35rem;
+  min-height: 0;
+}
+
+.dashboard-conta-table-card,
+.dashboard-conta-chart-card {
+  overflow: hidden;
+}
+
+.dashboard-conta-table-card .card-header,
+.dashboard-conta-chart-card .card-header {
+  align-items: center;
+  background-color: #ffffff;
+  border-bottom: 1px solid #edf2f7;
+  padding: 1.15rem 1.35rem;
+}
+
+.dashboard-conta-table-card .card-header h4,
+.dashboard-conta-chart-card .card-header h4 {
+  color: #25396f;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.dashboard-conta-table-card .finance-table-wrap {
+  overflow-x: visible;
+}
+
+.dashboard-conta-table-card .finance-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.9rem;
+}
+
+.dashboard-conta-table-card .finance-table thead th {
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e4eaf3 !important;
+  font-size: 0.86rem;
+  padding: 0.85rem 0.95rem;
+}
+
+.dashboard-conta-table-card .finance-table tbody td {
+  border-bottom: 1px solid rgba(226, 232, 240, 0.65);
+  padding: 0.8rem 0.95rem;
+}
+
+.dashboard-conta-table-card .dashboard-conta-table tbody tr:nth-child(odd) td {
+  background-color: #ffffff;
+}
+
+.dashboard-conta-table-card .dashboard-conta-table tbody tr:nth-child(even) td {
+  background-color: #f8fafc;
+}
+
+.dashboard-conta-table-card .dashboard-conta-table tbody tr:hover td {
+  background-color: #eef5ff;
+}
+
+.dashboard-conta-charts {
+  border-top: 1px solid #edf2f7;
+  padding-top: 1.75rem;
+}
+
+.dashboard-conta-charts > .page-heading {
+  margin-bottom: 1.25rem;
+}
+
+.dashboard-conta-chart-card .card-body {
+  padding: 1.35rem;
+}
+
+.dashboard-conta-chart-card .finance-chart-container {
+  height: clamp(280px, 32vw, 340px);
+}
+
+.dashboard-conta-chart-card .text-muted {
+  color: #5f6f82 !important;
+}
+
+body.theme-dark .dashboard-conta-table-card .card-header,
+body.theme-dark .dashboard-conta-chart-card .card-header {
+  background-color: #1f232a;
+  border-bottom-color: #3a4250;
+}
+
+body.theme-dark .dashboard-conta-table-card .card-header h4,
+body.theme-dark .dashboard-conta-chart-card .card-header h4 {
+  color: #f1f1f1;
+}
+
+body.theme-dark .dashboard-conta-table-card .finance-table thead th {
+  background-color: #252b34;
+  border-bottom-color: rgba(148, 163, 184, 0.18) !important;
+  color: #f1f1f1;
+}
+
+body.theme-dark .dashboard-conta-table-card .finance-table tbody td {
+  border-bottom-color: rgba(148, 163, 184, 0.08);
+}
+
+body.theme-dark .dashboard-conta-table-card .dashboard-conta-table tbody tr:nth-child(odd) td {
+  background-color: #1f232a;
+}
+
+body.theme-dark .dashboard-conta-table-card .dashboard-conta-table tbody tr:nth-child(even) td {
+  background-color: #242a33;
+}
+
+body.theme-dark .dashboard-conta-table-card .dashboard-conta-table tbody tr:hover td {
+  background-color: #2b3340;
+}
+
+body.theme-dark .dashboard-conta-charts {
+  border-top-color: #3a4250;
+}
+
+body.theme-dark .dashboard-conta-chart-card .text-muted {
+  color: #b3b3b3 !important;
+}
+
+@media (min-width: 1600px) {
+  .dashboard-conta-stats-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1199px) {
+  .dashboard-conta-stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(205px, 1fr));
+  }
+
+  .dashboard-conta-stat-card {
+    min-height: 122px;
+  }
+
+  .dashboard-conta-table-card .finance-table-wrap {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 991px) {
+  .dashboard-conta-page {
+    max-width: 100%;
+  }
+
+  .dashboard-conta-chart-card .finance-chart-container {
+    height: 300px;
+  }
+}
+
+@media (max-width: 575px) {
+  .dashboard-conta-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-conta-table-card .card-header {
+    align-items: stretch;
+  }
+
+  .dashboard-conta-table-card .card-header .btn,
+  .dashboard-conta-actions .btn {
     width: 100%;
   }
 }

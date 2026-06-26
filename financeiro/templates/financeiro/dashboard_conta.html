@@ -6,7 +6,7 @@ Dashboard da Conta
 
 {% block content %}
 
-<div class="finance-page">
+<div class="finance-page dashboard-conta-page">
 
 <div class="page-heading d-flex flex-column flex-lg-row justify-content-between gap-3">
     <div>
@@ -16,7 +16,7 @@ Dashboard da Conta
         </p>
     </div>
 
-    <div class="d-flex flex-wrap align-items-start gap-2">
+    <div class="dashboard-conta-actions d-flex flex-wrap align-items-start gap-2">
         <a href="{% url 'resumo_conta' conta.id %}" class="btn btn-outline-primary">
             Resumo Financeiro
         </a>
@@ -30,9 +30,9 @@ Dashboard da Conta
 </div>
 
 {# CARDS FINANCEIROS DO MÊS ATUAL #}
-<div class="row">
-    <div class="col-md-6 col-xl-4">
-        <div class="card h-100 finance-stat-card">
+<div class="dashboard-conta-stats-grid">
+    <div class="dashboard-conta-stat-item">
+        <div class="card h-100 finance-stat-card dashboard-conta-stat-card">
             <div class="card-body finance-card-body">
                 <div class="finance-card-icon stats-icon blue">
                     <i class="bi bi-wallet2"></i>
@@ -46,8 +46,8 @@ Dashboard da Conta
         </div>
     </div>
 
-    <div class="col-md-6 col-xl-4">
-        <div class="card h-100 finance-stat-card">
+    <div class="dashboard-conta-stat-item">
+        <div class="card h-100 finance-stat-card dashboard-conta-stat-card">
             <div class="card-body finance-card-body">
                 <div class="finance-card-icon stats-icon green">
                     <i class="bi bi-arrow-down-circle-fill"></i>
@@ -61,8 +61,8 @@ Dashboard da Conta
         </div>
     </div>
 
-    <div class="col-md-6 col-xl-4">
-        <div class="card h-100 finance-stat-card">
+    <div class="dashboard-conta-stat-item">
+        <div class="card h-100 finance-stat-card dashboard-conta-stat-card">
             <div class="card-body finance-card-body">
                 <div class="finance-card-icon stats-icon red">
                     <i class="bi bi-arrow-up-circle-fill"></i>
@@ -76,23 +76,25 @@ Dashboard da Conta
         </div>
     </div>
 
-    <div class="col-md-6 col-xl-4">
-        <div class="card h-100 finance-stat-card">
+    <div class="dashboard-conta-stat-item">
+        <div class="card h-100 finance-stat-card dashboard-conta-stat-card">
             <div class="card-body finance-card-body">
                 <div class="finance-card-icon stats-icon purple">
-                    <i class="bi bi-graph-up-arrow"></i>
+                    <i class="bi bi-graph-up"></i>
                 </div>
                 <div class="finance-card-content">
                     <div class="finance-card-title">Resultado do Mês</div>
-                    <div class="finance-card-value">R$ {{ resultado_mes }}</div>
+                    <div class="finance-card-value {% if resultado_mes >= 0 %}text-success{% else %}text-danger{% endif %}">
+                        R$ {{ resultado_mes }}
+                    </div>
                     <div class="finance-card-description">Entradas menos saídas.</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-6 col-xl-4">
-        <div class="card h-100 finance-stat-card">
+    <div class="dashboard-conta-stat-item">
+        <div class="card h-100 finance-stat-card dashboard-conta-stat-card">
             <div class="card-body finance-card-body">
                 <div class="finance-card-icon stats-icon green">
                     <i class="bi bi-arrow-left-right"></i>
@@ -106,8 +108,8 @@ Dashboard da Conta
         </div>
     </div>
 
-    <div class="col-md-6 col-xl-4">
-        <div class="card h-100 finance-stat-card">
+    <div class="dashboard-conta-stat-item">
+        <div class="card h-100 finance-stat-card dashboard-conta-stat-card">
             <div class="card-body finance-card-body">
                 <div class="finance-card-icon stats-icon red">
                     <i class="bi bi-arrow-left-right"></i>
@@ -123,7 +125,7 @@ Dashboard da Conta
 </div>
 
 {# MOVIMENTAÇÕES RECENTES DA CONTA #}
-<div class="card mb-4 finance-table-card">
+<div class="card mb-5 finance-table-card dashboard-conta-table-card">
     <div class="card-header d-flex justify-content-between align-items-center gap-3">
         <h4>Últimas movimentações da conta</h4>
         <a href="{% url 'listar_movimentacoes' %}?conta={{ conta.id }}" class="btn btn-sm btn-outline-primary">
@@ -132,7 +134,7 @@ Dashboard da Conta
     </div>
     <div class="card-content">
         <div class="finance-table-wrap">
-            <table class="table table-hover align-middle mb-0 finance-table">
+            <table class="table table-hover align-middle mb-0 finance-table dashboard-conta-table">
                 <thead>
                     <tr>
                         <th>Data</th>
@@ -192,14 +194,14 @@ Dashboard da Conta
 </div>
 
 {# GRÁFICOS FINANCEIROS DA CONTA #}
-<section>
+<section class="dashboard-conta-charts mb-5">
     <div class="page-heading">
         <h3>Visão financeira</h3>
     </div>
 
     <div class="row g-4">
-        <div class="col-xl-7">
-            <div class="card h-100 finance-chart-card">
+        <div class="col-xxl-7">
+            <div class="card h-100 finance-chart-card dashboard-conta-chart-card">
                 <div class="card-header">
                     <h4>Entradas x Saídas da Conta — Últimos 6 meses</h4>
                 </div>
@@ -222,8 +224,8 @@ Dashboard da Conta
             </div>
         </div>
 
-        <div class="col-xl-5">
-            <div class="card h-100 finance-chart-card">
+        <div class="col-xxl-5">
+            <div class="card h-100 finance-chart-card dashboard-conta-chart-card">
                 <div class="card-header">
                     <h4>Evolução do Resultado Financeiro</h4>
                 </div>
@@ -246,8 +248,8 @@ Dashboard da Conta
             </div>
         </div>
 
-        <div class="col-xl-5">
-            <div class="card h-100 finance-chart-card">
+        <div class="col-xxl-5">
+            <div class="card h-100 finance-chart-card dashboard-conta-chart-card">
                 <div class="card-header">
                     <h4>Gastos por Categoria da Conta — Mês atual</h4>
                 </div>
@@ -270,8 +272,8 @@ Dashboard da Conta
             </div>
         </div>
 
-        <div class="col-xl-7">
-            <div class="card h-100 finance-chart-card">
+        <div class="col-xxl-7">
+            <div class="card h-100 finance-chart-card dashboard-conta-chart-card">
                 <div class="card-header">
                     <h4>Transferências da Conta — Últimos 6 meses</h4>
                 </div>
@@ -309,10 +311,48 @@ Dashboard da Conta
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const temaEscuro = document.body.classList.contains('theme-dark');
-        const corTexto = temaEscuro ? '#d1d5db' : '#607080';
-        const corGrade = temaEscuro ? 'rgba(148, 163, 184, 0.18)' : 'rgba(96, 112, 128, 0.16)';
-        const corFundoPonto = temaEscuro ? '#1f232a' : '#ffffff';
+        let corTexto;
+        let corGrade;
+        let corGradeZero;
+        let corFundoPonto;
+
+        const obterCoresGrafico = function () {
+            const temaEscuro = document.body.classList.contains('theme-dark');
+
+            return {
+                texto: temaEscuro ? '#ffffff' : '#25396f',
+                grade: (
+                    temaEscuro
+                        ? 'rgba(255, 255, 255, 0.34)'
+                        : 'rgba(37, 57, 111, 0.22)'
+                ),
+                gradeZero: (
+                    temaEscuro
+                        ? 'rgba(255, 255, 255, 0.62)'
+                        : 'rgba(37, 57, 111, 0.38)'
+                ),
+                fundoPonto: temaEscuro ? '#1f232a' : '#ffffff'
+            };
+        };
+
+        const aplicarCoresGlobaisGrafico = function () {
+            const cores = obterCoresGrafico();
+
+            corTexto = cores.texto;
+            corGrade = cores.grade;
+            corGradeZero = cores.gradeZero;
+            corFundoPonto = cores.fundoPonto;
+
+            if (window.Chart) {
+                Chart.defaults.color = corTexto;
+                Chart.defaults.borderColor = corGrade;
+                Chart.defaults.font.size = 12;
+                Chart.defaults.font.weight = '600';
+            }
+        };
+
+        aplicarCoresGlobaisGrafico();
+
         const formatarMoeda = function (valor) {
             return new Intl.NumberFormat('pt-BR', {
                 style: 'currency',
@@ -323,6 +363,66 @@ Dashboard da Conta
             container.classList.add('d-none');
             mensagem.classList.remove('d-none');
         };
+        const atualizarCoresDoGrafico = function (grafico, canvasId) {
+            if (!grafico) {
+                return;
+            }
+
+            if (
+                grafico.options.plugins &&
+                grafico.options.plugins.legend &&
+                grafico.options.plugins.legend.labels
+            ) {
+                grafico.options.plugins.legend.labels.color = corTexto;
+            }
+
+            Object.values(grafico.options.scales || {}).forEach(function (escala) {
+                if (escala.ticks) {
+                    escala.ticks.color = corTexto;
+                }
+
+                if (escala.grid && escala.grid.display !== false) {
+                    escala.grid.color = function (contexto) {
+                        return (
+                            contexto.tick && contexto.tick.value === 0
+                                ? corGradeZero
+                                : corGrade
+                        );
+                    };
+                }
+            });
+
+            grafico.data.datasets.forEach(function (dataset) {
+                if (canvasId === 'graficoResultadoMensalConta') {
+                    dataset.pointBorderColor = corFundoPonto;
+                }
+            });
+
+            grafico.update('none');
+        };
+        const atualizarTemaDosGraficos = function () {
+            if (!window.Chart) {
+                return;
+            }
+
+            aplicarCoresGlobaisGrafico();
+
+            [
+                'graficoEntradasSaidasConta',
+                'graficoResultadoMensalConta',
+                'graficoGastosCategoriaConta',
+                'graficoTransferenciasConta'
+            ].forEach(function (canvasId) {
+                atualizarCoresDoGrafico(Chart.getChart(canvasId), canvasId);
+            });
+        };
+        const toggleTema = document.getElementById('toggle-dark');
+
+        if (toggleTema) {
+            toggleTema.addEventListener('change', function () {
+                window.setTimeout(atualizarTemaDosGraficos, 0);
+            });
+        }
         const opcoesBarrasVerticais = function () {
             return {
                 responsive: true,
@@ -539,7 +639,7 @@ Dashboard da Conta
                                     color: function (contexto) {
                                         return (
                                             contexto.tick.value === 0
-                                                ? 'rgba(255, 255, 255, 0.5)'
+                                                ? corGradeZero
                                                 : corGrade
                                         );
                                     },

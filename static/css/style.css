@@ -1048,6 +1048,283 @@ body.theme-dark .dashboard-conta-chart-card .text-muted {
   }
 }
 
+/* RESUMOS FINANCEIROS */
+.resumo-page {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 1480px;
+  padding-bottom: 2rem;
+  width: 100%;
+}
+
+.resumo-page > .page-heading:first-child {
+  margin-bottom: 1.75rem;
+}
+
+.resumo-page-actions .btn,
+.resumo-filter-actions .btn {
+  white-space: nowrap;
+}
+
+.resumo-filter-card,
+.resumo-table-card {
+  overflow: hidden;
+}
+
+.resumo-filter-card .card-header,
+.resumo-table-card .card-header {
+  align-items: center;
+  background-color: #ffffff;
+  border-bottom: 1px solid #edf2f7;
+  padding: 1.15rem 1.35rem;
+}
+
+.resumo-filter-card .card-header h4,
+.resumo-table-card .card-header h4 {
+  color: #25396f;
+  font-size: 1rem;
+  font-weight: 800;
+}
+
+.resumo-filter-card .card-body {
+  padding: 1.35rem;
+}
+
+.resumo-filter-card .form-label {
+  color: #25396f !important;
+  font-weight: 700;
+}
+
+.resumo-filter-card .dropdown-menu {
+  border: 1px solid #edf2f7;
+  box-shadow: 0 10px 20px rgba(25, 42, 70, 0.12);
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.resumo-filter-actions {
+  min-width: 230px;
+}
+
+.resumo-stats-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  margin-bottom: 2rem;
+}
+
+.resumo-primary-stats {
+  grid-template-columns: 1fr;
+}
+
+.resumo-stat-item {
+  min-width: 0;
+}
+
+.resumo-stat-card {
+  min-height: 126px;
+}
+
+.resumo-stat-card .finance-card-body {
+  align-items: center;
+  flex-direction: row;
+  gap: 0.85rem;
+  justify-content: flex-start;
+  padding: 1rem;
+}
+
+.resumo-stat-card .finance-card-body-stacked {
+  display: flex;
+}
+
+.resumo-stat-card .finance-card-icon {
+  align-items: center;
+  display: inline-flex;
+  height: 2.5rem;
+  justify-content: center;
+  width: 2.5rem;
+}
+
+.resumo-stat-card .finance-card-title {
+  margin-bottom: 0.35rem;
+}
+
+.resumo-stat-card .finance-card-value {
+  font-size: clamp(1.25rem, 1.7vw, 1.75rem);
+  letter-spacing: 0;
+}
+
+.resumo-stat-card .finance-card-description,
+.resumo-stat-card .finance-card-content .text-muted,
+.resumo-stat-card small {
+  color: #607080;
+  margin-top: 0.35rem;
+}
+
+.resumo-section-heading {
+  border-top: 1px solid #edf2f7;
+  margin-bottom: 1.25rem;
+  padding-top: 1.75rem;
+}
+
+.resumo-table-card {
+  margin-bottom: 2rem;
+}
+
+.resumo-table-card .finance-table-wrap {
+  overflow-x: visible;
+}
+
+.resumo-table-card .finance-table {
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 0.9rem;
+}
+
+.resumo-table-card .finance-table thead th {
+  background-color: #f8fafc;
+  border-bottom: 1px solid #e4eaf3 !important;
+  font-size: 0.86rem;
+  padding: 0.85rem 0.95rem;
+}
+
+.resumo-table-card .finance-table tbody td {
+  border-bottom: 1px solid rgba(226, 232, 240, 0.65);
+  padding: 0.8rem 0.95rem;
+}
+
+.resumo-table-card .resumo-table tbody tr:nth-child(odd) td {
+  background-color: #ffffff;
+}
+
+.resumo-table-card .resumo-table tbody tr:nth-child(even) td {
+  background-color: #f8fafc;
+}
+
+.resumo-table-card .resumo-table tbody tr:hover td {
+  background-color: #eef5ff;
+}
+
+.resumo-table-card .finance-table th:last-child,
+.resumo-table-card .finance-table td:last-child {
+  white-space: nowrap;
+}
+
+.resumo-table-card .badge.bg-light-secondary {
+  background-color: #e6eaee !important;
+  color: #25396f;
+}
+
+body.theme-dark .resumo-filter-card .card-header,
+body.theme-dark .resumo-table-card .card-header {
+  background-color: #1f232a;
+  border-bottom-color: #3a4250;
+}
+
+body.theme-dark .resumo-filter-card .card-header h4,
+body.theme-dark .resumo-table-card .card-header h4 {
+  color: #f1f1f1;
+}
+
+body.theme-dark .resumo-filter-card .form-label,
+body.theme-dark .resumo-filter-card .text-body,
+body.theme-dark .resumo-filter-card .form-check-label {
+  color: #f1f1f1 !important;
+}
+
+body.theme-dark .resumo-filter-card .dropdown-menu {
+  background-color: #1f232a;
+  border-color: #3a4250;
+}
+
+body.theme-dark .resumo-stat-card .finance-card-description,
+body.theme-dark .resumo-stat-card .finance-card-content .text-muted,
+body.theme-dark .resumo-stat-card small {
+  color: #b3b3b3;
+}
+
+body.theme-dark .resumo-section-heading {
+  border-top-color: #3a4250;
+}
+
+body.theme-dark .resumo-table-card .finance-table thead th {
+  background-color: #252b34;
+  border-bottom-color: rgba(148, 163, 184, 0.18) !important;
+  color: #f1f1f1;
+}
+
+body.theme-dark .resumo-table-card .finance-table tbody td {
+  border-bottom-color: rgba(148, 163, 184, 0.08);
+}
+
+body.theme-dark .resumo-table-card .badge.bg-light-secondary {
+  background-color: #2b3340 !important;
+  color: #f1f1f1;
+}
+
+body.theme-dark .resumo-table-card .resumo-table tbody tr:nth-child(odd) td {
+  background-color: #1f232a;
+}
+
+body.theme-dark .resumo-table-card .resumo-table tbody tr:nth-child(even) td {
+  background-color: #242a33;
+}
+
+body.theme-dark .resumo-table-card .resumo-table tbody tr:hover td {
+  background-color: #2b3340;
+}
+
+@media (min-width: 1600px) {
+  .resumo-period-stats {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .resumo-conta-page .resumo-period-stats {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 1199px) {
+  .resumo-stats-grid {
+    grid-template-columns: repeat(auto-fit, minmax(205px, 1fr));
+  }
+
+  .resumo-stat-card {
+    min-height: 122px;
+  }
+
+  .resumo-table-card .finance-table-wrap {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 991px) {
+  .resumo-page {
+    max-width: 100%;
+  }
+
+  .resumo-filter-actions {
+    min-width: 0;
+  }
+}
+
+@media (max-width: 575px) {
+  .resumo-stats-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .resumo-filter-card .card-header,
+  .resumo-table-card .card-header {
+    align-items: stretch;
+  }
+
+  .resumo-filter-actions .btn,
+  .resumo-page-actions .btn,
+  .resumo-table-card .card-header .btn {
+    width: 100%;
+  }
+}
+
 /* LINHAS DE TABELA COM ACESSO A DETALHES */
 .linha-clicavel {
   cursor: pointer;

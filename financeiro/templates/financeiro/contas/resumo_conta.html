@@ -7,7 +7,7 @@ Resumo da Conta
 
 {% block content %}
 
-<div class="finance-page">
+<div class="finance-page resumo-page resumo-conta-page">
 
 <div class="page-heading d-flex flex-column flex-lg-row justify-content-between gap-3">
     <div>
@@ -17,7 +17,7 @@ Resumo da Conta
         </p>
     </div>
 
-    <div class="d-flex flex-wrap align-items-start gap-2">
+    <div class="resumo-page-actions d-flex flex-wrap align-items-start gap-2">
         <a href="{% url 'dashboard_conta' conta.id %}" class="btn btn-outline-primary">
             Voltar ao Dashboard
         </a>
@@ -31,7 +31,7 @@ Resumo da Conta
 </div>
 
 {# FILTROS DO RESUMO DA CONTA #}
-<form method="get" class="card mb-4 finance-table-card">
+<form method="get" class="card mb-5 finance-table-card resumo-filter-card">
     <div class="card-header">
         <h4>Filtros</h4>
     </div>
@@ -198,7 +198,7 @@ Resumo da Conta
                 </div>
             </div>
 
-            <div class="col-md-auto d-flex flex-column flex-md-row gap-2 align-items-stretch align-items-md-end finance-filter-actions">
+            <div class="col-md-auto d-flex flex-column flex-md-row gap-2 align-items-stretch align-items-md-end finance-filter-actions resumo-filter-actions">
                 <button type="submit" class="btn btn-primary">
                     Aplicar filtro
                 </button>
@@ -211,9 +211,9 @@ Resumo da Conta
 </form>
 
 {# SALDO ATUAL NÃO É AFETADO PELOS FILTROS #}
-<div class="row">
-    <div class="col-12">
-        <div class="card finance-stat-card">
+<div class="resumo-stats-grid resumo-primary-stats">
+    <div class="resumo-stat-item">
+        <div class="card finance-stat-card resumo-stat-card">
             <div class="card-body finance-card-body">
                 <div class="finance-card-icon stats-icon blue">
                     <i class="bi bi-wallet2"></i>
@@ -231,77 +231,102 @@ Resumo da Conta
 </div>
 
 {# CARDS DO PERÍODO FILTRADO #}
-<div class="page-heading">
+<div class="page-heading resumo-section-heading">
     <h3>Resumo do Período</h3>
 </div>
 
-<div class="row g-3 mb-4">
+<div class="resumo-stats-grid resumo-period-stats">
     {% if not tipos_filtro or 'entrada' in tipos_filtro %}
-    <div class="{% if not tipos_filtro %}col-md-6 col-xl{% else %}col-md{% endif %}">
-        <div class="card h-100 finance-stat-card">
+    <div class="resumo-stat-item">
+        <div class="card h-100 finance-stat-card resumo-stat-card">
             <div class="card-body finance-card-body finance-card-body-stacked">
-                <div class="finance-card-title">Entradas</div>
-                <div class="finance-card-value text-success">R$ {{ entradas }}</div>
-                {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
+                <div class="finance-card-icon stats-icon green">
+                    <i class="bi bi-arrow-down-circle-fill"></i>
+                </div>
+                <div class="finance-card-content">
+                    <div class="finance-card-title">Entradas</div>
+                    <div class="finance-card-value text-success">R$ {{ entradas }}</div>
+                    {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
+                </div>
             </div>
         </div>
     </div>
     {% endif %}
 
     {% if not tipos_filtro or 'saida' in tipos_filtro %}
-    <div class="{% if not tipos_filtro %}col-md-6 col-xl{% else %}col-md{% endif %}">
-        <div class="card h-100 finance-stat-card">
+    <div class="resumo-stat-item">
+        <div class="card h-100 finance-stat-card resumo-stat-card">
             <div class="card-body finance-card-body finance-card-body-stacked">
-                <div class="finance-card-title">Saídas</div>
-                <div class="finance-card-value text-danger">R$ {{ saidas }}</div>
-                {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
+                <div class="finance-card-icon stats-icon red">
+                    <i class="bi bi-arrow-up-circle-fill"></i>
+                </div>
+                <div class="finance-card-content">
+                    <div class="finance-card-title">Saídas</div>
+                    <div class="finance-card-value text-danger">R$ {{ saidas }}</div>
+                    {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
+                </div>
             </div>
         </div>
     </div>
     {% endif %}
 
     {% if not tipos_filtro or 'transferencia' in tipos_filtro %}
-    <div class="{% if not tipos_filtro %}col-md-6 col-xl{% else %}col-md{% endif %}">
-        <div class="card h-100 finance-stat-card">
+    <div class="resumo-stat-item">
+        <div class="card h-100 finance-stat-card resumo-stat-card">
             <div class="card-body finance-card-body finance-card-body-stacked">
-                <div class="finance-card-title">Transferências Recebidas</div>
-                <div class="finance-card-value text-success">R$ {{ transferencias_recebidas }}</div>
-                {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
+                <div class="finance-card-icon stats-icon blue">
+                    <i class="bi bi-arrow-down-left-circle-fill"></i>
+                </div>
+                <div class="finance-card-content">
+                    <div class="finance-card-title">Transferências Recebidas</div>
+                    <div class="finance-card-value text-success">R$ {{ transferencias_recebidas }}</div>
+                    {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
+                </div>
             </div>
         </div>
     </div>
     {% endif %}
 
     {% if not tipos_filtro or 'transferencia' in tipos_filtro %}
-    <div class="{% if not tipos_filtro %}col-md-6 col-xl{% else %}col-md{% endif %}">
-        <div class="card h-100 finance-stat-card">
+    <div class="resumo-stat-item">
+        <div class="card h-100 finance-stat-card resumo-stat-card">
             <div class="card-body finance-card-body finance-card-body-stacked">
-                <div class="finance-card-title">Transferências Enviadas</div>
-                <div class="finance-card-value text-warning">R$ {{ transferencias_enviadas }}</div>
-                {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
+                <div class="finance-card-icon stats-icon blue">
+                    <i class="bi bi-arrow-up-right-circle-fill"></i>
+                </div>
+                <div class="finance-card-content">
+                    <div class="finance-card-title">Transferências Enviadas</div>
+                    <div class="finance-card-value text-warning">R$ {{ transferencias_enviadas }}</div>
+                    {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
+                </div>
             </div>
         </div>
     </div>
     {% endif %}
 
     {% if not tipos_filtro or 'entrada' in tipos_filtro and 'saida' in tipos_filtro %}
-    <div class="{% if not tipos_filtro %}col-md-6 col-xl{% else %}col-md{% endif %}">
-        <div class="card h-100 finance-stat-card">
+    <div class="resumo-stat-item">
+        <div class="card h-100 finance-stat-card resumo-stat-card">
             <div class="card-body finance-card-body finance-card-body-stacked">
-                <div class="finance-card-title">
-                    {% if categorias_filtro %}
-                        Resultado do Filtro
-                    {% else %}
-                        Resultado do Período
-                    {% endif %}
+                <div class="finance-card-icon stats-icon purple">
+                    <i class="bi bi-graph-up"></i>
                 </div>
+                <div class="finance-card-content">
+                    <div class="finance-card-title">
+                        {% if categorias_filtro %}
+                            Resultado do Filtro
+                        {% else %}
+                            Resultado do Período
+                        {% endif %}
+                    </div>
 
-                {% if resultado_periodo >= 0 %}
-                    <div class="finance-card-value text-success">R$ {{ resultado_periodo }}</div>
-                {% else %}
-                    <div class="finance-card-value text-danger">R$ {{ resultado_periodo }}</div>
-                {% endif %}
-                {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
+                    {% if resultado_periodo >= 0 %}
+                        <div class="finance-card-value text-success">R$ {{ resultado_periodo }}</div>
+                    {% else %}
+                        <div class="finance-card-value text-danger">R$ {{ resultado_periodo }}</div>
+                    {% endif %}
+                    {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
+                </div>
             </div>
         </div>
     </div>
@@ -309,13 +334,13 @@ Resumo da Conta
 </div>
 
 {# TABELA DE MOVIMENTAÇÕES DA CONTA #}
-<div class="card finance-table-card">
+<div class="card finance-table-card resumo-table-card">
     <div class="card-header">
         <h4>Movimentações da Conta</h4>
     </div>
     <div class="card-content">
         <div class="finance-table-wrap">
-        <table class="table table-hover align-middle mb-0 finance-table">
+        <table class="table table-hover align-middle mb-0 finance-table resumo-table">
             <thead>
                 <tr>
                     <th>Data</th>

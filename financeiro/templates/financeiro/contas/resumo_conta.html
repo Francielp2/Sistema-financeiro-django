@@ -7,17 +7,21 @@ Resumo da Conta
 
 {% block content %}
 
-{# CABEÇALHO DO RESUMO DA CONTA #}
-<div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
-    <h1 class="text-success mb-0">
-        Resumo da Conta: {{ conta.nome }}
-    </h1>
+<div class="finance-page">
+
+<div class="page-heading d-flex flex-column flex-lg-row justify-content-between gap-3">
+    <div>
+        <h3>Resumo da Conta</h3>
+        <p class="text-muted mb-0">
+            {{ conta.nome }} · {{ conta.get_tipo_display }}
+        </p>
+    </div>
 
     <div class="d-flex flex-wrap align-items-start gap-2">
-        <a href="{% url 'dashboard_conta' conta.id %}" class="btn btn-outline-info">
+        <a href="{% url 'dashboard_conta' conta.id %}" class="btn btn-outline-primary">
             Voltar ao Dashboard
         </a>
-        <a href="{% url 'editar_conta' conta.id %}" class="btn btn-outline-light">
+        <a href="{% url 'editar_conta' conta.id %}" class="btn btn-outline-primary">
             Editar Conta
         </a>
         <a href="{% url 'inicio' %}" class="btn btn-outline-secondary">
@@ -27,29 +31,28 @@ Resumo da Conta
 </div>
 
 {# FILTROS DO RESUMO DA CONTA #}
-<form method="get" class="card bg-dark border-secondary shadow mb-4">
+<form method="get" class="card mb-4 finance-table-card">
+    <div class="card-header">
+        <h4>Filtros</h4>
+    </div>
     <div class="card-body">
-        <h5 class="text-light mb-3">
-            Filtros
-        </h5>
-
         <div class="row g-3">
             <div class="col-md">
-                <label class="form-label text-light">
+                <label class="form-label text-body">
                     Data inicial
                 </label>
                 <input type="date" name="data_inicio" class="form-control" value="{{ data_inicio|date:'Y-m-d' }}">
             </div>
 
             <div class="col-md">
-                <label class="form-label text-light">
+                <label class="form-label text-body">
                     Data final
                 </label>
                 <input type="date" name="data_fim" class="form-control" value="{{ data_fim|date:'Y-m-d' }}">
             </div>
 
             <div class="col-md">
-                <label class="form-label text-light">
+                <label class="form-label text-body">
                     Tipos
                 </label>
 
@@ -67,8 +70,8 @@ Resumo da Conta
                         </span>
                     </button>
 
-                    <div class="dropdown-menu dropdown-menu-dark p-3 w-100" aria-labelledby="dropdownTipos">
-                        <div class="form-check text-light mb-2">
+                    <div class="dropdown-menu p-3 w-100" aria-labelledby="dropdownTipos">
+                        <div class="form-check text-body mb-2">
                             <input
                                 class="form-check-input"
                                 type="checkbox"
@@ -80,7 +83,7 @@ Resumo da Conta
                             </label>
                         </div>
 
-                        <div class="form-check text-light mb-2">
+                        <div class="form-check text-body mb-2">
                             <input
                                 class="form-check-input tipo-opcao"
                                 type="checkbox"
@@ -95,7 +98,7 @@ Resumo da Conta
                             </label>
                         </div>
 
-                        <div class="form-check text-light mb-2">
+                        <div class="form-check text-body mb-2">
                             <input
                                 class="form-check-input tipo-opcao"
                                 type="checkbox"
@@ -110,7 +113,7 @@ Resumo da Conta
                             </label>
                         </div>
 
-                        <div class="form-check text-light">
+                        <div class="form-check text-body">
                             <input
                                 class="form-check-input tipo-opcao"
                                 type="checkbox"
@@ -129,7 +132,7 @@ Resumo da Conta
             </div>
 
             <div class="col-md">
-                <label class="form-label text-light">
+                <label class="form-label text-body">
                     Categorias
                 </label>
 
@@ -147,8 +150,8 @@ Resumo da Conta
                         </span>
                     </button>
 
-                    <div class="dropdown-menu dropdown-menu-dark p-3 w-100" aria-labelledby="dropdownCategorias">
-                        <div class="form-check text-light mb-2">
+                    <div class="dropdown-menu p-3 w-100" aria-labelledby="dropdownCategorias">
+                        <div class="form-check text-body mb-2">
                             <input
                                 class="form-check-input"
                                 type="checkbox"
@@ -160,7 +163,7 @@ Resumo da Conta
                             </label>
                         </div>
 
-                        <div class="form-check text-light mb-2">
+                        <div class="form-check text-body mb-2">
                             <input
                                 class="form-check-input categoria-opcao"
                                 type="checkbox"
@@ -176,7 +179,7 @@ Resumo da Conta
                         </div>
 
                         {% for categoria in categorias %}
-                        <div class="form-check text-light mb-2">
+                        <div class="form-check text-body mb-2">
                             <input
                                 class="form-check-input categoria-opcao"
                                 type="checkbox"
@@ -195,11 +198,11 @@ Resumo da Conta
                 </div>
             </div>
 
-            <div class="col-md d-flex gap-2 align-items-end">
-                <button type="submit" class="btn btn-success w-100">
+            <div class="col-md-auto d-flex flex-column flex-md-row gap-2 align-items-stretch align-items-md-end finance-filter-actions">
+                <button type="submit" class="btn btn-primary">
                     Aplicar filtro
                 </button>
-                <a href="{% url 'resumo_conta' conta.id %}" class="btn btn-outline-light w-100">
+                <a href="{% url 'resumo_conta' conta.id %}" class="btn btn-outline-primary">
                     Limpar filtros
                 </a>
             </div>
@@ -208,40 +211,37 @@ Resumo da Conta
 </form>
 
 {# SALDO ATUAL NÃO É AFETADO PELOS FILTROS #}
-<div class="row mb-4">
+<div class="row">
     <div class="col-12">
-        <div class="card bg-dark border-info shadow">
-            <div class="card-body">
-                <h5 class="text-light">
-                    Saldo Atual
-                </h5>
-                <h3 class="text-info">
-                    R$ {{ conta.saldo_atual }}
-                </h3>
-                <small class="text-secondary">
-                    Saldo real da conta. Este valor não muda com os filtros.
-                </small>
+        <div class="card finance-stat-card">
+            <div class="card-body finance-card-body">
+                <div class="finance-card-icon stats-icon blue">
+                    <i class="bi bi-wallet2"></i>
+                </div>
+                <div class="finance-card-content">
+                    <div class="finance-card-title">Saldo Atual</div>
+                    <div class="finance-card-value">R$ {{ conta.saldo_atual }}</div>
+                    <div class="finance-card-description">
+                        Saldo real da conta. Este valor não muda com os filtros.
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 {# CARDS DO PERÍODO FILTRADO #}
-<h2 class="text-success mb-3">
-    Resumo do Período
-</h2>
+<div class="page-heading">
+    <h3>Resumo do Período</h3>
+</div>
 
 <div class="row g-3 mb-4">
     {% if not tipos_filtro or 'entrada' in tipos_filtro %}
     <div class="{% if not tipos_filtro %}col-md-6 col-xl{% else %}col-md{% endif %}">
-        <div class="card bg-dark border-secondary shadow h-100">
-            <div class="card-body d-flex flex-column justify-content-between">
-                <h5 class="text-light mb-3">
-                    Entradas
-                </h5>
-                <h3 class="text-success">
-                    R$ {{ entradas }}
-                </h3>
+        <div class="card h-100 finance-stat-card">
+            <div class="card-body finance-card-body finance-card-body-stacked">
+                <div class="finance-card-title">Entradas</div>
+                <div class="finance-card-value text-success">R$ {{ entradas }}</div>
                 {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
             </div>
         </div>
@@ -250,14 +250,10 @@ Resumo da Conta
 
     {% if not tipos_filtro or 'saida' in tipos_filtro %}
     <div class="{% if not tipos_filtro %}col-md-6 col-xl{% else %}col-md{% endif %}">
-        <div class="card bg-dark border-secondary shadow h-100">
-            <div class="card-body d-flex flex-column justify-content-between">
-                <h5 class="text-light mb-3">
-                    Saídas
-                </h5>
-                <h3 class="text-danger">
-                    R$ {{ saidas }}
-                </h3>
+        <div class="card h-100 finance-stat-card">
+            <div class="card-body finance-card-body finance-card-body-stacked">
+                <div class="finance-card-title">Saídas</div>
+                <div class="finance-card-value text-danger">R$ {{ saidas }}</div>
                 {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
             </div>
         </div>
@@ -266,14 +262,10 @@ Resumo da Conta
 
     {% if not tipos_filtro or 'transferencia' in tipos_filtro %}
     <div class="{% if not tipos_filtro %}col-md-6 col-xl{% else %}col-md{% endif %}">
-        <div class="card bg-dark border-secondary shadow h-100">
-            <div class="card-body d-flex flex-column justify-content-between">
-                <h5 class="text-light mb-3">
-                    Transferências Recebidas
-                </h5>
-                <h3 class="text-success">
-                    R$ {{ transferencias_recebidas }}
-                </h3>
+        <div class="card h-100 finance-stat-card">
+            <div class="card-body finance-card-body finance-card-body-stacked">
+                <div class="finance-card-title">Transferências Recebidas</div>
+                <div class="finance-card-value text-success">R$ {{ transferencias_recebidas }}</div>
                 {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
             </div>
         </div>
@@ -282,14 +274,10 @@ Resumo da Conta
 
     {% if not tipos_filtro or 'transferencia' in tipos_filtro %}
     <div class="{% if not tipos_filtro %}col-md-6 col-xl{% else %}col-md{% endif %}">
-        <div class="card bg-dark border-secondary shadow h-100">
-            <div class="card-body d-flex flex-column justify-content-between">
-                <h5 class="text-light mb-3">
-                    Transferências Enviadas
-                </h5>
-                <h3 class="text-warning">
-                    R$ {{ transferencias_enviadas }}
-                </h3>
+        <div class="card h-100 finance-stat-card">
+            <div class="card-body finance-card-body finance-card-body-stacked">
+                <div class="finance-card-title">Transferências Enviadas</div>
+                <div class="finance-card-value text-warning">R$ {{ transferencias_enviadas }}</div>
                 {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
             </div>
         </div>
@@ -298,24 +286,20 @@ Resumo da Conta
 
     {% if not tipos_filtro or 'entrada' in tipos_filtro and 'saida' in tipos_filtro %}
     <div class="{% if not tipos_filtro %}col-md-6 col-xl{% else %}col-md{% endif %}">
-        <div class="card bg-dark border-success shadow h-100">
-            <div class="card-body d-flex flex-column justify-content-between">
-                <h5 class="text-light mb-3">
+        <div class="card h-100 finance-stat-card">
+            <div class="card-body finance-card-body finance-card-body-stacked">
+                <div class="finance-card-title">
                     {% if categorias_filtro %}
                         Resultado do Filtro
                     {% else %}
                         Resultado do Período
                     {% endif %}
-                </h5>
+                </div>
 
                 {% if resultado_periodo >= 0 %}
-                    <h3 class="text-success fw-bold">
-                        R$ {{ resultado_periodo }}
-                    </h3>
+                    <div class="finance-card-value text-success">R$ {{ resultado_periodo }}</div>
                 {% else %}
-                    <h3 class="text-danger fw-bold">
-                        R$ {{ resultado_periodo }}
-                    </h3>
+                    <div class="finance-card-value text-danger">R$ {{ resultado_periodo }}</div>
                 {% endif %}
                 {% include 'financeiro/includes/filtros_resumo_ativos.html' %}
             </div>
@@ -325,13 +309,13 @@ Resumo da Conta
 </div>
 
 {# TABELA DE MOVIMENTAÇÕES DA CONTA #}
-<h2 class="text-success mb-3">
-    Movimentações da Conta
-</h2>
-
-<div class="card bg-dark border-secondary shadow">
-    <div class="card-body">
-        <table class="table table-dark table-hover align-middle">
+<div class="card finance-table-card">
+    <div class="card-header">
+        <h4>Movimentações da Conta</h4>
+    </div>
+    <div class="card-content">
+        <div class="finance-table-wrap">
+        <table class="table table-hover align-middle mb-0 finance-table">
             <thead>
                 <tr>
                     <th>Data</th>
@@ -419,7 +403,10 @@ Resumo da Conta
                 {% endfor %}
             </tbody>
         </table>
+        </div>
     </div>
+</div>
+
 </div>
 
 {% endblock %}

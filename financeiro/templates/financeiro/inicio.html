@@ -6,93 +6,108 @@ Dashboard Financeiro
 
 {% block content %}
 
-{# CABEÇALHO DO DASHBOARD #}
-<div class="d-flex flex-column flex-lg-row justify-content-between gap-3 mb-4">
-    <div>
-        <h1 class="text-success mb-2">
-            Dashboard Financeiro
-        </h1>
-        <p class="text-secondary mb-0">
-            Visão rápida do mês atual: {{ data_inicio_mes|date:"d/m/Y" }} até {{ data_fim_mes|date:"d/m/Y" }}.
-        </p>
-    </div>
+<div class="finance-page dashboard-page">
+
+<div class="page-heading">
+    <h3>Dashboard Financeiro</h3>
+    <p class="text-muted">
+        Visão rápida do mês atual: {{ data_inicio_mes|date:"d/m/Y" }} até {{ data_fim_mes|date:"d/m/Y" }}.
+    </p>
 </div>
 
 {# CARDS PRINCIPAIS #}
-<div class="row g-3 mb-4">
-    <div class="col-md-6 col-xl">
-        <div class="card bg-dark border-info shadow h-100">
-            <div class="card-body">
-                <h5 class="text-light">Patrimônio Total</h5>
-                <h3 class="text-info">R$ {{ patrimonio_total }}</h3>
-                <small class="text-secondary">Soma dos saldos atuais das contas.</small>
+<div class="dashboard-stats-grid">
+    <div class="dashboard-stat-item">
+        <div class="card h-100 finance-stat-card dashboard-stat-card">
+            <div class="card-body finance-card-body">
+                <div class="finance-card-icon stats-icon blue">
+                    <i class="bi bi-wallet2"></i>
+                </div>
+                <div class="finance-card-content">
+                    <div class="finance-card-title">Patrimônio Total</div>
+                    <div class="finance-card-value">R$ {{ patrimonio_total }}</div>
+                    <div class="finance-card-description">Saldo atual consolidado.</div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-6 col-xl">
-        <div class="card bg-dark border-success shadow h-100">
-            <div class="card-body">
-                <h5 class="text-light">Entradas do Mês</h5>
-                <h3 class="text-success">R$ {{ total_entradas_mes }}</h3>
-                <small class="text-secondary">Receitas registradas no mês atual.</small>
+    <div class="dashboard-stat-item">
+        <div class="card h-100 finance-stat-card dashboard-stat-card">
+            <div class="card-body finance-card-body">
+                <div class="finance-card-icon stats-icon green">
+                    <i class="bi bi-arrow-down-circle-fill"></i>
+                </div>
+                <div class="finance-card-content">
+                    <div class="finance-card-title">Entradas do Mês</div>
+                    <div class="finance-card-value">R$ {{ total_entradas_mes }}</div>
+                    <div class="finance-card-description">Receitas no mês atual.</div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-6 col-xl">
-        <div class="card bg-dark border-danger shadow h-100">
-            <div class="card-body">
-                <h5 class="text-light">Saídas do Mês</h5>
-                <h3 class="text-danger">R$ {{ total_saidas_mes }}</h3>
-                <small class="text-secondary">Despesas registradas no mês atual.</small>
+    <div class="dashboard-stat-item">
+        <div class="card h-100 finance-stat-card dashboard-stat-card">
+            <div class="card-body finance-card-body">
+                <div class="finance-card-icon stats-icon red">
+                    <i class="bi bi-arrow-up-circle-fill"></i>
+                </div>
+                <div class="finance-card-content">
+                    <div class="finance-card-title">Saídas do Mês</div>
+                    <div class="finance-card-value">R$ {{ total_saidas_mes }}</div>
+                    <div class="finance-card-description">Despesas no mês atual.</div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-6 col-xl">
-        <div class="card bg-dark border-secondary shadow h-100">
-            <div class="card-body">
-                <h5 class="text-light">Resultado do Mês</h5>
-
-                {% if resultado_mes >= 0 %}
-                    <h3 class="text-success">R$ {{ resultado_mes }}</h3>
-                {% else %}
-                    <h3 class="text-danger">R$ {{ resultado_mes }}</h3>
-                {% endif %}
-
-                <small class="text-secondary">Entradas menos saídas.</small>
+    <div class="dashboard-stat-item">
+        <div class="card h-100 finance-stat-card dashboard-stat-card">
+            <div class="card-body finance-card-body">
+                <div class="finance-card-icon stats-icon purple">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+                <div class="finance-card-content">
+                    <div class="finance-card-title">Resultado do Mês</div>
+                    <div class="finance-card-value {% if resultado_mes >= 0 %}text-success{% else %}text-danger{% endif %}">
+                        R$ {{ resultado_mes }}
+                    </div>
+                    <div class="finance-card-description">Entradas menos saídas.</div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="col-md-6 col-xl">
-        <div class="card bg-dark border-warning shadow h-100">
-            <div class="card-body">
-                <h5 class="text-light">Transferências Internas</h5>
-                <h3 class="text-warning">R$ {{ total_transferencias_mes }}</h3>
-                <small class="text-secondary">Não afetam patrimônio ou resultado.</small>
+    <div class="dashboard-stat-item">
+        <div class="card h-100 finance-stat-card dashboard-stat-card">
+            <div class="card-body finance-card-body">
+                <div class="finance-card-icon stats-icon blue">
+                    <i class="bi bi-arrow-left-right"></i>
+                </div>
+                <div class="finance-card-content">
+                    <div class="finance-card-title">Transferências Internas</div>
+                    <div class="finance-card-value">R$ {{ total_transferencias_mes }}</div>
+                    <div class="finance-card-description">Movimento interno entre contas.</div>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
 {# CONTAS E MOVIMENTAÇÕES RECENTES #}
-<div class="row g-4 mb-4">
+<div class="row g-4 mb-5 dashboard-tables">
     <div class="col-xl-5">
-        <div class="card bg-dark border-secondary shadow h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
-                    <h2 class="h5 text-light mb-0">
-                        Contas cadastradas
-                    </h2>
-                    <a href="{% url 'listar_contas' %}" class="btn btn-sm btn-outline-light">
-                        Ver todas
-                    </a>
-                </div>
-
-                <div class="table-responsive">
-                    <table class="table table-dark table-hover align-middle mb-0">
+        <div class="card h-100 finance-table-card dashboard-table-card">
+            <div class="card-header d-flex justify-content-between align-items-center gap-3">
+                <h4>Contas cadastradas</h4>
+                <a href="{% url 'listar_contas' %}" class="btn btn-sm btn-outline-primary">
+                    Ver todas
+                </a>
+            </div>
+            <div class="card-content">
+                <div class="finance-table-wrap">
+                    <table class="table table-hover align-middle mb-0 finance-table">
                         <thead>
                             <tr>
                                 <th>Conta</th>
@@ -113,14 +128,14 @@ Dashboard Financeiro
                                 <td>{{ conta.get_tipo_display }}</td>
                                 <td class="text-end text-info">R$ {{ conta.saldo_atual }}</td>
                                 <td class="text-end" data-no-row-link>
-                                    <a href="{% url 'dashboard_conta' conta.id %}" class="btn btn-sm btn-outline-info">
+                                    <a href="{% url 'dashboard_conta' conta.id %}" class="btn btn-sm btn-outline-primary">
                                         Dashboard
                                     </a>
                                 </td>
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="4" class="text-secondary">
+                                <td colspan="4" class="text-muted">
                                     Nenhuma conta cadastrada.
                                 </td>
                             </tr>
@@ -133,24 +148,21 @@ Dashboard Financeiro
     </div>
 
     <div class="col-xl-7">
-        <div class="card bg-dark border-secondary shadow h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
-                    <h2 class="h5 text-light mb-0">
-                        Movimentações recentes
-                    </h2>
-                    <div class="d-flex flex-wrap gap-2">
-                        <a href="{% url 'listar_movimentacoes' %}" class="btn btn-sm btn-outline-light">
-                            Ver lista
-                        </a>
-                        <a href="{% url 'criar_movimentacao' %}" class="btn btn-sm btn-success">
-                            Nova Movimentação
-                        </a>
-                    </div>
+        <div class="card h-100 finance-table-card dashboard-table-card">
+            <div class="card-header d-flex justify-content-between align-items-center gap-3">
+                <h4>Movimentações recentes</h4>
+                <div class="d-flex flex-wrap gap-2">
+                    <a href="{% url 'listar_movimentacoes' %}" class="btn btn-sm btn-outline-primary">
+                        Ver lista
+                    </a>
+                    <a href="{% url 'criar_movimentacao' %}" class="btn btn-sm btn-primary">
+                        Nova Movimentação
+                    </a>
                 </div>
-
-                <div class="table-responsive">
-                    <table class="table table-dark table-hover align-middle mb-0">
+            </div>
+            <div class="card-content">
+                <div class="finance-table-wrap">
+                    <table class="table table-hover align-middle mb-0 finance-table">
                         <thead>
                             <tr>
                                 <th>Data</th>
@@ -198,7 +210,7 @@ Dashboard Financeiro
                             </tr>
                             {% empty %}
                             <tr>
-                                <td colspan="5" class="text-secondary">
+                                <td colspan="5" class="text-muted">
                                     Nenhuma movimentação cadastrada.
                                 </td>
                             </tr>
@@ -212,30 +224,29 @@ Dashboard Financeiro
 </div>
 
 {# GRÁFICOS FINANCEIROS #}
-<section class="mb-4">
-    <h2 class="h4 text-success mb-3">
-        Visão financeira
-    </h2>
+<section class="dashboard-charts mb-5">
+    <div class="page-heading">
+        <h3>Visão financeira</h3>
+    </div>
 
     <div class="row g-4">
         <div class="col-xl-7">
-            <div class="card bg-dark border-secondary shadow h-100">
+            <div class="card h-100 finance-chart-card dashboard-chart-card">
+                <div class="card-header">
+                    <h4>Entradas x Saídas - Últimos 6 meses</h4>
+                </div>
                 <div class="card-body">
-                    <h3 class="h5 text-light mb-3">
-                        Entradas x Saídas - Últimos 6 meses
-                    </h3>
 
                     <div
                         id="containerGraficoEntradasSaidas"
-                        class="position-relative"
-                        style="height: 320px;"
+                        class="position-relative finance-chart-container"
                     >
                         <canvas id="graficoEntradasSaidas"></canvas>
                     </div>
 
                     <p
                         id="mensagemEntradasSaidas"
-                        class="text-secondary text-center py-5 mb-0 d-none"
+                        class="text-muted text-center py-5 mb-0 d-none"
                     >
                         Nenhuma movimentação encontrada nos últimos meses.
                     </p>
@@ -244,23 +255,22 @@ Dashboard Financeiro
         </div>
 
         <div class="col-xl-5">
-            <div class="card bg-dark border-secondary shadow h-100">
+            <div class="card h-100 finance-chart-card dashboard-chart-card">
+                <div class="card-header">
+                    <h4>Gastos por Categoria - Mês atual</h4>
+                </div>
                 <div class="card-body">
-                    <h3 class="h5 text-light mb-3">
-                        Gastos por Categoria - Mês atual
-                    </h3>
 
                     <div
                         id="containerGraficoGastosCategoria"
-                        class="position-relative"
-                        style="height: 320px;"
+                        class="position-relative finance-chart-container"
                     >
                         <canvas id="graficoGastosCategoria"></canvas>
                     </div>
 
                     <p
                         id="mensagemGastosCategoria"
-                        class="text-secondary text-center py-5 mb-0 d-none"
+                        class="text-muted text-center py-5 mb-0 d-none"
                     >
                         Nenhum gasto encontrado no mês atual.
                     </p>
@@ -269,23 +279,22 @@ Dashboard Financeiro
         </div>
 
         <div class="col-12">
-            <div class="card bg-dark border-secondary shadow h-100">
+            <div class="card h-100 finance-chart-card dashboard-chart-card">
+                <div class="card-header">
+                    <h4>Evolução do Resultado Financeiro</h4>
+                </div>
                 <div class="card-body">
-                    <h3 class="h5 text-light mb-3">
-                        Evolução do Resultado Financeiro
-                    </h3>
 
                     <div
                         id="containerGraficoResultadoMensal"
-                        class="position-relative"
-                        style="height: 320px;"
+                        class="position-relative finance-chart-container"
                     >
                         <canvas id="graficoResultadoMensal"></canvas>
                     </div>
 
                     <p
                         id="mensagemResultadoMensal"
-                        class="text-secondary text-center py-5 mb-0 d-none"
+                        class="text-muted text-center py-5 mb-0 d-none"
                     >
                         Nenhuma entrada ou saída encontrada nos últimos meses.
                     </p>
@@ -294,16 +303,15 @@ Dashboard Financeiro
         </div>
 
         <div class="col-xl-5">
-            <div class="card bg-dark border-secondary shadow h-100">
+            <div class="card h-100 finance-chart-card dashboard-chart-card">
+                <div class="card-header">
+                    <h4>Patrimônio por Conta</h4>
+                </div>
                 <div class="card-body">
-                    <h3 class="h5 text-light mb-3">
-                        Patrimônio por Conta
-                    </h3>
 
                     <div
                         id="containerGraficoPatrimonioConta"
-                        class="position-relative"
-                        style="height: 320px;"
+                        class="position-relative finance-chart-container"
                     >
                         <canvas id="graficoPatrimonioConta"></canvas>
                         <div
@@ -311,7 +319,7 @@ Dashboard Financeiro
                             class="position-absolute top-50 start-50 translate-middle text-center"
                             style="pointer-events: none;"
                         >
-                            <small class="d-block text-secondary">
+                            <small class="d-block text-muted">
                                 Patrimônio total
                             </small>
                             <strong
@@ -323,7 +331,7 @@ Dashboard Financeiro
 
                     <p
                         id="mensagemPatrimonioConta"
-                        class="text-secondary text-center py-5 mb-0 d-none"
+                        class="text-muted text-center py-5 mb-0 d-none"
                     >
                         Nenhum patrimônio disponível para exibir.
                     </p>
@@ -332,23 +340,22 @@ Dashboard Financeiro
         </div>
 
         <div class="col-xl-7">
-            <div class="card bg-dark border-secondary shadow h-100">
+            <div class="card h-100 finance-chart-card dashboard-chart-card">
+                <div class="card-header">
+                    <h4>Entradas por Categoria - Mês atual</h4>
+                </div>
                 <div class="card-body">
-                    <h3 class="h5 text-light mb-3">
-                        Entradas por Categoria - Mês atual
-                    </h3>
 
                     <div
                         id="containerGraficoEntradasCategoria"
-                        class="position-relative"
-                        style="height: 320px;"
+                        class="position-relative finance-chart-container"
                     >
                         <canvas id="graficoEntradasCategoria"></canvas>
                     </div>
 
                     <p
                         id="mensagemEntradasCategoria"
-                        class="text-secondary text-center py-5 mb-0 d-none"
+                        class="text-muted text-center py-5 mb-0 d-none"
                     >
                         Nenhuma entrada encontrada no mês atual.
                     </p>
@@ -357,6 +364,8 @@ Dashboard Financeiro
         </div>
     </div>
 </section>
+
+</div>
 
 {% endblock %}
 
@@ -370,8 +379,10 @@ Dashboard Financeiro
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const corTexto = '#d1d5db';
-        const corGrade = 'rgba(148, 163, 184, 0.18)';
+        const temaEscuro = document.body.classList.contains('theme-dark');
+        const corTexto = temaEscuro ? '#d1d5db' : '#4b5563';
+        const corGrade = temaEscuro ? 'rgba(148, 163, 184, 0.18)' : 'rgba(75, 85, 99, 0.16)';
+        const corFundoPonto = temaEscuro ? '#1f232a' : '#ffffff';
         const formatarMoeda = function (valor) {
             return new Intl.NumberFormat('pt-BR', {
                 style: 'currency',
@@ -535,7 +546,7 @@ Dashboard Financeiro
                                     return valor >= 0 ? '#1ed760' : '#ff5c6c';
                                 }
                             ),
-                            pointBorderColor: '#1f232a',
+                            pointBorderColor: corFundoPonto,
                             pointBorderWidth: 2,
                             pointRadius: 5,
                             pointHoverRadius: 7,

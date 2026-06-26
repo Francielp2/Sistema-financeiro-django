@@ -84,6 +84,21 @@ Movimentações
 
             <div class="col-md-3">
                 <label class="form-label text-light">
+                    Conta relacionada
+                </label>
+                <select name="conta" class="form-select">
+                    <option value="">Todas</option>
+
+                    {% for conta in contas %}
+                        <option value="{{ conta.id }}" {% if conta_filtro == conta.id|stringformat:"s" %}selected{% endif %}>
+                            {{ conta.nome }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="col-md-3">
+                <label class="form-label text-light">
                     Conta origem
                 </label>
                 <select name="conta_origem" class="form-select">

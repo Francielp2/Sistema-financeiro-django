@@ -24,8 +24,8 @@ Dashboard da Conta
         <a href="{% url 'resumo_conta' conta.id %}" class="btn btn-outline-info">
             Resumo Financeiro
         </a>
-        <a href="{% url 'editar_conta' conta.id %}" class="btn btn-outline-light">
-            Editar Conta
+        <a href="{% url 'detalhes_conta' conta.id %}?voltar_para={{ request.get_full_path|urlencode }}" class="btn btn-outline-light">
+            Detalhes da Conta
         </a>
         <a href="{% url 'inicio' %}" class="btn btn-outline-secondary">
             Voltar ao Dashboard Geral
@@ -101,18 +101,26 @@ Dashboard da Conta
 {# MOVIMENTAÇÕES RECENTES DA CONTA #}
 <div class="card bg-dark border-secondary shadow mb-4">
     <div class="card-body">
-        <h2 class="h5 text-light mb-3">
-            Últimas movimentações da conta
-        </h2>
+        <div class="d-flex justify-content-between align-items-center gap-3 mb-3">
+            <h2 class="h5 text-light mb-0">
+                Últimas movimentações da conta
+            </h2>
+            <a href="{% url 'listar_movimentacoes' %}?conta={{ conta.id }}" class="btn btn-sm btn-outline-light">
+                Ver todas
+            </a>
+        </div>
 
         <div class="table-responsive">
             <table class="table table-dark table-hover align-middle mb-0">
                 <thead>
                     <tr>
                         <th>Data</th>
+                        <th>Hora</th>
                         <th>Tipo</th>
                         <th>Descrição</th>
                         <th>Categoria</th>
+                        <th>Conta origem</th>
+                        <th>Conta destino</th>
                         <th class="text-end">Valor</th>
                     </tr>
                 </thead>
@@ -125,14 +133,33 @@ Dashboard da Conta
                         tabindex="0"
                     >
                         <td>{{ movimentacao.data|date:"d/m/Y" }}</td>
-                        <td>{{ movimentacao.get_tipo_display }}</td>
+                        <td>{{ movimentacao.hora|time:"H:i"|default:"-" }}</td>
+                        <td>
+                            {% if movimentacao.tipo == 'entrada' %}
+                                <span class="badge bg-success">Entrada</span>
+                            {% elif movimentacao.tipo == 'saida' %}
+                                <span class="badge bg-danger">Saída</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Transferência</span>
+                            {% endif %}
+                        </td>
                         <td>{{ movimentacao.descricao }}</td>
                         <td>{{ movimentacao.categoria.nome|default:"-" }}</td>
-                        <td class="text-end">R$ {{ movimentacao.valor }}</td>
+                        <td>{{ movimentacao.conta_origem.nome|default:"-" }}</td>
+                        <td>{{ movimentacao.conta_destino.nome|default:"-" }}</td>
+                        <td class="text-end">
+                            {% if movimentacao.tipo == 'entrada' %}
+                                <span class="text-success">+ R$ {{ movimentacao.valor }}</span>
+                            {% elif movimentacao.tipo == 'saida' %}
+                                <span class="text-danger">- R$ {{ movimentacao.valor }}</span>
+                            {% else %}
+                                <span class="text-warning">R$ {{ movimentacao.valor }}</span>
+                            {% endif %}
+                        </td>
                     </tr>
                     {% empty %}
                     <tr>
-                        <td colspan="5" class="text-secondary">
+                        <td colspan="8" class="text-secondary">
                             Nenhuma movimentação cadastrada para esta conta.
                         </td>
                     </tr>

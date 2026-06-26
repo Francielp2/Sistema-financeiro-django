@@ -1083,7 +1083,12 @@ class ViewsFinanceirasTestCase(FinanceiroTestMixin, TestCase):
         )
         self.assertContains(
             resposta,
-            reverse('editar_conta', args=[self.conta.id])
+            reverse('detalhes_conta', args=[self.conta.id])
+        )
+        self.assertContains(resposta, 'Detalhes da Conta')
+        self.assertContains(
+            resposta,
+            f'{reverse("listar_movimentacoes")}?conta={self.conta.id}'
         )
         self.assertContains(
             resposta,
@@ -1431,6 +1436,12 @@ class ViewsFinanceirasTestCase(FinanceiroTestMixin, TestCase):
             descricao='Salário',
             data_movimentacao=date(2026, 2, 1)
         )
+        transferencia_relacionada = self.criar_movimentacao(
+            'transferencia',
+            '25.00',
+            descricao='Reserva',
+            data_movimentacao=date(2026, 1, 20)
+        )
 
         resposta = self.client.get(reverse('listar_movimentacoes'), {
             'data_inicio': '2026-01-01',
@@ -1446,15 +1457,29 @@ class ViewsFinanceirasTestCase(FinanceiroTestMixin, TestCase):
         )
 
         resposta = self.client.get(reverse('listar_movimentacoes'), {
+            'conta': str(self.conta_destino.id),
+        })
+        self.assertIn(
+            transferencia_relacionada,
+            resposta.context['movimentacoes']
+        )
+        self.assertNotIn(
+            esperada,
+            resposta.context['movimentacoes']
+        )
+
+        resposta = self.client.get(reverse('listar_movimentacoes'), {
             'data_inicio': 'data-invalida',
             'tipo': 'invalido',
             'categoria': str(self.outra_categoria.id),
             'conta_origem': str(self.outra_conta.id),
+            'conta': str(self.outra_conta.id),
         })
         self.assertEqual(resposta.context['data_inicio_filtro'], '')
         self.assertEqual(resposta.context['tipo_filtro'], '')
         self.assertEqual(resposta.context['categoria_filtro'], '')
         self.assertEqual(resposta.context['conta_origem_filtro'], '')
+        self.assertEqual(resposta.context['conta_filtro'], '')
 
     def test_resumos_geral_e_por_conta(self):
         self.client.force_login(self.usuario)

@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db.models import Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
@@ -336,6 +337,7 @@ def listar_movimentacoes(request):
     data_fim_filtro = request.GET.get('data_fim', '')
     tipo_filtro = request.GET.get('tipo', '')
     categoria_filtro = request.GET.get('categoria', '')
+    conta_filtro = request.GET.get('conta', '')
     conta_origem_filtro = request.GET.get('conta_origem', '')
     conta_destino_filtro = request.GET.get('conta_destino', '')
     descricao_filtro = request.GET.get('descricao', '').strip()
@@ -378,6 +380,20 @@ def listar_movimentacoes(request):
         movimentacoes = movimentacoes.filter(categoria_id=categoria_filtro)
     else:
         categoria_filtro = ''
+
+    if (
+        conta_filtro.isdigit()
+        and models.Conta.objects.filter(
+            id=conta_filtro,
+            usuario=request.user
+        ).exists()
+    ):
+        movimentacoes = movimentacoes.filter(
+            Q(conta_origem_id=conta_filtro)
+            | Q(conta_destino_id=conta_filtro)
+        )
+    else:
+        conta_filtro = ''
 
     if (
         conta_origem_filtro.isdigit()
@@ -428,6 +444,7 @@ def listar_movimentacoes(request):
         'data_fim_filtro': data_fim_filtro,
         'tipo_filtro': tipo_filtro,
         'categoria_filtro': categoria_filtro,
+        'conta_filtro': conta_filtro,
         'conta_origem_filtro': conta_origem_filtro,
         'conta_destino_filtro': conta_destino_filtro,
         'descricao_filtro': descricao_filtro,

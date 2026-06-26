@@ -77,33 +77,6 @@ Dashboard Financeiro
     </div>
 </div>
 
-{# ATALHOS RÁPIDOS #}
-<div class="card bg-dark border-secondary shadow mb-4">
-    <div class="card-body">
-        <h2 class="h5 text-light mb-3">
-            Atalhos rápidos
-        </h2>
-
-        <div class="d-flex flex-wrap gap-2">
-            <a href="{% url 'criar_movimentacao' %}" class="btn btn-success">
-                Nova movimentação
-            </a>
-            <a href="{% url 'criar_conta' %}" class="btn btn-outline-success">
-                Nova conta
-            </a>
-            <a href="{% url 'criar_categoria' %}" class="btn btn-outline-success">
-                Nova categoria
-            </a>
-            <a href="{% url 'resumo_financeiro' %}" class="btn btn-outline-info">
-                Resumo financeiro
-            </a>
-            <a href="{% url 'listar_movimentacoes' %}" class="btn btn-outline-light">
-                Listar movimentações
-            </a>
-        </div>
-    </div>
-</div>
-
 {# CONTAS E MOVIMENTAÇÕES RECENTES #}
 <div class="row g-4 mb-4">
     <div class="col-xl-5">
@@ -130,11 +103,16 @@ Dashboard Financeiro
                         </thead>
                         <tbody>
                             {% for conta in contas %}
-                            <tr>
+                            <tr
+                                class="linha-clicavel"
+                                data-href="{% url 'detalhes_conta' conta.id %}?voltar_para={{ request.get_full_path|urlencode }}"
+                                role="link"
+                                tabindex="0"
+                            >
                                 <td>{{ conta.nome }}</td>
                                 <td>{{ conta.get_tipo_display }}</td>
                                 <td class="text-end text-info">R$ {{ conta.saldo_atual }}</td>
-                                <td class="text-end">
+                                <td class="text-end" data-no-row-link>
                                     <a href="{% url 'dashboard_conta' conta.id %}" class="btn btn-sm btn-outline-info">
                                         Dashboard
                                     </a>
@@ -161,9 +139,14 @@ Dashboard Financeiro
                     <h2 class="h5 text-light mb-0">
                         Movimentações recentes
                     </h2>
-                    <a href="{% url 'listar_movimentacoes' %}" class="btn btn-sm btn-outline-light">
-                        Ver lista
-                    </a>
+                    <div class="d-flex flex-wrap gap-2">
+                        <a href="{% url 'listar_movimentacoes' %}" class="btn btn-sm btn-outline-light">
+                            Ver lista
+                        </a>
+                        <a href="{% url 'criar_movimentacao' %}" class="btn btn-sm btn-success">
+                            Nova Movimentação
+                        </a>
+                    </div>
                 </div>
 
                 <div class="table-responsive">

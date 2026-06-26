@@ -99,16 +99,6 @@ Detalhes da Movimentação
         </div>
 
         <div class="d-flex flex-wrap gap-2 mt-4">
-            {% if movimentacao.conta_origem %}
-                <a href="{% url 'dashboard_conta' movimentacao.conta_origem.id %}" class="btn btn-outline-info">
-                    Abrir Dashboard da Conta de Origem
-                </a>
-            {% endif %}
-            {% if movimentacao.conta_destino and movimentacao.conta_destino != movimentacao.conta_origem %}
-                <a href="{% url 'dashboard_conta' movimentacao.conta_destino.id %}" class="btn btn-outline-info">
-                    Abrir Dashboard da Conta de Destino
-                </a>
-            {% endif %}
             <a href="{% url 'editar_movimentacao' movimentacao.id %}" class="btn btn-outline-light">
                 Editar
             </a>

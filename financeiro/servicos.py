@@ -457,6 +457,19 @@ def obter_entradas_saidas_conta_ultimos_meses(
     )
 
 
+def calcular_resultado_mensal(dados_entradas_saidas):
+    entradas = dados_entradas_saidas.get('entradas', [])
+    saidas = dados_entradas_saidas.get('saidas', [])
+
+    return {
+        'labels': dados_entradas_saidas.get('labels', []),
+        'resultados': [
+            entrada - saida
+            for entrada, saida in zip(entradas, saidas)
+        ],
+    }
+
+
 def obter_gastos_por_categoria_conta(
     usuario,
     conta,
@@ -545,6 +558,10 @@ def obter_dashboard_geral(usuario):
         data_inicio_mes,
         data_fim_mes
     )
+    dados_entradas_saidas_meses = obter_entradas_saidas_ultimos_meses(
+        usuario,
+        quantidade_meses=6
+    )
 
     return {
         'patrimonio_total': calcular_patrimonio_total(usuario, contas),
@@ -567,11 +584,9 @@ def obter_dashboard_geral(usuario):
             data_fim_mes
         ),
         'dados_patrimonio_por_conta': obter_patrimonio_por_conta(usuario),
-        'dados_entradas_saidas_meses': (
-            obter_entradas_saidas_ultimos_meses(
-                usuario,
-                quantidade_meses=6
-            )
+        'dados_entradas_saidas_meses': dados_entradas_saidas_meses,
+        'dados_resultado_mensal': calcular_resultado_mensal(
+            dados_entradas_saidas_meses
         ),
     }
 

@@ -153,19 +153,6 @@ class Movimentacao(models.Model):
                 raise ValidationError(
                     'A conta de origem e destino não podem ser iguais.')
 
-        # VALIDA SALDO DISPONÍVEL
-        if self.tipo == 'saida':
-            if self.conta_origem.saldo_atual < self.valor:
-                raise ValidationError(
-                    'Saldo insuficiente para realizar esta saída.'
-                )
-
-        if self.tipo == 'transferencia':
-            if self.conta_origem.saldo_atual < self.valor:
-                raise ValidationError(
-                    'Saldo insuficiente para realizar esta transferência.'
-                )
-
         if self.tipo == 'transferencia' and self.categoria:
             raise ValidationError(
                 'Transferências internas não devem possuir categoria.')

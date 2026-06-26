@@ -194,7 +194,7 @@ class ModelsTestCase(FinanceiroTestMixin, TestCase):
         ):
             com_origem.full_clean()
 
-    def test_saida_exige_origem_proibe_destino_e_valida_saldo(self):
+    def test_saida_exige_origem_proibe_destino_e_permite_saldo_negativo(self):
         sem_origem = models.Movimentacao(
             usuario=self.usuario,
             descricao='Saída',
@@ -209,14 +209,6 @@ class ModelsTestCase(FinanceiroTestMixin, TestCase):
             conta_origem=self.conta,
             conta_destino=self.conta_destino
         )
-        sem_saldo = models.Movimentacao(
-            usuario=self.usuario,
-            descricao='Saída',
-            valor=Decimal('2000.00'),
-            tipo='saida',
-            conta_origem=self.conta
-        )
-
         with self.assertRaisesMessage(
             ValidationError,
             'Saídas precisam de uma conta de origem.'
@@ -227,13 +219,14 @@ class ModelsTestCase(FinanceiroTestMixin, TestCase):
             'Saídas não devem ter conta de destino.'
         ):
             com_destino.full_clean()
-        with self.assertRaisesMessage(
-            ValidationError,
-            'Saldo insuficiente para realizar esta saída.'
-        ):
-            sem_saldo.full_clean()
 
-    def test_transferencia_valida_contas_saldo_e_categoria(self):
+        self.criar_movimentacao('saida', '1200.00')
+
+        self.assertEqual(self.conta.saldo_atual, Decimal('-200.00'))
+
+    def test_transferencia_valida_contas_categoria_e_permite_saldo_negativo(
+        self
+    ):
         casos = [
             (
                 models.Movimentacao(
@@ -260,17 +253,6 @@ class ModelsTestCase(FinanceiroTestMixin, TestCase):
                 models.Movimentacao(
                     usuario=self.usuario,
                     descricao='Transferência',
-                    valor=Decimal('2000.00'),
-                    tipo='transferencia',
-                    conta_origem=self.conta,
-                    conta_destino=self.conta_destino
-                ),
-                'Saldo insuficiente para realizar esta transferência.'
-            ),
-            (
-                models.Movimentacao(
-                    usuario=self.usuario,
-                    descricao='Transferência',
                     valor=Decimal('10.00'),
                     tipo='transferencia',
                     categoria=self.categoria,
@@ -285,6 +267,17 @@ class ModelsTestCase(FinanceiroTestMixin, TestCase):
             with self.subTest(mensagem=mensagem):
                 with self.assertRaisesMessage(ValidationError, mensagem):
                     movimentacao.full_clean()
+
+        transferencia = self.criar_movimentacao(
+            'transferencia',
+            '1200.00'
+        )
+
+        self.assertEqual(self.conta.saldo_atual, Decimal('-200.00'))
+        self.assertEqual(
+            transferencia.conta_destino.saldo_atual,
+            Decimal('1700.00')
+        )
 
 
 class FormulariosTestCase(FinanceiroTestMixin, TestCase):
@@ -689,6 +682,33 @@ class ServicosTestCase(FinanceiroTestMixin, TestCase):
             {'labels': [], 'entradas': [], 'saidas': []}
         )
 
+    def test_resultado_mensal_subtrai_saidas_e_preserva_meses_zerados(self):
+        resultado = servicos.calcular_resultado_mensal({
+            'labels': ['Jan/2026', 'Fev/2026', 'Mar/2026'],
+            'entradas': [
+                Decimal('500.00'),
+                Decimal('100.00'),
+                0,
+            ],
+            'saidas': [
+                Decimal('200.00'),
+                Decimal('300.00'),
+                0,
+            ],
+        })
+
+        self.assertEqual(
+            resultado,
+            {
+                'labels': ['Jan/2026', 'Fev/2026', 'Mar/2026'],
+                'resultados': [
+                    Decimal('300.00'),
+                    Decimal('-200.00'),
+                    0,
+                ],
+            }
+        )
+
     @patch('financeiro.servicos.timezone.localdate')
     def test_entradas_saidas_conta_meses_isola_conta_e_preenche_zeros(
         self,
@@ -970,7 +990,15 @@ class ViewsFinanceirasTestCase(FinanceiroTestMixin, TestCase):
             resposta.context['dados_entradas_saidas_meses'],
             meses
         )
+        self.assertEqual(
+            resposta.context['dados_resultado_mensal'],
+            {
+                'labels': ['Jan/2026'],
+                'resultados': [Decimal('450.00')],
+            }
+        )
         self.assertContains(resposta, 'id="graficoEntradasSaidas"')
+        self.assertContains(resposta, 'id="graficoResultadoMensal"')
         self.assertContains(resposta, 'id="graficoGastosCategoria"')
         self.assertContains(resposta, 'id="graficoPatrimonioConta"')
         self.assertContains(resposta, 'id="totalPatrimonioConta"')
@@ -979,6 +1007,10 @@ class ViewsFinanceirasTestCase(FinanceiroTestMixin, TestCase):
         self.assertContains(
             resposta,
             'id="dados-entradas-saidas-meses"'
+        )
+        self.assertContains(
+            resposta,
+            'id="dados-resultado-mensal"'
         )
         self.assertContains(
             resposta,

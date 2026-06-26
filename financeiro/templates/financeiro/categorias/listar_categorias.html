@@ -9,7 +9,7 @@ Categorias
 {# CABEÇALHO E AÇÃO DE CRIAÇÃO #}
 <div class="d-flex justify-content-between align-items-center mb-4">
 
-    <h1 class="text-success">
+    <h1 class="listing-page-title">
         Categorias
     </h1>
 
@@ -20,18 +20,17 @@ Categorias
 </div>
 
 {# FILTROS DA LISTAGEM #}
-<form method="get" class="card bg-dark border-secondary shadow mb-4">
+<form method="get" class="card mb-4 listing-filter-card">
+    <div class="card-header">
+        <h4>Filtros</h4>
+    </div>
 
     <div class="card-body">
-
-        <h5 class="text-light mb-3">
-            Filtros
-        </h5>
 
         <div class="row g-3 align-items-end">
 
             <div class="col-md">
-                <label class="form-label text-light">
+                <label class="form-label">
                     Nome
                 </label>
                 <input
@@ -44,7 +43,7 @@ Categorias
             </div>
 
             <div class="col-md">
-                <label class="form-label text-light">
+                <label class="form-label">
                     Status
                 </label>
                 <select name="ativa" class="form-select">
@@ -58,12 +57,12 @@ Categorias
                 </select>
             </div>
 
-            <div class="col-md d-flex gap-2">
+            <div class="col-md d-flex gap-2 listing-filter-actions">
                 <button type="submit" class="btn btn-success w-100">
                     Aplicar filtro
                 </button>
 
-                <a href="{% url 'listar_categorias' %}" class="btn btn-outline-light w-100">
+                <a href="{% url 'listar_categorias' %}" class="btn btn-outline-primary w-100">
                     Limpar filtros
                 </a>
             </div>
@@ -107,14 +106,14 @@ Categorias
 
                     <td>
                         {% if categoria.ativa %}
-                            Ativa
+                            <span class="badge bg-success">Ativa</span>
                         {% else %}
-                            Inativa
+                            <span class="badge bg-secondary">Inativa</span>
                         {% endif %}
                     </td>
 
                     <td data-no-row-link>
-                        <a href="{% url 'editar_categoria' categoria.id %}" class="btn btn-sm btn-outline-light">
+                        <a href="{% url 'editar_categoria' categoria.id %}" class="btn btn-sm btn-outline-primary">
                             Editar
                         </a>
 

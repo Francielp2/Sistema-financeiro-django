@@ -1378,6 +1378,55 @@ body.theme-dark .resumo-table-card .resumo-table tbody tr:hover td {
 }
 
 /* TABELAS DE LISTAGEM */
+.listing-page-title {
+  color: #25396f;
+  line-height: 1.2;
+  margin-bottom: 0;
+}
+
+.listing-filter-card {
+  background-color: #ffffff;
+  border: 1px solid #e7edf7;
+  border-radius: 0.7rem;
+  box-shadow: 0 8px 18px rgba(25, 42, 70, 0.05);
+  overflow: visible;
+}
+
+.listing-filter-card .card-header {
+  align-items: center;
+  background-color: #ffffff;
+  border-bottom: 1px solid #edf2f7;
+  padding: 1.15rem 1.35rem;
+}
+
+.listing-filter-card .card-header h4 {
+  color: #25396f;
+  font-size: 1rem;
+  font-weight: 800;
+  margin-bottom: 0;
+}
+
+.listing-filter-card .card-body {
+  padding: 1.35rem;
+}
+
+.listing-filter-card .form-label {
+  color: #25396f;
+  font-weight: 700;
+}
+
+.listing-filter-actions {
+  min-width: 220px;
+}
+
+.listing-filter-actions .btn {
+  white-space: nowrap;
+}
+
+.listing-filter-card-wide .listing-filter-actions {
+  min-width: 0;
+}
+
 .listing-table-card {
   border: 1px solid #e7edf7;
   border-radius: 0.7rem;
@@ -1451,8 +1500,29 @@ body.theme-dark .resumo-table-card .resumo-table tbody tr:hover td {
 }
 
 body.theme-dark .listing-table-card {
+  background-color: #1f232a !important;
   border-color: #3a4250;
   box-shadow: none;
+}
+
+body.theme-dark .listing-filter-card {
+  background-color: #1f232a !important;
+  border-color: #3a4250;
+  box-shadow: none;
+}
+
+body.theme-dark .listing-page-title {
+  color: #f1f1f1;
+}
+
+body.theme-dark .listing-filter-card .card-header {
+  background-color: #1f232a;
+  border-bottom-color: #3a4250;
+}
+
+body.theme-dark .listing-filter-card .card-header h4,
+body.theme-dark .listing-filter-card .form-label {
+  color: #f1f1f1;
 }
 
 body.theme-dark .listing-table,
@@ -1486,6 +1556,16 @@ body.theme-dark .listing-table tbody tr:hover td {
 @media (max-width: 1199px) {
   .listing-table-wrap {
     overflow-x: auto;
+  }
+}
+
+@media (max-width: 767px) {
+  .listing-filter-actions {
+    min-width: 0;
+  }
+
+  .listing-filter-actions .btn {
+    width: 100%;
   }
 }
 

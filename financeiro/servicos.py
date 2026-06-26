@@ -602,6 +602,13 @@ def obter_dashboard_conta(usuario, conta):
         data_inicio_mes,
         data_fim_mes
     )
+    dados_entradas_saidas_conta_meses = (
+        obter_entradas_saidas_conta_ultimos_meses(
+            usuario,
+            conta,
+            quantidade_meses=6
+        )
+    )
 
     return {
         'conta': conta,
@@ -622,11 +629,10 @@ def obter_dashboard_conta(usuario, conta):
             conta=conta
         ),
         'dados_entradas_saidas_conta_meses': (
-            obter_entradas_saidas_conta_ultimos_meses(
-                usuario,
-                conta,
-                quantidade_meses=6
-            )
+            dados_entradas_saidas_conta_meses
+        ),
+        'dados_resultado_mensal_conta': calcular_resultado_mensal(
+            dados_entradas_saidas_conta_meses
         ),
         'dados_gastos_categoria_conta': obter_gastos_por_categoria_conta(
             usuario,

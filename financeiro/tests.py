@@ -517,10 +517,15 @@ class ServicosTestCase(FinanceiroTestMixin, TestCase):
 
         self.assertEqual(resultado, [recente, antiga])
 
+    @patch(
+        'financeiro.servicos.timezone.localdate',
+        return_value=date(2026, 2, 15)
+    )
     @patch('financeiro.servicos.obter_periodo_mes_atual')
     def test_dashboard_conta_reutiliza_resumo_e_isola_movimentacoes(
         self,
-        periodo_mock
+        periodo_mock,
+        localdate_mock
     ):
         periodo_mock.return_value = (
             date(2026, 1, 1),
@@ -565,6 +570,10 @@ class ServicosTestCase(FinanceiroTestMixin, TestCase):
             Decimal('200.00')
         )
         self.assertEqual(dashboard['resultado_mes'], Decimal('50.00'))
+        self.assertEqual(
+            dashboard['dados_resultado_mensal_conta']['resultados'][-2:],
+            [Decimal('200.00'), Decimal('20.00')]
+        )
         self.assertEqual(
             list(dashboard['movimentacoes_recentes'])[0],
             recente_fora_do_mes
@@ -1090,6 +1099,10 @@ class ViewsFinanceirasTestCase(FinanceiroTestMixin, TestCase):
         )
         self.assertContains(
             resposta,
+            'id="graficoResultadoMensalConta"'
+        )
+        self.assertContains(
+            resposta,
             'id="dados-entradas-saidas-conta-meses"'
         )
         self.assertContains(
@@ -1099,6 +1112,10 @@ class ViewsFinanceirasTestCase(FinanceiroTestMixin, TestCase):
         self.assertContains(
             resposta,
             'id="dados-transferencias-conta-meses"'
+        )
+        self.assertContains(
+            resposta,
+            'id="dados-resultado-mensal-conta"'
         )
         self.assertContains(
             resposta,

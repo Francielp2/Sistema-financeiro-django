@@ -179,6 +179,31 @@ Dashboard da Conta
             <div class="card bg-dark border-secondary shadow h-100">
                 <div class="card-body">
                     <h3 class="h5 text-light mb-3">
+                        Evolução do Resultado Financeiro
+                    </h3>
+
+                    <div
+                        id="containerGraficoResultadoMensalConta"
+                        class="position-relative"
+                        style="height: 320px;"
+                    >
+                        <canvas id="graficoResultadoMensalConta"></canvas>
+                    </div>
+
+                    <p
+                        id="mensagemResultadoMensalConta"
+                        class="text-secondary text-center py-5 mb-0 d-none"
+                    >
+                        Nenhuma entrada ou saída encontrada nesta conta nos últimos 6 meses.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-5">
+            <div class="card bg-dark border-secondary shadow h-100">
+                <div class="card-body">
+                    <h3 class="h5 text-light mb-3">
                         Gastos por Categoria da Conta — Mês atual
                     </h3>
 
@@ -200,7 +225,7 @@ Dashboard da Conta
             </div>
         </div>
 
-        <div class="col-12">
+        <div class="col-xl-7">
             <div class="card bg-dark border-secondary shadow h-100">
                 <div class="card-body">
                     <h3 class="h5 text-light mb-3">
@@ -233,6 +258,7 @@ Dashboard da Conta
 {{ dados_entradas_saidas_conta_meses|json_script:"dados-entradas-saidas-conta-meses" }}
 {{ dados_gastos_categoria_conta|json_script:"dados-gastos-categoria-conta" }}
 {{ dados_transferencias_conta_meses|json_script:"dados-transferencias-conta-meses" }}
+{{ dados_resultado_mensal_conta|json_script:"dados-resultado-mensal-conta" }}
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script>
@@ -362,6 +388,125 @@ Dashboard da Conta
                 ocultarGrafico(
                     containerEntradasSaidas,
                     mensagemEntradasSaidas
+                );
+            }
+        }
+
+        const elementoResultadoMensal = document.getElementById(
+            'dados-resultado-mensal-conta'
+        );
+        const canvasResultadoMensal = document.getElementById(
+            'graficoResultadoMensalConta'
+        );
+        const containerResultadoMensal = document.getElementById(
+            'containerGraficoResultadoMensalConta'
+        );
+        const mensagemResultadoMensal = document.getElementById(
+            'mensagemResultadoMensalConta'
+        );
+
+        if (
+            elementoResultadoMensal &&
+            canvasResultadoMensal &&
+            containerResultadoMensal &&
+            mensagemResultadoMensal &&
+            window.Chart
+        ) {
+            const dados = JSON.parse(elementoResultadoMensal.textContent);
+            const labels = dados.labels || [];
+            const resultados = (dados.resultados || []).map(Number);
+            const dadosValidos = (
+                labels.length > 0 &&
+                resultados.length === labels.length &&
+                resultados.some(function (valor) {
+                    return Number.isFinite(valor) && valor !== 0;
+                })
+            );
+
+            if (dadosValidos) {
+                new Chart(canvasResultadoMensal, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Resultado',
+                            data: resultados,
+                            borderColor: '#1ed760',
+                            backgroundColor: 'rgba(29, 185, 84, 0.16)',
+                            pointBackgroundColor: resultados.map(
+                                function (valor) {
+                                    return valor >= 0 ? '#1ed760' : '#ff5c6c';
+                                }
+                            ),
+                            pointBorderColor: '#1f232a',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            borderWidth: 3,
+                            tension: 0.25,
+                            fill: false
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        interaction: {
+                            mode: 'index',
+                            intersect: false
+                        },
+                        plugins: {
+                            legend: {
+                                labels: {
+                                    color: corTexto
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function (contexto) {
+                                        return (
+                                            'Resultado: ' +
+                                            formatarMoeda(contexto.parsed.y)
+                                        );
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                ticks: {
+                                    color: corTexto
+                                },
+                                grid: {
+                                    color: corGrade
+                                }
+                            },
+                            y: {
+                                ticks: {
+                                    color: corTexto,
+                                    callback: function (valor) {
+                                        return formatarMoeda(valor);
+                                    }
+                                },
+                                grid: {
+                                    color: function (contexto) {
+                                        return (
+                                            contexto.tick.value === 0
+                                                ? 'rgba(255, 255, 255, 0.5)'
+                                                : corGrade
+                                        );
+                                    },
+                                    lineWidth: function (contexto) {
+                                        return contexto.tick.value === 0 ? 2 : 1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            } else {
+                ocultarGrafico(
+                    containerResultadoMensal,
+                    mensagemResultadoMensal
                 );
             }
         }

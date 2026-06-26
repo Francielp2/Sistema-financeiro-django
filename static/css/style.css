@@ -194,6 +194,14 @@ body.theme-dark .text-muted {
   --sidebar-accent-icon: #c2410c;
 }
 
+.sidebar-accent-usuarios {
+  --sidebar-accent-bg: #eef2ff;
+  --sidebar-accent-hover: #e0e7ff;
+  --sidebar-accent-active: #4f46e5;
+  --sidebar-accent-border: #4f46e5;
+  --sidebar-accent-icon: #4338ca;
+}
+
 .sidebar-accent-login {
   --sidebar-accent-bg: #eef5ff;
   --sidebar-accent-hover: #dceaff;
@@ -318,6 +326,13 @@ body.theme-dark .sidebar-accent-admin {
   --sidebar-accent-hover-dark: rgba(234, 88, 12, 0.28);
   --sidebar-accent-border-dark: #fb923c;
   --sidebar-accent-icon-dark: #fdba74;
+}
+
+body.theme-dark .sidebar-accent-usuarios {
+  --sidebar-accent-bg-dark: rgba(79, 70, 229, 0.2);
+  --sidebar-accent-hover-dark: rgba(79, 70, 229, 0.3);
+  --sidebar-accent-border-dark: #818cf8;
+  --sidebar-accent-icon-dark: #a5b4fc;
 }
 
 body.theme-dark #main {

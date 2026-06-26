@@ -152,6 +152,13 @@
                                 <span>Painel Administrativo</span>
                             </a>
                         </li>
+
+                        <li class="sidebar-item sidebar-accent-usuarios {% if request.resolver_match.url_name == 'listar_usuarios' %}active{% endif %}">
+                            <a href="{% url 'listar_usuarios' %}" class="sidebar-link">
+                                <i class="bi bi-people-fill"></i>
+                                <span>Usuários</span>
+                            </a>
+                        </li>
                         {% endif %}
                         {% else %}
                         <li class="sidebar-title">Acesso</li>

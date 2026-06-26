@@ -6,40 +6,38 @@ Excluir Movimentação
 
 {% block content %}
 
-{# CONFIRMAÇÃO DE EXCLUSÃO DA MOVIMENTAÇÃO #}
-<div class="row justify-content-center">
-    <div class="col-md-6">
+<div class="app-form-page app-form-page-narrow">
+    <div class="page-heading">
+        <h3 class="text-danger">Excluir Movimentação</h3>
+        <p class="text-muted">
+            Confirme a exclusão antes de continuar.
+        </p>
+    </div>
 
-        <div class="card bg-dark border-secondary shadow">
-            <div class="card-body">
+    <form method="POST" class="card app-form-card">
+        {% csrf_token %}
 
-                <h2 class="text-danger mb-3">
-                    Excluir Movimentação
-                </h2>
-
-                <p class="text-light">
+        <div class="card-body">
+            <section class="app-form-section">
+                <div class="app-form-section-title">Confirmação</div>
+                <p class="app-form-confirmation-text mb-0">
                     Tem certeza que deseja excluir a movimentação
                     <strong>{{ movimentacao.descricao }}</strong>
                     no valor de
                     <strong>R$ {{ movimentacao.valor }}</strong>?
                 </p>
+            </section>
 
-                <form method="POST">
-                    {% csrf_token %}
-
-                    <button type="submit" class="btn btn-danger">
-                        Sim, excluir
-                    </button>
-
-                    <a href="{% url 'listar_movimentacoes' %}" class="btn btn-outline-light">
-                        Cancelar
-                    </a>
-                </form>
-
+            <div class="app-form-actions">
+                <button type="submit" class="btn btn-danger">
+                    Sim, excluir
+                </button>
+                <a href="{% url 'listar_movimentacoes' %}" class="btn btn-outline-primary">
+                    Cancelar
+                </a>
             </div>
         </div>
-
-    </div>
+    </form>
 </div>
 
 {% endblock %}

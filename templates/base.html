@@ -194,10 +194,12 @@
                     <i class="bi bi-justify fs-3"></i>
                 </a>
 
-                <button type="button" class="btn btn-sm btn-outline-secondary app-back-button" onclick="if (window.history.length > 1) { window.history.back(); } else { window.location.href = '{% url 'inicio' %}'; }">
-                    <i class="bi bi-arrow-left"></i>
-                    <span>Voltar</span>
-                </button>
+                {% if user.is_authenticated and request.resolver_match.url_name != 'inicio' %}
+                    <a href="{{ request.url_voltar_segura|default:'/' }}" class="btn btn-sm btn-outline-secondary app-back-button">
+                        <i class="bi bi-arrow-left"></i>
+                        <span>Voltar</span>
+                    </a>
+                {% endif %}
             </header>
 
             <div class="page-content">

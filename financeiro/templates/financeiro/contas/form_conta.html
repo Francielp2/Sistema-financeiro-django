@@ -6,84 +6,89 @@
 
 {% block content %}
 
-{# FORMULÁRIO DE CRIAÇÃO E EDIÇÃO DE CONTA #}
-<div class="row justify-content-center">
-
-    <div class="col-md-6">
-
-        <div class="card bg-dark border-secondary shadow">
-
-            <div class="card-body">
-
-                <h2 class="mb-4 text-success">
-                    {% if form.instance.pk %}
-                        Editar Conta
-                    {% else %}
-                        Nova Conta
-                    {% endif %}
-                </h2>
-
-                <form method="POST">
-
-                    {% csrf_token %}
-
-                    <div class="mb-3">
-                        <label class="form-label text-light">
-                            Nome
-                        </label>
-
-                        {{ form.nome }}
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label text-light">
-                            Tipo
-                        </label>
-
-                        {{ form.tipo }}
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label text-light">
-                            Saldo Inicial
-                        </label>
-
-                        {{ form.saldo_inicial }}
-                    </div>
-
-                    <div class="mb-3">
-                        <label class="form-label text-light">
-                            Descrição
-                        </label>
-
-                        {{ form.descricao }}
-                    </div>
-
-                   <div class="form-check mb-4">
-                        {{ form.ativa }}
-
-                        <label class="form-check-label">
-                            Conta ativa
-                        </label>
-                    </div>
-                    
-                    <div class="d-flex flex-wrap gap-2">
-                        <button type="submit" class="btn btn-success">
-                            Salvar Conta
-                        </button>
-                        <a href="{% url 'listar_contas' %}" class="btn btn-outline-light">
-                            Cancelar
-                        </a>
-                    </div>
-
-                </form>
-
-            </div>
-
-        </div>
-
+<div class="app-form-page">
+    <div class="page-heading">
+        <h3>
+            {% if form.instance.pk %}Editar Conta{% else %}Nova Conta{% endif %}
+        </h3>
+        <p class="text-muted">
+            Informe os dados principais da conta financeira.
+        </p>
     </div>
 
+    <form method="POST" class="card app-form-card">
+        {% csrf_token %}
+
+        <div class="card-body">
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <section class="app-form-section">
+                <div class="app-form-section-title">Dados da conta</div>
+
+                <div class="row g-3">
+                    <div class="col-lg-7 app-form-field">
+                        <label class="form-label" for="{{ form.nome.id_for_label }}">Nome</label>
+                        {{ form.nome }}
+                        {% for erro in form.nome.errors %}
+                            <div class="text-danger small mt-1">{{ erro }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-lg-5 app-form-field">
+                        <label class="form-label" for="{{ form.tipo.id_for_label }}">Tipo</label>
+                        {{ form.tipo }}
+                        {% for erro in form.tipo.errors %}
+                            <div class="text-danger small mt-1">{{ erro }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-lg-5 app-form-field">
+                        <label class="form-label" for="{{ form.saldo_inicial.id_for_label }}">Saldo Inicial</label>
+                        {{ form.saldo_inicial }}
+                        {% for erro in form.saldo_inicial.errors %}
+                            <div class="text-danger small mt-1">{{ erro }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-lg-7 app-form-field app-form-check-field">
+                        <div class="form-check">
+                            {{ form.ativa }}
+                            <label class="form-check-label" for="{{ form.ativa.id_for_label }}">
+                                Conta ativa
+                            </label>
+                        </div>
+                        {% for erro in form.ativa.errors %}
+                            <div class="text-danger small mt-1">{{ erro }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+
+            <section class="app-form-section">
+                <div class="app-form-section-title">Descrição</div>
+                <div class="app-form-field">
+                    <label class="form-label" for="{{ form.descricao.id_for_label }}">Descrição</label>
+                    {{ form.descricao }}
+                    {% for erro in form.descricao.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <div class="app-form-actions">
+                <button type="submit" class="btn btn-success">
+                    Salvar Conta
+                </button>
+                <a href="{% url 'listar_contas' %}" class="btn btn-outline-primary">
+                    Cancelar
+                </a>
+            </div>
+        </div>
+    </form>
 </div>
 
 {% endblock %}

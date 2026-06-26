@@ -1608,7 +1608,8 @@ body.theme-dark .listing-table tbody tr:hover td {
   }
 }
 
-/* FORMULÁRIO DE MOVIMENTAÇÃO */
+/* FORMULÁRIOS DO SISTEMA */
+.app-form-page,
 .movimentacao-form-page {
   margin-left: auto;
   margin-right: auto;
@@ -1617,15 +1618,22 @@ body.theme-dark .listing-table tbody tr:hover td {
   width: 100%;
 }
 
+.app-form-page-narrow {
+  max-width: 760px;
+}
+
+.app-form-page .page-heading,
 .movimentacao-form-page .page-heading {
   margin-bottom: 1.5rem;
 }
 
+.app-form-page .page-heading h3,
 .movimentacao-form-page .page-heading h3 {
   color: #25396f;
   line-height: 1.2;
 }
 
+.app-form-card,
 .movimentacao-form-card {
   background-color: #ffffff;
   border: 1px solid #e7edf7;
@@ -1633,16 +1641,19 @@ body.theme-dark .listing-table tbody tr:hover td {
   box-shadow: 0 8px 18px rgba(25, 42, 70, 0.05);
 }
 
+.app-form-card .card-body,
 .movimentacao-form-card .card-body {
   padding: 1.5rem;
 }
 
+.app-form-section,
 .movimentacao-form-section {
   border-bottom: 1px solid #edf2f7;
   margin-bottom: 1.35rem;
   padding-bottom: 1.35rem;
 }
 
+.app-form-section:last-of-type,
 .movimentacao-form-section:last-of-type {
   border-bottom: 0;
   margin-bottom: 1.25rem;
@@ -1656,6 +1667,7 @@ body.theme-dark .listing-table tbody tr:hover td {
   padding: 1.15rem;
 }
 
+.app-form-section-title,
 .movimentacao-section-heading {
   color: #25396f;
   font-size: 0.86rem;
@@ -1664,36 +1676,67 @@ body.theme-dark .listing-table tbody tr:hover td {
   text-transform: uppercase;
 }
 
+.app-form-field .form-label,
 .movimentacao-field .form-label {
   color: #25396f;
   font-weight: 700;
 }
 
+.app-form-field textarea.form-control,
 .movimentacao-field textarea.form-control {
   min-height: 96px;
   resize: vertical;
 }
 
+.app-form-check-field {
+  align-items: center;
+  display: flex;
+  padding-top: 1.8rem;
+}
+
+.app-form-check-field .form-check-label {
+  color: #25396f;
+  font-weight: 700;
+}
+
+.app-form-card .form-text {
+  color: #607080;
+}
+
+.app-form-confirmation-text {
+  color: #25396f;
+}
+
+.app-form-actions,
 .movimentacao-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
   padding-top: 0.25rem;
 }
 
+.app-form-actions .btn,
 .movimentacao-form-actions .btn {
   white-space: nowrap;
 }
 
+body.theme-dark .app-form-page .page-heading h3,
 body.theme-dark .movimentacao-form-page .page-heading h3,
+body.theme-dark .app-form-section-title,
 body.theme-dark .movimentacao-section-heading,
+body.theme-dark .app-form-field .form-label,
 body.theme-dark .movimentacao-field .form-label {
   color: #f1f1f1;
 }
 
+body.theme-dark .app-form-card,
 body.theme-dark .movimentacao-form-card {
   background-color: #1f232a !important;
   border-color: #3a4250;
   box-shadow: none;
 }
 
+body.theme-dark .app-form-section,
 body.theme-dark .movimentacao-form-section {
   border-bottom-color: #3a4250;
 }
@@ -1703,11 +1746,29 @@ body.theme-dark .movimentacao-type-section {
   border-color: #3a4250;
 }
 
+body.theme-dark .app-form-check-field .form-check-label {
+  color: #f1f1f1;
+}
+
+body.theme-dark .app-form-card .form-text {
+  color: #b3b3b3;
+}
+
+body.theme-dark .app-form-confirmation-text {
+  color: #f1f1f1;
+}
+
 @media (max-width: 767px) {
+  .app-form-card .card-body,
   .movimentacao-form-card .card-body {
     padding: 1.15rem;
   }
 
+  .app-form-check-field {
+    padding-top: 0;
+  }
+
+  .app-form-actions .btn,
   .movimentacao-form-actions .btn {
     width: 100%;
   }

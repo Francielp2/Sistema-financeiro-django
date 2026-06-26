@@ -1626,6 +1626,52 @@ class UsuariosViewsTestCase(FinanceiroTestMixin, TestCase):
             reverse('inicio')
         )
 
+    def test_botao_voltar_aparece_apenas_para_usuario_autenticado(self):
+        resposta = self.client.get(reverse('login'))
+        self.assertNotContains(resposta, 'app-back-button')
+
+        resposta = self.client.get(reverse('cadastro'))
+        self.assertNotContains(resposta, 'app-back-button')
+
+        self.client.force_login(self.usuario)
+        resposta = self.client.get(reverse('inicio'))
+        self.assertNotContains(resposta, 'app-back-button')
+
+        resposta = self.client.get(reverse('perfil'))
+        self.assertContains(resposta, 'app-back-button')
+        self.assertContains(
+            resposta,
+            f'href="{reverse("inicio")}" class="btn btn-sm btn-outline-secondary app-back-button"'
+        )
+
+    def test_botao_voltar_usa_apenas_url_autenticada_segura(self):
+        self.client.force_login(self.usuario)
+
+        self.client.get(reverse('inicio'))
+        resposta = self.client.get(reverse('perfil'))
+
+        self.assertContains(
+            resposta,
+            f'href="{reverse("inicio")}" class="btn btn-sm btn-outline-secondary app-back-button"'
+        )
+
+        sessao = self.client.session
+        sessao['ultima_pagina_autenticada_segura'] = reverse('login')
+        sessao.save()
+
+        resposta = self.client.get(reverse('perfil'))
+        self.assertContains(
+            resposta,
+            f'href="{reverse("inicio")}" class="btn btn-sm btn-outline-secondary app-back-button"'
+        )
+
+    def test_paginas_autenticadas_nao_sao_armazenadas_no_cache(self):
+        self.client.force_login(self.usuario)
+
+        resposta = self.client.get(reverse('inicio'))
+
+        self.assertIn('no-store', resposta.headers['Cache-Control'])
+
     def test_login_logout_e_perfil(self):
         resposta = self.client.post(reverse('login'), {
             'username': self.usuario.username,

@@ -6,50 +6,83 @@ Editar perfil
 
 {% block content %}
 
-<div class="row justify-content-center">
-    <div class="col-lg-7">
-        <div class="card bg-dark border-secondary shadow">
-            <div class="card-body">
-                <h1 class="h3 text-success mb-3">
-                    Editar perfil
-                </h1>
+<div class="app-form-page">
+    <div class="page-heading">
+        <h3>Editar perfil</h3>
+        <p class="text-muted">
+            Atualize seus dados pessoais e confirme a alteração com sua senha atual.
+        </p>
+    </div>
 
-                <form method="post">
-                    {% csrf_token %}
+    <form method="post" class="card app-form-card">
+        {% csrf_token %}
 
-                    {% if form.non_field_errors %}
-                        <div class="alert alert-danger">
-                            {{ form.non_field_errors }}
-                        </div>
-                    {% endif %}
+        <div class="card-body">
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
 
-                    {% for campo in form %}
-                        <div class="mb-3">
-                            <label class="form-label text-light" for="{{ campo.id_for_label }}">
-                                {{ campo.label }}
-                            </label>
-                            {{ campo }}
+            <section class="app-form-section">
+                <div class="app-form-section-title">Dados pessoais</div>
 
-                            {% for erro in campo.errors %}
-                                <div class="text-danger small mt-1">
-                                    {{ erro }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
-
-                    <div class="d-flex flex-wrap gap-2">
-                        <button type="submit" class="btn btn-success">
-                            Salvar alterações
-                        </button>
-                        <a href="{% url 'perfil' %}" class="btn btn-outline-light">
-                            Cancelar
-                        </a>
+                <div class="row g-3">
+                    <div class="col-md-6 app-form-field">
+                        <label class="form-label" for="{{ form.first_name.id_for_label }}">
+                            {{ form.first_name.label }}
+                        </label>
+                        {{ form.first_name }}
+                        {% for erro in form.first_name.errors %}
+                            <div class="text-danger small mt-1">{{ erro }}</div>
+                        {% endfor %}
                     </div>
-                </form>
+
+                    <div class="col-md-6 app-form-field">
+                        <label class="form-label" for="{{ form.last_name.id_for_label }}">
+                            {{ form.last_name.label }}
+                        </label>
+                        {{ form.last_name }}
+                        {% for erro in form.last_name.errors %}
+                            <div class="text-danger small mt-1">{{ erro }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-12 app-form-field">
+                        <label class="form-label" for="{{ form.email.id_for_label }}">
+                            {{ form.email.label }}
+                        </label>
+                        {{ form.email }}
+                        {% for erro in form.email.errors %}
+                            <div class="text-danger small mt-1">{{ erro }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+
+            <section class="app-form-section">
+                <div class="app-form-section-title">Confirmação</div>
+                <div class="app-form-field">
+                    <label class="form-label" for="{{ form.senha_atual.id_for_label }}">
+                        {{ form.senha_atual.label }}
+                    </label>
+                    {{ form.senha_atual }}
+                    {% for erro in form.senha_atual.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <div class="app-form-actions">
+                <button type="submit" class="btn btn-success">
+                    Salvar alterações
+                </button>
+                <a href="{% url 'perfil' %}" class="btn btn-outline-primary">
+                    Cancelar
+                </a>
             </div>
         </div>
-    </div>
+    </form>
 </div>
 
 {% endblock %}

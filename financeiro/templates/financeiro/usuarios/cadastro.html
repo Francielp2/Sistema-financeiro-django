@@ -6,56 +6,112 @@ Cadastro
 
 {% block content %}
 
-<div class="row justify-content-center">
-    <div class="col-lg-7">
-        <div class="card bg-dark border-secondary shadow">
-            <div class="card-body">
-                <h1 class="h3 text-success mb-3">
-                    Criar conta
-                </h1>
-
-                <form method="post">
-                    {% csrf_token %}
-
-                    {% if form.non_field_errors %}
-                        <div class="alert alert-danger">
-                            {{ form.non_field_errors }}
-                        </div>
-                    {% endif %}
-
-                    {% for campo in form %}
-                        <div class="mb-3">
-                            <label class="form-label text-light" for="{{ campo.id_for_label }}">
-                                {{ campo.label }}
-                            </label>
-                            {{ campo }}
-
-                            {% if campo.help_text %}
-                                <div class="form-text text-secondary">
-                                    {{ campo.help_text }}
-                                </div>
-                            {% endif %}
-
-                            {% for erro in campo.errors %}
-                                <div class="text-danger small mt-1">
-                                    {{ erro }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
-
-                    <button type="submit" class="btn btn-success w-100">
-                        Cadastrar
-                    </button>
-                </form>
-
-                <p class="text-secondary mt-3 mb-0">
-                    Já possui conta?
-                    <a href="{% url 'login' %}" class="text-success">Entrar</a>
-                </p>
-            </div>
-        </div>
+<div class="app-form-page">
+    <div class="page-heading">
+        <h3>Criar conta</h3>
+        <p class="text-muted">
+            Cadastre seus dados para acessar o sistema financeiro.
+        </p>
     </div>
+
+    <form method="post" class="card app-form-card">
+        {% csrf_token %}
+
+        <div class="card-body">
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <section class="app-form-section">
+                <div class="app-form-section-title">Dados pessoais</div>
+
+                <div class="row g-3">
+                    <div class="col-md-6 app-form-field">
+                        <label class="form-label" for="{{ form.first_name.id_for_label }}">
+                            {{ form.first_name.label }}
+                        </label>
+                        {{ form.first_name }}
+                        {% for erro in form.first_name.errors %}
+                            <div class="text-danger small mt-1">{{ erro }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-md-6 app-form-field">
+                        <label class="form-label" for="{{ form.last_name.id_for_label }}">
+                            {{ form.last_name.label }}
+                        </label>
+                        {{ form.last_name }}
+                        {% for erro in form.last_name.errors %}
+                            <div class="text-danger small mt-1">{{ erro }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-12 app-form-field">
+                        <label class="form-label" for="{{ form.email.id_for_label }}">
+                            {{ form.email.label }}
+                        </label>
+                        {{ form.email }}
+                        {% for erro in form.email.errors %}
+                            <div class="text-danger small mt-1">{{ erro }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+
+            <section class="app-form-section">
+                <div class="app-form-section-title">Acesso</div>
+
+                <div class="row g-3">
+                    <div class="col-12 app-form-field">
+                        <label class="form-label" for="{{ form.username.id_for_label }}">
+                            {{ form.username.label }}
+                        </label>
+                        {{ form.username }}
+                        {% for erro in form.username.errors %}
+                            <div class="text-danger small mt-1">{{ erro }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-md-6 app-form-field">
+                        <label class="form-label" for="{{ form.password1.id_for_label }}">
+                            {{ form.password1.label }}
+                        </label>
+                        {{ form.password1 }}
+                        {% if form.password1.help_text %}
+                            <div class="form-text">{{ form.password1.help_text }}</div>
+                        {% endif %}
+                        {% for erro in form.password1.errors %}
+                            <div class="text-danger small mt-1">{{ erro }}</div>
+                        {% endfor %}
+                    </div>
+
+                    <div class="col-md-6 app-form-field">
+                        <label class="form-label" for="{{ form.password2.id_for_label }}">
+                            {{ form.password2.label }}
+                        </label>
+                        {{ form.password2 }}
+                        {% if form.password2.help_text %}
+                            <div class="form-text">{{ form.password2.help_text }}</div>
+                        {% endif %}
+                        {% for erro in form.password2.errors %}
+                            <div class="text-danger small mt-1">{{ erro }}</div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </section>
+
+            <button type="submit" class="btn btn-success w-100">
+                Cadastrar
+            </button>
+
+            <p class="text-muted text-center mt-3 mb-0">
+                Já possui conta?
+                <a href="{% url 'login' %}">Entrar</a>
+            </p>
+        </div>
+    </form>
 </div>
 
 {% endblock %}

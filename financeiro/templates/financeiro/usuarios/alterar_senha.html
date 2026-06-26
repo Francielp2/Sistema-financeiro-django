@@ -6,56 +6,59 @@ Alterar senha
 
 {% block content %}
 
-<div class="row justify-content-center">
-    <div class="col-lg-7">
-        <div class="card bg-dark border-secondary shadow">
-            <div class="card-body">
-                <h1 class="h3 text-success mb-3">
-                    Alterar senha
-                </h1>
+<div class="app-form-page app-form-page-narrow">
+    <div class="page-heading">
+        <h3>Alterar senha</h3>
+        <p class="text-muted">
+            Informe sua senha atual e defina uma nova senha de acesso.
+        </p>
+    </div>
 
-                <form method="post">
-                    {% csrf_token %}
+    <form method="post" class="card app-form-card">
+        {% csrf_token %}
 
-                    {% if form.non_field_errors %}
-                        <div class="alert alert-danger">
-                            {{ form.non_field_errors }}
-                        </div>
-                    {% endif %}
+        <div class="card-body">
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
 
-                    {% for campo in form %}
-                        <div class="mb-3">
-                            <label class="form-label text-light" for="{{ campo.id_for_label }}">
-                                {{ campo.label }}
-                            </label>
-                            {{ campo }}
+            <section class="app-form-section">
+                <div class="app-form-section-title">Segurança</div>
 
-                            {% if campo.help_text %}
-                                <div class="form-text text-secondary">
-                                    {{ campo.help_text }}
-                                </div>
-                            {% endif %}
+                {% for campo in form %}
+                    <div class="app-form-field mb-3">
+                        <label class="form-label" for="{{ campo.id_for_label }}">
+                            {{ campo.label }}
+                        </label>
+                        {{ campo }}
 
-                            {% for erro in campo.errors %}
-                                <div class="text-danger small mt-1">
-                                    {{ erro }}
-                                </div>
-                            {% endfor %}
-                        </div>
-                    {% endfor %}
+                        {% if campo.help_text %}
+                            <div class="form-text">
+                                {{ campo.help_text }}
+                            </div>
+                        {% endif %}
 
-                    <div class="d-flex flex-wrap gap-2">
-                        <button type="submit" class="btn btn-success">
-                            Alterar senha
-                        </button>
-                        <a href="{% url 'perfil' %}" class="btn btn-outline-light">
-                            Cancelar
-                        </a>
+                        {% for erro in campo.errors %}
+                            <div class="text-danger small mt-1">
+                                {{ erro }}
+                            </div>
+                        {% endfor %}
                     </div>
-                </form>
+                {% endfor %}
+            </section>
+
+            <div class="app-form-actions">
+                <button type="submit" class="btn btn-success">
+                    Alterar senha
+                </button>
+                <a href="{% url 'perfil' %}" class="btn btn-outline-primary">
+                    Cancelar
+                </a>
             </div>
         </div>
-    </div>
+    </form>
 </div>
 
 {% endblock %}

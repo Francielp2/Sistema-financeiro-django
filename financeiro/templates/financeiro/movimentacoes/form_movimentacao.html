@@ -6,6 +6,8 @@
 
 {% block content %}
 
+{% with tipo_atual=form.tipo.value|default:'entrada' %}
+
 <div class="movimentacao-form-page">
     <div class="page-heading">
         <h3>
@@ -85,7 +87,7 @@
                 </div>
 
                 <div class="row g-3">
-                    <div class="col-lg-4 movimentacao-field" data-movimentacao-field="categoria">
+                    <div class="col-lg-4 movimentacao-field {% if tipo_atual == 'transferencia' %}d-none{% endif %}" data-movimentacao-field="categoria">
                         <label class="form-label" for="{{ form.categoria.id_for_label }}">
                             Categoria
                         </label>
@@ -95,7 +97,7 @@
                         {% endfor %}
                     </div>
 
-                    <div class="col-lg-4 movimentacao-field" data-movimentacao-field="conta_origem">
+                    <div class="col-lg-4 movimentacao-field {% if tipo_atual == 'entrada' %}d-none{% endif %}" data-movimentacao-field="conta_origem">
                         <label class="form-label" for="{{ form.conta_origem.id_for_label }}">
                             Conta de origem
                         </label>
@@ -105,7 +107,7 @@
                         {% endfor %}
                     </div>
 
-                    <div class="col-lg-4 movimentacao-field" data-movimentacao-field="conta_destino">
+                    <div class="col-lg-4 movimentacao-field {% if tipo_atual == 'saida' %}d-none{% endif %}" data-movimentacao-field="conta_destino">
                         <label class="form-label" for="{{ form.conta_destino.id_for_label }}">
                             Conta de destino
                         </label>
@@ -172,6 +174,8 @@
         </div>
     </form>
 </div>
+
+{% endwith %}
 
 {% endblock %}
 

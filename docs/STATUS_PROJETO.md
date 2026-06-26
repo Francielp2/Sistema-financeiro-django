@@ -1,6 +1,6 @@
 # Status Atual do Projeto
 
-Atualizado em: 24/06/2026
+Atualizado em: 25/06/2026
 
 ## 1. Visão Geral
 
@@ -40,7 +40,9 @@ O sistema foi projetado para funcionar sem inteligência artificial. A IA contin
 * Transferências internas representam movimentações entre contas próprias.
 * Transferências internas não alteram o patrimônio geral.
 * Transferências internas não devem possuir categoria.
-* Saídas e transferências internas são bloqueadas quando a conta de origem não possui saldo suficiente.
+* Saídas e transferências internas podem deixar o saldo da conta negativo temporariamente.
+* A validação de saldo suficiente foi removida para evitar inconsistências ao lançar ou editar movimentações antigas.
+* Existe pendência registrada para implementar futuramente uma validação cronológica de saldo mais correta.
 * Validações financeiras principais ficam no backend/model.
 
 ### Patrimônio e Resultado
@@ -79,7 +81,7 @@ O sistema foi projetado para funcionar sem inteligência artificial. A IA contin
 * `save()` usando `full_clean()` antes de persistir.
 * Preenchimento automático de data e hora quando não informadas.
 * Validação de valor maior que zero.
-* Validação de saldo insuficiente para saídas e transferências.
+* Saídas e transferências permitem saldo negativo temporariamente.
 * Validação impedindo categoria em transferências internas.
 * Ordenação padrão das movimentações da mais recente para a mais antiga.
 
@@ -149,6 +151,7 @@ O sistema foi projetado para funcionar sem inteligência artificial. A IA contin
 * Listagem de movimentações recentes.
 * Gráficos implementados com Chart.js:
   * entradas x saídas dos últimos seis meses;
+  * evolução do resultado financeiro dos últimos seis meses;
   * gastos por categoria no mês atual;
   * entradas por categoria no mês atual;
   * patrimônio por conta.
@@ -156,6 +159,31 @@ O sistema foi projetado para funcionar sem inteligência artificial. A IA contin
 * Dados dos gráficos enviados ao JavaScript com `json_script`.
 * Gráficos sem dados são substituídos por mensagens amigáveis.
 * Gráficos e indicadores respeitam o isolamento por usuário.
+* A montagem dos dados do dashboard geral foi centralizada em `obter_dashboard_geral`.
+* A seção de atalhos rápidos foi removida para reduzir poluição visual.
+* O acesso para nova movimentação permanece disponível na área de movimentações recentes.
+
+### Dashboard Individual da Conta
+
+* Página própria para dashboard de uma conta específica.
+* Serviço `obter_dashboard_conta` centraliza os dados da tela.
+* Cards financeiros implementados:
+  * saldo atual;
+  * entradas do mês;
+  * saídas do mês;
+  * resultado do mês;
+  * transferências recebidas;
+  * transferências enviadas.
+* Últimas movimentações da conta exibidas em tabela.
+* Acesso para ver todas as movimentações relacionadas à conta.
+* Acesso para detalhes cadastrais da conta.
+* Acesso para resumo financeiro da conta.
+* Gráficos implementados com Chart.js:
+  * entradas x saídas da conta nos últimos seis meses;
+  * evolução do resultado financeiro da conta nos últimos seis meses;
+  * gastos por categoria da conta no mês atual;
+  * transferências recebidas x enviadas nos últimos seis meses.
+* Todos os dados são restritos à conta atual e ao usuário autenticado.
 
 ### Resumos Financeiros
 
@@ -169,6 +197,9 @@ O sistema foi projetado para funcionar sem inteligência artificial. A IA contin
 * Resumo financeiro por conta dentro do relatório geral.
 * Período padrão baseado no mês atual.
 * Patrimônio isolado dos filtros.
+* A tabela "Resumo por Conta no Período" considera apenas o período selecionado, sem ser afetada por filtros de tipo ou categoria.
+* Cards principais continuam respeitando período, tipo e categoria.
+* Labels compactos indicam período, tipo e categoria filtrados.
 
 #### Resumo Individual por Conta
 
@@ -181,6 +212,7 @@ O sistema foi projetado para funcionar sem inteligência artificial. A IA contin
 * Movimentações filtradas da conta.
 * Período padrão baseado no mês atual.
 * Saldo atual isolado dos filtros.
+* Labels compactos indicam período, tipo e categoria filtrados.
 
 ### Filtros dos Relatórios
 
@@ -190,6 +222,30 @@ O sistema foi projetado para funcionar sem inteligência artificial. A IA contin
 * Opção "Sem categoria".
 * Dropdowns com seleção múltipla.
 * Opção "Todos".
+* Botão de limpar filtros nas telas com filtros.
+* Filtro de movimentações por conta relacionada, considerando conta de origem ou destino.
+
+### Navegação e Páginas Cadastrais
+
+* Páginas cadastrais separadas de dashboards e resumos:
+  * detalhes da conta;
+  * detalhes da categoria;
+  * detalhes da movimentação.
+* Linhas de tabelas clicáveis para abrir detalhes em:
+  * contas;
+  * categorias;
+  * movimentações;
+  * tabelas de movimentações em dashboards e resumos.
+* Colunas de ações não disparam o clique da linha.
+* Parâmetro `voltar_para` implementado para preservar origem e filtros.
+* Retorno validado com URL segura/local antes de ser usado.
+* Botões de voltar padronizados nas páginas relevantes.
+* Botão global de voltar adicionado ao template base, retornando para a última página acessada.
+* Fluxo de navegação disponível pela interface:
+  * Dashboard Geral;
+  * Dashboard da Conta;
+  * Resumo Financeiro da Conta;
+  * Dados/Detalhes da Conta.
 
 ### Usuários e Autenticação
 
@@ -232,12 +288,12 @@ O sistema foi projetado para funcionar sem inteligência artificial. A IA contin
 
 ### Testes Automatizados
 
-* Suíte com 40 testes automatizados.
+* Suíte com 52 testes automatizados.
 * Cobertura atual inclui:
   * regras e validações dos models;
   * cálculo de saldo e patrimônio;
   * entradas, saídas e transferências;
-  * bloqueio por saldo insuficiente;
+  * comportamento com saldo negativo temporariamente permitido;
   * formulários e recursos ativos por usuário;
   * serviços financeiros e dados dos gráficos;
   * CRUDs e filtros;
@@ -246,18 +302,15 @@ O sistema foi projetado para funcionar sem inteligência artificial. A IA contin
   * categorias padrão para novos usuários;
   * bloqueio de movimentações sem conta ativa.
 * `python3 manage.py check` executado sem problemas.
-* `python3 manage.py test` executado com os 40 testes aprovados.
+* `python3 manage.py test` executado com os 52 testes aprovados.
 
 ---
 
 ## 4. Funcionalidades em Andamento
 
-* Refinar a página de resumo individual da conta.
-* Melhorar a navegação entre dashboard, resumo geral e resumo por conta.
-* Separar melhor informações cadastrais da conta e relatórios financeiros.
 * Continuar centralizando cálculos financeiros na camada de serviços.
 * Padronizar exibição de erros nos formulários financeiros.
-* Revisar casos de edição de movimentações antigas.
+* Definir e implementar validação cronológica de saldo para movimentações antigas.
 * Melhorar responsividade e organização visual dos templates.
 * Validar visualmente os gráficos com diferentes quantidades de contas e categorias.
 
@@ -268,7 +321,7 @@ O sistema foi projetado para funcionar sem inteligência artificial. A IA contin
 ### Estabilidade e Regras Financeiras
 
 * Tratar datas inválidas nos filtros dos resumos sem gerar erro 500.
-* Corrigir a validação de saldo ao editar saídas e transferências existentes.
+* Implementar validação cronológica de saldo ao lançar ou editar saídas e transferências.
 * Permitir edição de movimentações antigas que usam conta ou categoria atualmente inativa.
 * Definir regra de exclusão de conta com movimentações:
   * bloquear exclusão;
@@ -278,8 +331,6 @@ O sistema foi projetado para funcionar sem inteligência artificial. A IA contin
 
 ### Interface e Navegação
 
-* Implementar dashboard individual por conta.
-* Melhorar navegação entre dashboard, resumo geral e resumo individual.
 * Reorganizar templates de dashboard e relatórios.
 * Implementar sidebar.
 * Melhorar interface dark/verde.
@@ -287,10 +338,8 @@ O sistema foi projetado para funcionar sem inteligência artificial. A IA contin
 
 ### Gráficos
 
-Os quatro gráficos iniciais do dashboard já foram implementados. Próximas possibilidades:
+Os gráficos principais do dashboard geral e do dashboard individual da conta já foram implementados. Próximas possibilidades:
 
-* Evolução por período.
-* Gráficos individuais por conta.
 * Integração entre filtros e gráficos.
 * Refinar comportamento de legendas quando houver muitas contas ou categorias.
 
@@ -332,11 +381,14 @@ Os quatro gráficos iniciais do dashboard já foram implementados. Próximas pos
 * A lógica financeira principal permanece no backend.
 * O saldo atual é uma propriedade calculada, não um campo editável manualmente.
 * O dashboard é uma visão rápida do mês atual.
+* O dashboard individual da conta é uma visão rápida focada em apenas uma conta.
 * O patrimônio exibido no dashboard é acumulado e não depende do mês atual.
 * Os dados do dashboard são preparados no backend e enviados aos gráficos com `json_script`.
 * Chart.js é usado apenas para apresentação; os cálculos permanecem no backend.
 * O resumo financeiro é a área analítica com filtros.
+* As páginas de detalhes são cadastrais e não devem concentrar relatórios ou dashboards.
 * Transferências internas não alteram patrimônio geral nem resultado geral.
+* Saldo negativo é permitido temporariamente até a criação de uma validação cronológica mais adequada.
 
 ---
 
@@ -364,8 +416,8 @@ Restrições:
 
 ## 8. Estado Atual do Projeto
 
-O projeto está em fase de estabilização e refinamento.
+O projeto está em fase de estabilização, refinamento de navegação e preparação visual.
 
-A base financeira, autenticação, dashboard com quatro gráficos, resumos, filtros, notificações, testes automatizados e isolamento por usuário já estão implementados. O conjunto inicial do dashboard está funcional e os dados analíticos permanecem calculados no backend.
+A base financeira, autenticação, dashboard geral, dashboard individual da conta, resumos, filtros, páginas cadastrais, notificações, testes automatizados e isolamento por usuário já estão implementados. Os dados financeiros permanecem calculados no backend e enviados aos templates de forma controlada.
 
-O foco atual deve ser corrigir os pontos conhecidos de edição e filtros, definir políticas de exclusão, melhorar responsividade e navegação e ampliar os testes para casos extremos. PostgreSQL, deploy e inteligência artificial permanecem como etapas posteriores.
+O foco atual deve ser implementar a validação cronológica de saldo, definir políticas de exclusão, melhorar responsividade, reduzir poluição visual antes do template definitivo e ampliar os testes para casos extremos. PostgreSQL, deploy e inteligência artificial permanecem como etapas posteriores.

@@ -66,7 +66,7 @@ Dashboard Financeiro
         <div class="card h-100 finance-stat-card dashboard-stat-card">
             <div class="card-body finance-card-body">
                 <div class="finance-card-icon stats-icon purple">
-                    <i class="bi bi-graph-up-arrow"></i>
+                    <i class="bi bi-graph-up"></i>
                 </div>
                 <div class="finance-card-content">
                     <div class="finance-card-title">Resultado do Mês</div>
@@ -379,16 +379,122 @@ Dashboard Financeiro
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const temaEscuro = document.body.classList.contains('theme-dark');
-        const corTexto = temaEscuro ? '#d1d5db' : '#4b5563';
-        const corGrade = temaEscuro ? 'rgba(148, 163, 184, 0.18)' : 'rgba(75, 85, 99, 0.16)';
-        const corFundoPonto = temaEscuro ? '#1f232a' : '#ffffff';
+        let corTexto;
+        let corGrade;
+        let corGradeZero;
+        let corFundoPonto;
+
+        const obterCoresGrafico = function () {
+            const temaEscuro = document.body.classList.contains('theme-dark');
+
+            return {
+                texto: temaEscuro ? '#ffffff' : '#25396f',
+                grade: (
+                    temaEscuro
+                        ? 'rgba(255, 255, 255, 0.34)'
+                        : 'rgba(37, 57, 111, 0.22)'
+                ),
+                gradeZero: (
+                    temaEscuro
+                        ? 'rgba(255, 255, 255, 0.62)'
+                        : 'rgba(37, 57, 111, 0.38)'
+                ),
+                fundoPonto: temaEscuro ? '#1f232a' : '#ffffff'
+            };
+        };
+
+        const aplicarCoresGlobaisGrafico = function () {
+            const cores = obterCoresGrafico();
+
+            corTexto = cores.texto;
+            corGrade = cores.grade;
+            corGradeZero = cores.gradeZero;
+            corFundoPonto = cores.fundoPonto;
+
+            if (window.Chart) {
+                Chart.defaults.color = corTexto;
+                Chart.defaults.borderColor = corGrade;
+                Chart.defaults.font.size = 12;
+                Chart.defaults.font.weight = '600';
+            }
+        };
+
+        aplicarCoresGlobaisGrafico();
+
         const formatarMoeda = function (valor) {
             return new Intl.NumberFormat('pt-BR', {
                 style: 'currency',
                 currency: 'BRL'
             }).format(valor);
         };
+
+        const atualizarCoresDoGrafico = function (grafico, canvasId) {
+            if (!grafico) {
+                return;
+            }
+
+            if (
+                grafico.options.plugins &&
+                grafico.options.plugins.legend &&
+                grafico.options.plugins.legend.labels
+            ) {
+                grafico.options.plugins.legend.labels.color = corTexto;
+            }
+
+            Object.values(grafico.options.scales || {}).forEach(function (escala) {
+                if (escala.ticks) {
+                    escala.ticks.color = corTexto;
+                }
+
+                if (escala.grid && escala.grid.display !== false) {
+                    escala.grid.color = function (contexto) {
+                        return (
+                            contexto.tick && contexto.tick.value === 0
+                                ? corGradeZero
+                                : corGrade
+                        );
+                    };
+                }
+            });
+
+            grafico.data.datasets.forEach(function (dataset) {
+                if (canvasId === 'graficoResultadoMensal') {
+                    dataset.pointBorderColor = corFundoPonto;
+                }
+
+                if (canvasId === 'graficoPatrimonioConta') {
+                    dataset.borderColor = corFundoPonto;
+                }
+            });
+
+            grafico.update('none');
+        };
+
+        const atualizarTemaDosGraficos = function () {
+            if (!window.Chart) {
+                return;
+            }
+
+            aplicarCoresGlobaisGrafico();
+
+            [
+                'graficoEntradasSaidas',
+                'graficoResultadoMensal',
+                'graficoGastosCategoria',
+                'graficoPatrimonioConta',
+                'graficoEntradasCategoria'
+            ].forEach(function (canvasId) {
+                atualizarCoresDoGrafico(Chart.getChart(canvasId), canvasId);
+            });
+        };
+
+        const toggleTema = document.getElementById('toggle-dark');
+
+        if (toggleTema) {
+            toggleTema.addEventListener('change', function () {
+                window.setTimeout(atualizarTemaDosGraficos, 0);
+            });
+        }
 
         const elementoDadosMeses = document.getElementById(
             'dados-entradas-saidas-meses'
@@ -599,7 +705,7 @@ Dashboard Financeiro
                                     color: function (contexto) {
                                         return (
                                             contexto.tick.value === 0
-                                                ? 'rgba(255, 255, 255, 0.5)'
+                                                ? corGradeZero
                                                 : corGrade
                                         );
                                     },
@@ -796,7 +902,7 @@ Dashboard Financeiro
                                     ];
                                 }
                             ),
-                            borderColor: '#1f232a',
+                            borderColor: corFundoPonto,
                             borderWidth: 2,
                             hoverOffset: 6
                         }]

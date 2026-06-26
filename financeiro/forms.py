@@ -303,11 +303,11 @@ class MovimentacaoForm(forms.ModelForm):
             'conta_destino': forms.Select(attrs={
                 'class': 'form-select'
             }),
-            'data': forms.DateInput(attrs={
+            'data': forms.DateInput(format='%Y-%m-%d', attrs={
                 'class': 'form-control',
                 'type': 'date'
             }),
-            'hora': forms.TimeInput(attrs={
+            'hora': forms.TimeInput(format='%H:%M', attrs={
                 'class': 'form-control',
                 'type': 'time'
             }),

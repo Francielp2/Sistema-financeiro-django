@@ -6,91 +6,263 @@
 
 {% block content %}
 
-{# FORMULÁRIO DE CRIAÇÃO E EDIÇÃO DE MOVIMENTAÇÃO #}
-<div class="row justify-content-center">
-    <div class="col-md-7">
+<div class="movimentacao-form-page">
+    <div class="page-heading">
+        <h3>
+            {% if form.instance.pk %}
+                Editar Movimentação
+            {% else %}
+                Nova Movimentação
+            {% endif %}
+        </h3>
+        <p class="text-muted">
+            Preencha apenas os dados necessários para o tipo de movimentação escolhido.
+        </p>
+    </div>
 
-        <div class="card bg-dark border-secondary shadow">
-            <div class="card-body">
+    <form
+        method="POST"
+        class="card movimentacao-form-card"
+        data-editing="{% if form.instance.pk %}true{% else %}false{% endif %}"
+    >
+        {% csrf_token %}
 
-                <h2 class="text-success mb-4">
-                    {% if form.instance.pk %}
-                        Editar Movimentação
-                    {% else %}
-                        Nova Movimentação
-                    {% endif %}
-                </h2>
+        <div class="card-body">
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for erro in form.non_field_errors %}
+                        <div>{{ erro }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
 
-                <form method="POST">
-                    {% csrf_token %}
+            <section class="movimentacao-form-section movimentacao-type-section">
+                <div class="movimentacao-section-heading">
+                    <span>Tipo da movimentação</span>
+                </div>
+                <div class="movimentacao-field">
+                    <label class="form-label" for="{{ form.tipo.id_for_label }}">
+                        Tipo
+                    </label>
+                    {{ form.tipo }}
+                    {% for erro in form.tipo.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+            </section>
 
-                    {% if form.non_field_errors %}
-                        <div class="alert alert-danger">
-                            {% for erro in form.non_field_errors %}
-                                <div>{{ erro }}</div>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
+            <section class="movimentacao-form-section">
+                <div class="movimentacao-section-heading">
+                    <span>Dados principais</span>
+                </div>
 
-                    <div class="mb-3">
-                        <label class="form-label text-light">Descrição</label>
+                <div class="row g-3">
+                    <div class="col-lg-8 movimentacao-field">
+                        <label class="form-label" for="{{ form.descricao.id_for_label }}">
+                            Descrição
+                        </label>
                         {{ form.descricao }}
+                        {% for erro in form.descricao.errors %}
+                            <div class="text-danger small mt-1">{{ erro }}</div>
+                        {% endfor %}
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label text-light">Valor</label>
+                    <div class="col-lg-4 movimentacao-field">
+                        <label class="form-label" for="{{ form.valor.id_for_label }}">
+                            Valor
+                        </label>
                         {{ form.valor }}
+                        {% for erro in form.valor.errors %}
+                            <div class="text-danger small mt-1">{{ erro }}</div>
+                        {% endfor %}
                     </div>
+                </div>
+            </section>
 
-                    <div class="mb-3">
-                        <label class="form-label text-light">Tipo</label>
-                        {{ form.tipo }}
-                    </div>
+            <section class="movimentacao-form-section">
+                <div class="movimentacao-section-heading">
+                    <span>Classificação e contas</span>
+                </div>
 
-                    <div class="mb-3">
-                        <label class="form-label text-light">Categoria</label>
+                <div class="row g-3">
+                    <div class="col-lg-4 movimentacao-field" data-movimentacao-field="categoria">
+                        <label class="form-label" for="{{ form.categoria.id_for_label }}">
+                            Categoria
+                        </label>
                         {{ form.categoria }}
+                        {% for erro in form.categoria.errors %}
+                            <div class="text-danger small mt-1">{{ erro }}</div>
+                        {% endfor %}
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label text-light">Conta de origem</label>
+                    <div class="col-lg-4 movimentacao-field" data-movimentacao-field="conta_origem">
+                        <label class="form-label" for="{{ form.conta_origem.id_for_label }}">
+                            Conta de origem
+                        </label>
                         {{ form.conta_origem }}
+                        {% for erro in form.conta_origem.errors %}
+                            <div class="text-danger small mt-1">{{ erro }}</div>
+                        {% endfor %}
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label text-light">Conta de destino</label>
+                    <div class="col-lg-4 movimentacao-field" data-movimentacao-field="conta_destino">
+                        <label class="form-label" for="{{ form.conta_destino.id_for_label }}">
+                            Conta de destino
+                        </label>
                         {{ form.conta_destino }}
+                        {% for erro in form.conta_destino.errors %}
+                            <div class="text-danger small mt-1">{{ erro }}</div>
+                        {% endfor %}
                     </div>
+                </div>
+            </section>
 
-                    <div class="mb-3">
-                        <label class="form-label text-light">Data</label>
+            <section class="movimentacao-form-section">
+                <div class="movimentacao-section-heading">
+                    <span>Data e hora</span>
+                </div>
+
+                <div class="row g-3">
+                    <div class="col-md-6 movimentacao-field">
+                        <label class="form-label" for="{{ form.data.id_for_label }}">
+                            Data
+                        </label>
                         {{ form.data }}
+                        {% for erro in form.data.errors %}
+                            <div class="text-danger small mt-1">{{ erro }}</div>
+                        {% endfor %}
                     </div>
 
-                    <div class="mb-3">
-                        <label class="form-label text-light">Hora</label>
+                    <div class="col-md-6 movimentacao-field">
+                        <label class="form-label" for="{{ form.hora.id_for_label }}">
+                            Hora
+                        </label>
                         {{ form.hora }}
+                        {% for erro in form.hora.errors %}
+                            <div class="text-danger small mt-1">{{ erro }}</div>
+                        {% endfor %}
                     </div>
+                </div>
+            </section>
 
-                    <div class="mb-4">
-                        <label class="form-label text-light">Observação</label>
-                        {{ form.observacao }}
-                    </div>
+            <section class="movimentacao-form-section">
+                <div class="movimentacao-section-heading">
+                    <span>Observações</span>
+                </div>
 
-                    <div class="d-flex flex-wrap gap-2">
-                        <button type="submit" class="btn btn-success">
-                            Salvar Movimentação
-                        </button>
-                        <a href="{% url 'listar_movimentacoes' %}" class="btn btn-outline-light">
-                            Cancelar
-                        </a>
-                    </div>
-                </form>
+                <div class="movimentacao-field">
+                    <label class="form-label" for="{{ form.observacao.id_for_label }}">
+                        Observação
+                    </label>
+                    {{ form.observacao }}
+                    {% for erro in form.observacao.errors %}
+                        <div class="text-danger small mt-1">{{ erro }}</div>
+                    {% endfor %}
+                </div>
+            </section>
 
+            <div class="movimentacao-form-actions d-flex flex-wrap gap-2">
+                <button type="submit" class="btn btn-success">
+                    Salvar Movimentação
+                </button>
+                <a href="{% url 'listar_movimentacoes' %}" class="btn btn-outline-primary">
+                    Cancelar
+                </a>
             </div>
         </div>
-
-    </div>
+    </form>
 </div>
 
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const formulario = document.querySelector('.movimentacao-form-card');
+
+        if (!formulario) {
+            return;
+        }
+
+        const editando = formulario.dataset.editing === 'true';
+        const campoTipo = formulario.querySelector('[name="tipo"]');
+        const campoCategoria = formulario.querySelector('[name="categoria"]');
+        const campoContaOrigem = formulario.querySelector('[name="conta_origem"]');
+        const campoContaDestino = formulario.querySelector('[name="conta_destino"]');
+        const campoData = formulario.querySelector('[name="data"]');
+        const campoHora = formulario.querySelector('[name="hora"]');
+
+        const grupos = {
+            categoria: formulario.querySelector('[data-movimentacao-field="categoria"]'),
+            conta_origem: formulario.querySelector('[data-movimentacao-field="conta_origem"]'),
+            conta_destino: formulario.querySelector('[data-movimentacao-field="conta_destino"]')
+        };
+
+        const definirCampo = function (grupo, campo, visivel, limpar) {
+            if (!grupo || !campo) {
+                return;
+            }
+
+            grupo.classList.toggle('d-none', !visivel);
+            campo.disabled = !visivel;
+
+            if (limpar) {
+                campo.value = '';
+            }
+        };
+
+        const atualizarCamposPorTipo = function (limparCampos) {
+            const tipo = campoTipo ? campoTipo.value : '';
+
+            definirCampo(
+                grupos.categoria,
+                campoCategoria,
+                tipo !== 'transferencia',
+                limparCampos && tipo === 'transferencia'
+            );
+            definirCampo(
+                grupos.conta_origem,
+                campoContaOrigem,
+                tipo === 'saida' || tipo === 'transferencia',
+                limparCampos && tipo === 'entrada'
+            );
+            definirCampo(
+                grupos.conta_destino,
+                campoContaDestino,
+                tipo === 'entrada' || tipo === 'transferencia',
+                limparCampos && tipo === 'saida'
+            );
+        };
+
+        const preencherDataHoraAtual = function () {
+            if (editando) {
+                return;
+            }
+
+            const agora = new Date();
+            const ano = agora.getFullYear();
+            const mes = String(agora.getMonth() + 1).padStart(2, '0');
+            const dia = String(agora.getDate()).padStart(2, '0');
+            const hora = String(agora.getHours()).padStart(2, '0');
+            const minuto = String(agora.getMinutes()).padStart(2, '0');
+
+            if (campoData && !campoData.value) {
+                campoData.value = `${ano}-${mes}-${dia}`;
+            }
+
+            if (campoHora && !campoHora.value) {
+                campoHora.value = `${hora}:${minuto}`;
+            }
+        };
+
+        atualizarCamposPorTipo(false);
+        preencherDataHoraAtual();
+
+        if (campoTipo) {
+            campoTipo.addEventListener('change', function () {
+                atualizarCamposPorTipo(true);
+            });
+        }
+    });
+</script>
 {% endblock %}

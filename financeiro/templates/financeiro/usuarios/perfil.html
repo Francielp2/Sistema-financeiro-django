@@ -5,65 +5,99 @@ Meu perfil
 {% endblock %}
 
 {% block content %}
-
-<div class="d-flex justify-content-between align-items-center gap-3 mb-4">
-    <div>
-        <h1 class="text-success mb-1">
-            Meu perfil
-        </h1>
-        <p class="text-secondary mb-0">
-            Dados da sua conta no sistema.
-        </p>
-    </div>
-</div>
-
-<div class="card bg-dark border-secondary shadow">
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-dark align-middle mb-0">
-                <tbody>
-                    <tr>
-                        <th>Usuário</th>
-                        <td>{{ request.user.username }}</td>
-                    </tr>
-                    <tr>
-                        <th>Nome</th>
-                        <td>{{ request.user.first_name|default:"-" }}</td>
-                    </tr>
-                    <tr>
-                        <th>Sobrenome</th>
-                        <td>{{ request.user.last_name|default:"-" }}</td>
-                    </tr>
-                    <tr>
-                        <th>E-mail</th>
-                        <td>{{ request.user.email|default:"-" }}</td>
-                    </tr>
-                    <tr>
-                        <th>Tipo de usuário</th>
-                        <td>
-                            {% if request.user.is_staff or request.user.is_superuser %}
-                                <span class="badge bg-success">Administrador</span>
-                            {% else %}
-                                <span class="badge bg-secondary">Usuário comum</span>
-                            {% endif %}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+<div class="details-page">
+    <div class="page-heading details-header">
+        <div>
+            <h3 class="details-page-title mb-1">Meu perfil</h3>
+            <p class="details-page-subtitle mb-0">Dados da sua conta no sistema.</p>
         </div>
-
-        <div class="d-flex flex-wrap gap-2 mt-4">
-            <a href="{% url 'editar_perfil' %}" class="btn btn-success">
+        <div class="details-actions">
+            <a href="{% url 'editar_perfil' %}" class="btn btn-primary">
                 Editar dados
             </a>
-            <a href="{% url 'alterar_senha' %}" class="btn btn-outline-light">
+            <a href="{% url 'alterar_senha' %}" class="btn btn-outline-primary">
+                Alterar senha
+            </a>
+        </div>
+    </div>
+
+    <section class="section">
+        <div class="card details-main-card">
+            <div class="card-body">
+                <div class="details-main-content">
+                    <div>
+                        <span class="details-eyebrow">Usuário</span>
+                        <h4 class="details-main-title">{{ request.user.username }}</h4>
+                        <div class="details-badge-row">
+                            {% if request.user.is_staff or request.user.is_superuser %}
+                                <span class="badge bg-light-success">Administrador</span>
+                            {% else %}
+                                <span class="badge bg-light-secondary">Usuário comum</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="details-main-metric">
+                        <span>Status</span>
+                        {% if request.user.is_active %}
+                            <strong class="text-success">Ativo</strong>
+                        {% else %}
+                            <strong class="text-secondary">Inativo</strong>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row g-3 details-info-grid">
+            <div class="col-md-6">
+                <div class="card details-info-card h-100">
+                    <div class="card-body">
+                        <span class="details-info-label">Nome</span>
+                        <strong class="details-info-value">{{ request.user.first_name|default:"-" }}</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card details-info-card h-100">
+                    <div class="card-body">
+                        <span class="details-info-label">Sobrenome</span>
+                        <strong class="details-info-value">{{ request.user.last_name|default:"-" }}</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card details-info-card h-100">
+                    <div class="card-body">
+                        <span class="details-info-label">E-mail</span>
+                        <strong class="details-info-value">{{ request.user.email|default:"-" }}</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card details-info-card h-100">
+                    <div class="card-body">
+                        <span class="details-info-label">Tipo de usuário</span>
+                        {% if request.user.is_staff or request.user.is_superuser %}
+                            <strong class="details-info-value text-success">Administrador</strong>
+                        {% else %}
+                            <strong class="details-info-value">Usuário comum</strong>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="details-footer-actions">
+            <a href="{% url 'editar_perfil' %}" class="btn btn-primary">
+                Editar dados
+            </a>
+            <a href="{% url 'alterar_senha' %}" class="btn btn-outline-primary">
                 Alterar senha
             </a>
             <a href="{% url 'inicio' %}" class="btn btn-outline-secondary">
                 Voltar
             </a>
         </div>
-    </div>
+    </section>
 </div>
-
 {% endblock %}

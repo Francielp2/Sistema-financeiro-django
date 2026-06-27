@@ -1,0 +1,42 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Página não encontrada</title>
+    <link rel="icon" type="image/png" href="{% static 'images/lucro-financeiro.png' %}">
+    <script>
+        (function () {
+            var theme = localStorage.getItem('mazer-theme') || 'light';
+            document.documentElement.setAttribute('data-theme', theme);
+            document.addEventListener('DOMContentLoaded', function () {
+                document.body.classList.add('theme-' + theme);
+            });
+        })();
+    </script>
+    <link rel="stylesheet" href="{% static 'mazer/assets/css/bootstrap.css' %}">
+    <link rel="stylesheet" href="{% static 'mazer/assets/vendors/bootstrap-icons/bootstrap-icons.css' %}">
+    <link rel="stylesheet" href="{% static 'mazer/assets/css/app.css' %}">
+    <link rel="stylesheet" href="{% static 'mazer/assets/css/pages/error.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+
+<body>
+    <div id="error" class="app-error-page">
+        <div class="error-page container">
+            <div class="col-md-8 col-12 offset-md-2">
+                <img class="img-error" src="{% static 'mazer/assets/images/samples/error-404.png' %}" alt="Página não encontrada">
+                <div class="text-center">
+                    <h1 class="error-title">Página não encontrada</h1>
+                    <p class="fs-5 app-error-message">O endereço acessado não existe ou foi movido.</p>
+                    <a href="/" class="btn btn-lg btn-outline-primary mt-3">Voltar ao início</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

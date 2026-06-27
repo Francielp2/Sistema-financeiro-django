@@ -25,6 +25,9 @@ SECRET_KEY = 'django-insecure-vlbwx3f*tw_cu5dx%x$ju#r(rh&sw+33(w$=^d@)zr9!(j1rmc
 # MODO DE DEPURAÇÃO
 DEBUG = True
 
+# Permite visualizar as páginas personalizadas de 403/404 durante o desenvolvimento.
+SHOW_CUSTOM_ERROR_PAGES_IN_DEBUG = True
+
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',

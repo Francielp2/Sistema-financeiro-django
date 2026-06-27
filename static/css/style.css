@@ -2197,6 +2197,32 @@ body.theme-dark .details-badge-row .badge.bg-light-info {
   color: #d8f3ff;
 }
 
+/* PÁGINAS DE ERRO */
+.app-error-page {
+  min-height: 100vh;
+}
+
+.app-error-page .error-title {
+  color: #25396f;
+  line-height: 1.15;
+}
+
+.app-error-page .app-error-message {
+  color: #607080;
+}
+
+body.theme-dark .app-error-page {
+  background-color: #15171c !important;
+}
+
+body.theme-dark .app-error-page .error-title {
+  color: #f1f1f1;
+}
+
+body.theme-dark .app-error-page .app-error-message {
+  color: #cbd5e1;
+}
+
 @media (max-width: 767px) {
   .details-header,
   .details-main-content {

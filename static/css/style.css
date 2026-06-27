@@ -458,7 +458,7 @@ body.theme-dark .app-auth-topbar .theme-toggle {
 }
 
 .app-auth-main {
-  background-color: #f6f8fb;
+  background-color: #f2f7ff;
   color: #25396f;
 }
 
@@ -501,42 +501,42 @@ body.theme-dark .app-auth-topbar .theme-toggle {
 .app-auth-main .form-control:focus,
 .app-auth-main .form-select:focus {
   background-color: #ffffff;
-  border-color: #1db954;
-  box-shadow: 0 0 0 0.2rem rgba(29, 185, 84, 0.18);
+  border-color: #435ebe;
+  box-shadow: 0 0 0 0.2rem rgba(67, 94, 190, 0.18);
   color: #25396f;
 }
 
 .app-auth-main .text-danger,
 .app-auth-main .errorlist {
-  color: #b42318 !important;
+  color: #dc3545 !important;
 }
 
 .app-auth-main .alert-danger {
-  background-color: #fff1f0;
-  border-color: #ffccc7;
-  color: #a8071a;
+  background-color: #fff5f5;
+  border-color: #f5c2c7;
+  color: #b02a37;
 }
 
 .app-auth-main a {
-  color: #198754;
+  color: #435ebe;
   font-weight: 700;
 }
 
 .app-auth-main a:hover,
 .app-auth-main a:focus {
-  color: #146c43;
+  color: #364b98;
 }
 
-.app-auth-main .btn-success {
-  background-color: #198754;
-  border-color: #198754;
+.app-auth-main .btn-primary {
+  background-color: #435ebe;
+  border-color: #435ebe;
   color: #ffffff;
 }
 
-.app-auth-main .btn-success:hover,
-.app-auth-main .btn-success:focus {
-  background-color: #157347;
-  border-color: #146c43;
+.app-auth-main .btn-primary:hover,
+.app-auth-main .btn-primary:focus {
+  background-color: #3950a2;
+  border-color: #364b98;
   color: #ffffff;
 }
 
@@ -581,8 +581,8 @@ body.theme-dark .app-auth-main .form-control::placeholder {
 body.theme-dark .app-auth-main .form-control:focus,
 body.theme-dark .app-auth-main .form-select:focus {
   background-color: #171b21;
-  border-color: #30c48d;
-  box-shadow: 0 0 0 0.2rem rgba(48, 196, 141, 0.22);
+  border-color: #6c86f5;
+  box-shadow: 0 0 0 0.2rem rgba(108, 134, 245, 0.22);
   color: #ffffff;
 }
 
@@ -598,24 +598,24 @@ body.theme-dark .app-auth-main .alert-danger {
 }
 
 body.theme-dark .app-auth-main a {
-  color: #6ee7b7;
+  color: #9db0ff;
 }
 
 body.theme-dark .app-auth-main a:hover,
 body.theme-dark .app-auth-main a:focus {
-  color: #a7f3d0;
+  color: #c4ceff;
 }
 
-body.theme-dark .app-auth-main .btn-success {
-  background-color: #1db954;
-  border-color: #1db954;
+body.theme-dark .app-auth-main .btn-primary {
+  background-color: #435ebe;
+  border-color: #435ebe;
   color: #ffffff;
 }
 
-body.theme-dark .app-auth-main .btn-success:hover,
-body.theme-dark .app-auth-main .btn-success:focus {
-  background-color: #22c55e;
-  border-color: #22c55e;
+body.theme-dark .app-auth-main .btn-primary:hover,
+body.theme-dark .app-auth-main .btn-primary:focus {
+  background-color: #516bd1;
+  border-color: #6c86f5;
   color: #ffffff;
 }
 

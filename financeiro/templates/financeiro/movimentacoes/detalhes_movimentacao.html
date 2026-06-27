@@ -5,101 +5,138 @@ Detalhes da Movimentação
 {% endblock %}
 
 {% block content %}
+<div class="details-page">
+    <div class="page-heading details-header">
+        <div>
+            <h3 class="details-page-title mb-1">Detalhes da Movimentação</h3>
+            <p class="details-page-subtitle mb-0">Dados cadastrais da movimentação selecionada.</p>
+        </div>
+        <div class="details-actions">
+            <a href="{{ voltar_para }}" class="btn btn-outline-secondary">
+                Voltar
+            </a>
+            <a href="{% url 'editar_movimentacao' movimentacao.id %}" class="btn btn-primary">
+                Editar
+            </a>
+            <a href="{% url 'excluir_movimentacao' movimentacao.id %}" class="btn btn-outline-danger">
+                Excluir
+            </a>
+        </div>
+    </div>
 
-{# DADOS DA MOVIMENTAÇÃO SELECIONADA #}
-<div class="card bg-dark border-secondary shadow">
-    <div class="card-body">
-
-        <h1 class="h3 text-success mb-4">Dados da Movimentação</h1>
-
-        <div class="row g-3">
-            <div class="col-md-6">
-                <div class="card bg-dark border-secondary h-100">
-                    <div class="card-body">
-                        <p class="text-secondary mb-1">Tipo</p>
-                        <p class="text-light mb-0">{{ movimentacao.get_tipo_display }}</p>
+    <section class="section">
+        <div class="card details-main-card">
+            <div class="card-body">
+                <div class="details-main-content">
+                    <div>
+                        <span class="details-eyebrow">Movimentação</span>
+                        <h4 class="details-main-title">{{ movimentacao.descricao }}</h4>
+                        <div class="details-badge-row">
+                            {% if movimentacao.tipo == 'entrada' %}
+                                <span class="badge bg-light-success">{{ movimentacao.get_tipo_display }}</span>
+                            {% elif movimentacao.tipo == 'saida' %}
+                                <span class="badge bg-light-danger">{{ movimentacao.get_tipo_display }}</span>
+                            {% else %}
+                                <span class="badge bg-light-info">{{ movimentacao.get_tipo_display }}</span>
+                            {% endif %}
+                            <span class="badge bg-light-primary">
+                                {{ movimentacao.data|date:"d/m/Y" }} às {{ movimentacao.hora|time:"H:i"|default:"-" }}
+                            </span>
+                        </div>
                     </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card bg-dark border-secondary h-100">
-                    <div class="card-body">
-                        <p class="text-secondary mb-1">Valor</p>
-                        <p class="text-light mb-0">R$ {{ movimentacao.valor }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card bg-dark border-secondary h-100">
-                    <div class="card-body">
-                        <p class="text-secondary mb-1">Data e hora</p>
-                        <p class="text-light mb-0">
-                            {{ movimentacao.data|date:"d/m/Y" }}
-                            às {{ movimentacao.hora|time:"H:i"|default:"-" }}
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card bg-dark border-secondary h-100">
-                    <div class="card-body">
-                        <p class="text-secondary mb-1">Categoria</p>
-                        <p class="text-light mb-0">{{ movimentacao.categoria|default:"-" }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card bg-dark border-secondary h-100">
-                    <div class="card-body">
-                        <p class="text-secondary mb-1">Conta de origem</p>
-                        <p class="text-light mb-0">{{ movimentacao.conta_origem|default:"-" }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card bg-dark border-secondary h-100">
-                    <div class="card-body">
-                        <p class="text-secondary mb-1">Conta de destino</p>
-                        <p class="text-light mb-0">{{ movimentacao.conta_destino|default:"-" }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card bg-dark border-secondary h-100">
-                    <div class="card-body">
-                        <p class="text-secondary mb-1">Data de criação</p>
-                        <p class="text-light mb-0">{{ movimentacao.criada_em|date:"d/m/Y H:i" }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="card bg-dark border-secondary h-100">
-                    <div class="card-body">
-                        <p class="text-secondary mb-1">Última atualização</p>
-                        <p class="text-light mb-0">{{ movimentacao.atualizada_em|date:"d/m/Y H:i" }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="card bg-dark border-secondary">
-                    <div class="card-body">
-                        <p class="text-secondary mb-1">Descrição</p>
-                        <p class="text-light mb-0">{{ movimentacao.descricao }}</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-12">
-                <div class="card bg-dark border-secondary">
-                    <div class="card-body">
-                        <p class="text-secondary mb-1">Observações</p>
-                        <p class="text-light mb-0">{{ movimentacao.observacao|default:"Sem observações" }}</p>
+                    <div class="details-main-metric">
+                        <span>Valor</span>
+                        {% if movimentacao.tipo == 'entrada' %}
+                            <strong class="text-success">R$ {{ movimentacao.valor }}</strong>
+                        {% elif movimentacao.tipo == 'saida' %}
+                            <strong class="text-danger">R$ {{ movimentacao.valor }}</strong>
+                        {% else %}
+                            <strong class="text-info">R$ {{ movimentacao.valor }}</strong>
+                        {% endif %}
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="d-flex flex-wrap gap-2 mt-4">
-            <a href="{% url 'editar_movimentacao' movimentacao.id %}" class="btn btn-outline-light">
+        <div class="row g-3 details-info-grid">
+            <div class="col-md-6 col-xl-3">
+                <div class="card details-info-card h-100">
+                    <div class="card-body">
+                        <span class="details-info-label">Tipo</span>
+                        <strong class="details-info-value">{{ movimentacao.get_tipo_display }}</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card details-info-card h-100">
+                    <div class="card-body">
+                        <span class="details-info-label">Data e hora</span>
+                        <strong class="details-info-value">
+                            {{ movimentacao.data|date:"d/m/Y" }} às {{ movimentacao.hora|time:"H:i"|default:"-" }}
+                        </strong>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card details-info-card h-100">
+                    <div class="card-body">
+                        <span class="details-info-label">Categoria</span>
+                        <strong class="details-info-value">{{ movimentacao.categoria|default:"-" }}</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3">
+                <div class="card details-info-card h-100">
+                    <div class="card-body">
+                        <span class="details-info-label">Criada em</span>
+                        <strong class="details-info-value">{{ movimentacao.criada_em|date:"d/m/Y H:i" }}</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card details-info-card h-100">
+                    <div class="card-body">
+                        <span class="details-info-label">Conta de origem</span>
+                        <strong class="details-info-value">{{ movimentacao.conta_origem|default:"-" }}</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card details-info-card h-100">
+                    <div class="card-body">
+                        <span class="details-info-label">Conta de destino</span>
+                        <strong class="details-info-value">{{ movimentacao.conta_destino|default:"-" }}</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card details-info-card h-100">
+                    <div class="card-body">
+                        <span class="details-info-label">Última atualização</span>
+                        <strong class="details-info-value">{{ movimentacao.atualizada_em|date:"d/m/Y H:i" }}</strong>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card details-info-card h-100">
+                    <div class="card-body">
+                        <span class="details-info-label">Descrição</span>
+                        <p class="details-info-text mb-0">{{ movimentacao.descricao }}</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="card details-info-card">
+                    <div class="card-body">
+                        <span class="details-info-label">Observações</span>
+                        <p class="details-info-text mb-0">{{ movimentacao.observacao|default:"Sem observações" }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="details-footer-actions">
+            <a href="{% url 'editar_movimentacao' movimentacao.id %}" class="btn btn-primary">
                 Editar
             </a>
             <a href="{% url 'excluir_movimentacao' movimentacao.id %}" class="btn btn-outline-danger">
@@ -109,8 +146,6 @@ Detalhes da Movimentação
                 Voltar
             </a>
         </div>
-
-    </div>
+    </section>
 </div>
-
 {% endblock %}

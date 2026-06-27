@@ -1644,6 +1644,21 @@ class UsuariosViewsTestCase(FinanceiroTestMixin, TestCase):
             f'href="{reverse("inicio")}" class="btn btn-sm btn-outline-secondary app-back-button"'
         )
 
+    def test_paginas_de_acesso_nao_exibem_sidebar_nem_rodape(self):
+        for url in (reverse('login'), reverse('cadastro')):
+            with self.subTest(url=url):
+                resposta = self.client.get(url)
+
+                self.assertNotContains(resposta, 'id="sidebar"')
+                self.assertNotContains(
+                    resposta,
+                    'Sistema Financeiro - Controle pessoal'
+                )
+                self.assertNotContains(resposta, 'mazer/assets/js/main.js')
+                self.assertContains(resposta, 'app-auth-topbar')
+                self.assertContains(resposta, 'Financeiro')
+                self.assertContains(resposta, 'id="toggle-dark"')
+
     def test_botao_voltar_usa_apenas_url_autenticada_segura(self):
         self.client.force_login(self.usuario)
 

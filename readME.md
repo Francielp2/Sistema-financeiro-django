@@ -10,13 +10,13 @@ O projeto foi desenvolvido como parte do **Projeto de Conclusão de Curso (PCC)*
 
 O sistema tem como objetivo permitir que cada usuário controle completamente sua vida financeira por meio de:
 
-* gerenciamento de contas financeiras;
-* controle de entradas, saídas e transferências;
-* categorização das movimentações;
-* dashboards financeiros;
-* relatórios detalhados;
-* gráficos interativos;
-* acompanhamento da evolução patrimonial.
+- gerenciamento de contas financeiras;
+- controle de entradas, saídas e transferências;
+- categorização das movimentações;
+- dashboards financeiros;
+- relatórios detalhados;
+- gráficos interativos;
+- acompanhamento da evolução patrimonial.
 
 Toda a aplicação foi desenvolvida para funcionar com múltiplos usuários, mantendo completo isolamento dos dados.
 
@@ -26,59 +26,59 @@ Toda a aplicação foi desenvolvida para funcionar com múltiplos usuários, man
 
 ## Autenticação
 
-* Cadastro de usuários
-* Login
-* Logout
-* Perfil do usuário
-* Alteração de senha
-* Proteção das páginas através de autenticação
-* Separação completa dos dados por usuário
+- Cadastro de usuários
+- Login
+- Logout
+- Perfil do usuário
+- Alteração de senha
+- Proteção das páginas através de autenticação
+- Separação completa dos dados por usuário
 
 ---
 
 ## Contas
 
-* Cadastro de contas
-* Edição
-* Exclusão
-* Controle de saldo inicial
-* Bloqueio da alteração do saldo inicial quando existem movimentações
-* Dashboard individual da conta
-* Resumo financeiro por conta
+- Cadastro de contas
+- Edição
+- Exclusão
+- Controle de saldo inicial
+- Bloqueio da alteração do saldo inicial quando existem movimentações
+- Dashboard individual da conta
+- Resumo financeiro por conta
 
 ---
 
 ## Categorias
 
-* Cadastro
-* Edição
-* Exclusão
-* Ativação/Inativação
-* Categorias padrão criadas automaticamente para novos usuários
+- Cadastro
+- Edição
+- Exclusão
+- Ativação/Inativação
+- Categorias padrão criadas automaticamente para novos usuários
 
 ---
 
 ## Movimentações
 
-* Entradas
-* Saídas
-* Transferências internas
+- Entradas
+- Saídas
+- Transferências internas
 
 Cada movimentação possui:
 
-* data;
-* hora;
-* categoria;
-* descrição;
-* conta de origem;
-* conta de destino;
-* valor.
+- data;
+- hora;
+- categoria;
+- descrição;
+- conta de origem;
+- conta de destino;
+- valor.
 
 Também são realizadas diversas validações de negócio, incluindo:
 
-* saldo insuficiente;
-* regras para transferências;
-* consistência das categorias.
+- saldo insuficiente;
+- regras para transferências;
+- consistência das categorias.
 
 ---
 
@@ -88,26 +88,26 @@ Também são realizadas diversas validações de negócio, incluindo:
 
 Exibe indicadores financeiros como:
 
-* patrimônio total;
-* entradas;
-* saídas;
-* resultado;
-* transferências.
+- patrimônio total;
+- entradas;
+- saídas;
+- resultado;
+- transferências.
 
 Além disso apresenta:
 
-* últimas movimentações;
-* resumo das contas;
-* gráficos financeiros.
+- últimas movimentações;
+- resumo das contas;
+- gráficos financeiros.
 
 ### Dashboard Individual
 
 Cada conta possui um dashboard próprio contendo:
 
-* indicadores financeiros;
-* movimentações recentes;
-* gráficos específicos da conta;
-* acesso rápido ao resumo financeiro.
+- indicadores financeiros;
+- movimentações recentes;
+- gráficos específicos da conta;
+- acesso rápido ao resumo financeiro.
 
 ---
 
@@ -117,18 +117,18 @@ O sistema possui relatórios financeiros com filtros avançados.
 
 É possível filtrar por:
 
-* período;
-* tipo de movimentação;
-* categoria;
-* conta.
+- período;
+- tipo de movimentação;
+- categoria;
+- conta.
 
 Os relatórios apresentam:
 
-* patrimônio;
-* entradas;
-* saídas;
-* transferências;
-* resultado financeiro.
+- patrimônio;
+- entradas;
+- saídas;
+- transferências;
+- resultado financeiro.
 
 ---
 
@@ -138,12 +138,12 @@ Os dashboards possuem gráficos interativos desenvolvidos com Chart.js.
 
 Atualmente o sistema apresenta:
 
-* evolução do resultado financeiro;
-* entradas x saídas;
-* patrimônio por conta;
-* gastos por categoria;
-* entradas por categoria;
-* gráficos específicos do dashboard individual.
+- evolução do resultado financeiro;
+- entradas x saídas;
+- patrimônio por conta;
+- gastos por categoria;
+- entradas por categoria;
+- gráficos específicos do dashboard individual.
 
 ---
 
@@ -153,29 +153,29 @@ A interface foi construída utilizando o template **Mazer Admin Dashboard**, ada
 
 O sistema possui:
 
-* tema claro;
-* tema escuro;
-* layout responsivo;
-* sidebar de navegação;
-* dashboards modernos;
-* tabelas padronizadas;
-* formulários adaptados;
-* páginas de detalhes organizadas.
+- tema claro;
+- tema escuro;
+- layout responsivo;
+- sidebar de navegação;
+- dashboards modernos;
+- tabelas padronizadas;
+- formulários adaptados;
+- páginas de detalhes organizadas.
 
 ---
 
 # Tecnologias utilizadas
 
-* Python
-* Django
-* SQLite (desenvolvimento)
-* PostgreSQL (planejado)
-* HTML5
-* CSS3
-* JavaScript
-* Bootstrap
-* Chart.js
-* Mazer Admin Template
+- Python
+- Django
+- SQLite (desenvolvimento)
+- PostgreSQL (planejado)
+- HTML5
+- CSS3
+- JavaScript
+- Bootstrap
+- Chart.js
+- Mazer Admin Template
 
 ---
 
@@ -183,12 +183,12 @@ O sistema possui:
 
 O projeto foi desenvolvido buscando separar responsabilidades entre:
 
-* Models
-* Views
-* Forms
-* Templates
-* Services
-* Static
+- Models
+- Views
+- Forms
+- Templates
+- Services
+- Static
 
 Os cálculos financeiros estão sendo gradualmente centralizados em uma camada de serviços para reduzir duplicação de código e facilitar manutenção.
 
@@ -198,12 +198,12 @@ Os cálculos financeiros estão sendo gradualmente centralizados em uma camada d
 
 Entre as medidas implementadas destacam-se:
 
-* Login obrigatório nas áreas protegidas
-* Isolamento completo dos dados por usuário
-* Validações de negócio
-* Proteção contra acesso indevido às informações financeiras
-* Validação da origem das navegações
-* Preservação segura dos filtros durante a navegação
+- Login obrigatório nas áreas protegidas
+- Isolamento completo dos dados por usuário
+- Validações de negócio
+- Proteção contra acesso indevido às informações financeiras
+- Validação da origem das navegações
+- Preservação segura dos filtros durante a navegação
 
 ---
 
@@ -221,7 +221,7 @@ financeiro/
 └── README.md
 ```
 
-*A estrutura poderá sofrer reorganizações durante a fase final de desenvolvimento.*
+_A estrutura poderá sofrer reorganizações durante a fase final de desenvolvimento._
 
 ---
 
@@ -231,22 +231,22 @@ O sistema encontra-se com a base funcional concluída.
 
 Atualmente estão implementados:
 
-* CRUDs completos;
-* dashboards;
-* relatórios;
-* gráficos;
-* autenticação;
-* interface responsiva;
-* tema claro e escuro;
-* adaptação ao template Mazer.
+- CRUDs completos;
+- dashboards;
+- relatórios;
+- gráficos;
+- autenticação;
+- interface responsiva;
+- tema claro e escuro;
+- adaptação ao template Mazer.
 
 O projeto encontra-se na fase de:
 
-* revisão;
-* estabilização;
-* reorganização interna;
-* preparação para migração para PostgreSQL;
-* preparação para deploy.
+- revisão;
+- estabilização;
+- reorganização interna;
+- preparação para migração para PostgreSQL;
+- preparação para deploy.
 
 ---
 
@@ -254,13 +254,13 @@ O projeto encontra-se na fase de:
 
 As próximas etapas incluem:
 
-* reorganização da arquitetura do projeto;
-* migração para PostgreSQL;
-* deploy da aplicação;
-* configurações personalizadas do usuário;
-* personalização do dashboard;
-* recuperação de senha;
-* integração com Inteligência Artificial para interpretação de movimentações financeiras.
+- reorganização da arquitetura do projeto;
+- migração para PostgreSQL;
+- deploy da aplicação;
+- configurações personalizadas do usuário;
+- personalização do dashboard;
+- recuperação de senha;
+- integração com Inteligência Artificial para interpretação de movimentações financeiras.
 
 ---
 
@@ -269,13 +269,13 @@ As próximas etapas incluem:
 Clone o repositório:
 
 ```bash
-git clone https://github.com/SEU-USUARIO/SEU-REPOSITORIO.git
+git clone https://github.com/Francielp2/Sistema-financeiro-django.git
 ```
 
 Acesse a pasta do projeto:
 
 ```bash
-cd SEU-REPOSITORIO
+cd Sistema-financeiro-django
 ```
 
 Crie um ambiente virtual:
